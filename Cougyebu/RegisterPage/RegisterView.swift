@@ -29,7 +29,7 @@ class RegisterView: UIView {
     let sendEmailButton: UIButton = {
         let btn = UIButton()
         btn.setTitle("인증메일전송", for: .normal)
-        btn.setTitleColor(UIColor.white, for: .normal)
+        btn.setTitleColor(.black, for: .normal)
         btn.titleLabel?.font = UIFont.boldSystemFont(ofSize: 11)
         btn.backgroundColor = .systemGray6
         btn.layer.cornerRadius = 12
@@ -61,7 +61,7 @@ class RegisterView: UIView {
     let authButton: UIButton = {
         let btn = UIButton()
         btn.setTitle("인증확인", for: .normal)
-        btn.setTitleColor(UIColor.white, for: .normal)
+        btn.setTitleColor(.black, for: .normal)
         btn.titleLabel?.font = UIFont.boldSystemFont(ofSize: 11)
         btn.backgroundColor = .systemGray6
         btn.layer.cornerRadius = 12
@@ -99,7 +99,7 @@ class RegisterView: UIView {
     let nicknameCheckButton: UIButton = {
         let btn = UIButton()
         btn.setTitle("중복확인", for: .normal)
-        btn.setTitleColor(UIColor.white, for: .normal)
+        btn.setTitleColor(.black, for: .normal)
         btn.titleLabel?.font = UIFont.boldSystemFont(ofSize: 11)
         btn.backgroundColor = .systemGray6
         btn.layer.cornerRadius = 12
@@ -172,7 +172,7 @@ class RegisterView: UIView {
     let registerButton: UIButton = {
         let btn = UIButton()
         btn.setTitle("회원가입", for: .normal)
-        btn.setTitleColor(.white, for: .normal)
+        btn.setTitleColor(.black, for: .normal)
         btn.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
         btn.backgroundColor = .systemGray6
         btn.layer.cornerRadius = 8

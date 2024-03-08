@@ -58,7 +58,7 @@ class FirestoreManager {
         }
     }
 
-    // 닉네임 중복확인, 로직 수정
+    // 닉네임 중복확인
     func findNickname(nickname: String, completion: @escaping (User?) -> Void) {
         let userDB = db.collection("User")
         let query = userDB.whereField("nickname", isEqualTo: nickname)
@@ -103,12 +103,14 @@ class FirestoreManager {
     }
    
     // 유저 업데이트
-    func updateUser(email: String, updatedFields: [String: Any]) {
+    func updateUser(email: String, updatedFields: [String: Any], completion: ((Bool?) -> Void)?) {
         db.collection("User").document(email).updateData(updatedFields) { error in
             if let error = error {
                 print("Error: \(error)")
+                completion?(false)
             } else {
                 print("유저 정보 업데이트 성공")
+                completion?(true)
             }
         }
     }
@@ -129,91 +131,91 @@ class FirestoreManager {
     }
      
     // 유저 연결
-//    func connectUser(inputEmail: String, inputCode: String) {
-//        db.collection("User").document(inputEmail).getDocument { [self] (document, error) in
-//            guard let document = document, document.exists else { return }
-//            if let code = document["code"] as? String, code == inputCode {
-//                // 입력한 사용자 데이터
-//                var updatedFields: [String: Any] = [:]
-//                updatedFields["coupleEmail"] = currentUser?.email
-//                updatedFields["coupleNickname"] = db.collection("User").document((currentUser?.email)!)
-//                updatedFields["isConnect"] = true
-//                updatedFields["code"] = inputCode
-//
-//                updateUser(email: inputEmail, updatedFields: updatedFields)
-//
-//                // 현재 사용자 데이터
-//                updatedFields["coupleEmail"] = inputEmail
-//                updatedFields["coupleNickname"] = db.collection("User").document(inputEmail)
-//                updatedFields["isConnect"] = true
-//                updatedFields["code"] = inputCode
-//
-//                updateUser(email: (currentUser?.email)!, updatedFields: updatedFields)
-//                print("유저 연결 성공")
-//            } else {
-//                // 얼랏 띄우기
-//                print("유저 연결 실패")
-//            }
-//        }
-//    }
-
     func connectUser(inputEmail: String, inputCode: String) {
         db.collection("User").document(inputEmail).getDocument { [self] (document, error) in
             guard let document = document, document.exists else { return }
-            
-            if let code = document["code"] as? String {
-                // 코드 o
-                handleExistingCode(inputEmail: inputEmail, inputCode: inputCode, storedCode: code)
+            if let code = document["code"] as? String, code == inputCode {
+                // 입력한 사용자 데이터
+                var updatedFields: [String: Any] = [:]
+                updatedFields["coupleEmail"] = currentUser?.email
+                updatedFields["coupleNickname"] = db.collection("User").document((currentUser?.email)!)
+                updatedFields["isConnect"] = true
+                updatedFields["code"] = inputCode
+
+             //   updateUser(email: inputEmail, updatedFields: updatedFields, completion: ((Bool?) -> Void)?)
+
+                // 현재 사용자 데이터
+                updatedFields["coupleEmail"] = inputEmail
+                updatedFields["coupleNickname"] = db.collection("User").document(inputEmail)
+                updatedFields["isConnect"] = true
+                updatedFields["code"] = inputCode
+
+             //   updateUser(email: (currentUser?.email)!, updatedFields: updatedFields)
+                print("유저 연결 성공")
             } else {
-                // 코드 x
-                handleMissingCode(inputEmail: inputEmail, inputCode: inputCode)
+                // 얼랏 띄우기
+                print("유저 연결 실패")
             }
         }
     }
-    
-    func handleExistingCode(inputEmail: String, inputCode: String, storedCode: String) {
-        if storedCode == inputCode {
-            // 입력한 사용자 데이터
-            var updatedFields: [String: Any] = [:]
-            updatedFields["coupleEmail"] = currentUser?.email
-            updatedFields["coupleNickname"] = db.collection("User").document((currentUser?.email)!)
-//            updatedFields["isConnect"] = true
-            updatedFields["code"] = inputCode
-            
-            updateUser(email: inputEmail, updatedFields: updatedFields)
-            
-            // 현재 사용자 데이터
-            updatedFields["coupleEmail"] = inputEmail
-            updatedFields["coupleNickname"] = db.collection("User").document(inputEmail)
-//            updatedFields["isConnect"] = true
-            updatedFields["code"] = inputCode
-            
-            updateUser(email: (currentUser?.email)!, updatedFields: updatedFields)
-            print("유저 연결 성공")
-        } else {
-            // 입력한 코드와 일치하지 않는 경우
-            print("유저 연결 실패: 코드가 일치하지 않습니다")
-        }
-    }
 
-    func handleMissingCode(inputEmail: String, inputCode: String) {
-        // 입력한 사용자 데이터
-        var updatedFields: [String: Any] = [:]
-        updatedFields["coupleEmail"] = currentUser?.email
-        updatedFields["coupleNickname"] = db.collection("User").document((currentUser?.email)!)
-        updatedFields["code"] = inputCode
-        
-        updateUser(email: inputEmail, updatedFields: updatedFields)
-        
-        // 현재 사용자 데이터
-        updatedFields["coupleEmail"] = inputEmail
-        updatedFields["coupleNickname"] = db.collection("User").document(inputEmail)
-        updatedFields["code"] = inputCode
-        
-        updateUser(email: (currentUser?.email)!, updatedFields: updatedFields)
-        print("유저 연결 성공: 코드가 생성되었습니다")
-    }
-    
+//    func connectUser(inputEmail: String, inputCode: String) {
+//        db.collection("User").document(inputEmail).getDocument { [self] (document, error) in
+//            guard let document = document, document.exists else { return }
+//            
+//            if let code = document["code"] as? String {
+//                // 코드 o
+//                handleExistingCode(inputEmail: inputEmail, inputCode: inputCode, storedCode: code)
+//            } else {
+//                // 코드 x
+//                handleMissingCode(inputEmail: inputEmail, inputCode: inputCode)
+//            }
+//        }
+//    }
+//    
+//    func handleExistingCode(inputEmail: String, inputCode: String, storedCode: String) {
+//        if storedCode == inputCode {
+//            // 입력한 사용자 데이터
+//            var updatedFields: [String: Any] = [:]
+//            updatedFields["coupleEmail"] = currentUser?.email
+//            updatedFields["coupleNickname"] = db.collection("User").document((currentUser?.email)!)
+////            updatedFields["isConnect"] = true
+//            updatedFields["code"] = inputCode
+//            
+////            updateUser(email: inputEmail, updatedFields: updatedFields)
+//            
+//            // 현재 사용자 데이터
+//            updatedFields["coupleEmail"] = inputEmail
+//            updatedFields["coupleNickname"] = db.collection("User").document(inputEmail)
+////            updatedFields["isConnect"] = true
+//            updatedFields["code"] = inputCode
+//            
+////            updateUser(email: (currentUser?.email)!, updatedFields: updatedFields)
+//            print("유저 연결 성공")
+//        } else {
+//            // 입력한 코드와 일치하지 않는 경우
+//            print("유저 연결 실패: 코드가 일치하지 않습니다")
+//        }
+//    }
+//
+//    func handleMissingCode(inputEmail: String, inputCode: String) {
+//        // 입력한 사용자 데이터
+//        var updatedFields: [String: Any] = [:]
+//        updatedFields["coupleEmail"] = currentUser?.email
+//        updatedFields["coupleNickname"] = db.collection("User").document((currentUser?.email)!)
+//        updatedFields["code"] = inputCode
+//        
+////        updateUser(email: inputEmail, updatedFields: updatedFields)
+//        
+//        // 현재 사용자 데이터
+//        updatedFields["coupleEmail"] = inputEmail
+//        updatedFields["coupleNickname"] = db.collection("User").document(inputEmail)
+//        updatedFields["code"] = inputCode
+//        
+////        updateUser(email: (currentUser?.email)!, updatedFields: updatedFields)
+//        print("유저 연결 성공: 코드가 생성되었습니다")
+//    }
+//    
     
     // 게시글 등록
     func addPost(email: String, post: Post) {

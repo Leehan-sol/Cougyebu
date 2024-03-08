@@ -17,7 +17,6 @@ class ConnectViewModel {
         self.observableUser = observableUser
     }
     
-    
     func makeRandomNumber() -> String {
         let randomNumber = Int.random(in: 1000000..<9999999)
         let stringNumber = String(randomNumber)

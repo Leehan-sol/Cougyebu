@@ -26,8 +26,15 @@ class ConnectViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setNavigationBar()
         setUI()
         addTarget()
+    }
+    
+    func setNavigationBar() {
+        self.title = "커플 연결"
+        
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 18)]
     }
     
     func setUI() {
@@ -70,17 +77,17 @@ class ConnectViewController: UIViewController {
                     // 이메일 존재 o
                     guard let randomNumber = self?.viewModel.makeRandomNumber() else { return }
                     guard let self = self else { return }
-                    AlertManager.showAlertOneButton(from: self, title: "연결코드입니다.", message: randomNumber, buttonTitle: "확인")
                     viewModel.connectUser(email: email, code: randomNumber)
-                    
-                    connectView.coupleCodeLabel.isHidden = false
-                    connectView.coupleCodeTextField.isHidden = false
-                    connectView.connectButton.isHidden = true
-                    connectView.coupleCodeTextField.isEnabled = false
-                    connectView.coupleCodeLabel.text = "커플 코드"
-                    connectView.coupleEmailTextField.text = user.coupleEmail
-                    connectView.coupleCodeTextField.text = "\(randomNumber)"
-                   
+                    AlertManager.showAlertOneButton(from: self, title: "연결코드입니다.", message: randomNumber, buttonTitle: "확인"){
+                        self.connectView.coupleEmailTextField.isEnabled = false
+                        self.connectView.coupleCodeLabel.isHidden = false
+                        self.connectView.coupleCodeTextField.isHidden = false
+                        self.connectView.coupleCodeBottom.isHidden = false
+                        self.connectView.connectButton.isHidden = true
+                        // 기웅@naver.com
+                        self.connectView.coupleEmailTextField.text = self.viewModel.observableUser?.value.coupleEmail
+                        self.connectView.coupleCodeTextField.text = "\(randomNumber)"
+                    }
                 }
             }
         }

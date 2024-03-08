@@ -44,7 +44,7 @@ class WithdrawalViewController: UIViewController {
     
     func addTarget() {
         withdrawalView.passwordButton.addTarget(self, action: #selector(checkPasswordButtonTapped), for: .touchUpInside)
-        withdrawalView.withdrawalButton.addTarget(self, action: #selector(userDeletionButtonTapped), for: .touchUpInside)
+        withdrawalView.withdrawalButton.addTarget(self, action: #selector(withdrawalButtonTapped), for: .touchUpInside)
     }
     
     // MARK: - @objc
@@ -60,7 +60,7 @@ class WithdrawalViewController: UIViewController {
         }
     }
     
-    @objc func userDeletionButtonTapped() {
+    @objc func withdrawalButtonTapped() {
         let user = Auth.auth().currentUser
         let credential = EmailAuthProvider.credential(withEmail: user?.email ?? "", password: withdrawalView.passwordTextField.text ?? "")
         
@@ -78,6 +78,7 @@ class WithdrawalViewController: UIViewController {
                                 print("Firebase Error: \(error)")
                             } else {
                                 print("회원탈퇴 성공")
+                                // ✨ 화면이동 로직 구현
                                 let loginViewController = LoginViewController()
                              //   self.transitionToRootView(view: UINavigationController(rootViewController: loginViewController))
                             }

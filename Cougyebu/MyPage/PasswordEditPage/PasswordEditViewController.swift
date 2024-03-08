@@ -19,7 +19,7 @@ class PasswordEditViewController: UIViewController {
         super.viewDidLoad()
         setNavigationBar()
         setTextField()
-        setupAddTarget()
+        setAddTarget()
     }
     
     
@@ -36,7 +36,7 @@ class PasswordEditViewController: UIViewController {
     }
     
     
-    func setupAddTarget() {
+    func setAddTarget() {
         passwordEditView.changePasswordButton.addTarget(self, action: #selector(changePasswordButtonTapped), for: .touchUpInside)
         passwordEditView.passwordButton.addTarget(self, action: #selector(editPasswordButtonTapped), for: .touchUpInside)
         passwordEditView.newPasswordButton.addTarget(self, action: #selector(newPasswordButtonTapped), for: .touchUpInside)
