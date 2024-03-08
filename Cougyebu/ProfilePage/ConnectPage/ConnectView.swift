@@ -44,7 +44,6 @@ class ConnectView: UIView {
         tf.autocapitalizationType = .none
         tf.autocorrectionType = .no
         tf.spellCheckingType = .no
-        tf.clearButtonMode = .whileEditing
         return tf
     }()
     

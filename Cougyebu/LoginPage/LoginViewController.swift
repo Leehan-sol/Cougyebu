@@ -11,7 +11,7 @@ import FirebaseAuth
 class LoginViewController: UIViewController {
     
     private let loginView = LoginView()
-    private let fsManager = FirestoreManager()
+    private let userManager = UserManager()
     
     override func loadView() {
         view = loginView
@@ -61,9 +61,8 @@ class LoginViewController: UIViewController {
                     AlertManager.showAlertOneButton(from: self, title: "로그인 실패", message: "아이디 또는 비밀번호가 틀렸습니다.", buttonTitle: "확인")
                     print("로그인 실패 : \(error.localizedDescription)")
                 } else {
-                    self.fsManager.findUser(email: email) { user in
+                    self.userManager.findUser(email: email) { user in
                         if user != nil {
-                            //   currentUser = user -> user 의존성 주입 처리
                             print("로그인 성공")
                             self.loginSuccess(email: email)
                         } else {
@@ -78,7 +77,8 @@ class LoginViewController: UIViewController {
     
     func loginSuccess(email: String) {
         if let currentUserEmail = Auth.auth().currentUser?.email {
-            let mainVC = MainViewController()
+            let mainVM = MainViewModel(userEmail: currentUserEmail)
+            let mainVC = MainViewController(viewModel: mainVM)
             let mainNavi = UINavigationController(rootViewController: mainVC)
             
             let myPageVM = MyPageViewModel(userEmail: currentUserEmail)
@@ -124,7 +124,7 @@ class LoginViewController: UIViewController {
     }
     
     func findIdByNickname(_ nickname: String) {
-        fsManager.findNickname(nickname: nickname) { user in
+        userManager.findNickname(nickname: nickname) { user in
             let alertTitle: String
             let alertMessage: String
             

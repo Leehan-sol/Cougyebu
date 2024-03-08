@@ -7,10 +7,15 @@
 
 import Foundation
 
-struct Post {
-    var postingDate: String
+struct Posts {
+    var date: String
     var category: String
     var content: String
     var cost: Int
 }
+
+struct Post {
+    var posts: [Posts]
+}
+
 

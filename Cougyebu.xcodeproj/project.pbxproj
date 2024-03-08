@@ -51,8 +51,8 @@
 		CC4955F52B998EB9003B3341 /* String +.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4955F42B998EB9003B3341 /* String +.swift */; };
 		CC4955F72B998EC2003B3341 /* UIDevice +.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4955F62B998EC2003B3341 /* UIDevice +.swift */; };
 		CC4955FA2B998F94003B3341 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4955F92B998F94003B3341 /* User.swift */; };
-		CC4955FC2B998F9E003B3341 /* FirestoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4955FB2B998F9E003B3341 /* FirestoreManager.swift */; };
-		CC4955FE2B998FA4003B3341 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4955FD2B998FA4003B3341 /* Post.swift */; };
+		CC4955FC2B998F9E003B3341 /* UserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4955FB2B998F9E003B3341 /* UserManager.swift */; };
+		CC4955FE2B998FA4003B3341 /* Posts.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4955FD2B998FA4003B3341 /* Posts.swift */; };
 		CC4956002B998FAB003B3341 /* AlertManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4955FF2B998FAB003B3341 /* AlertManager.swift */; };
 		CC4956022B998FB3003B3341 /* SMTPManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4956012B998FB3003B3341 /* SMTPManager.swift */; };
 		CC4956052B9991CC003B3341 /* RegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4956042B9991CC003B3341 /* RegisterView.swift */; };
@@ -79,6 +79,7 @@
 		CC4956382B999485003B3341 /* WithdrawalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4956372B999485003B3341 /* WithdrawalViewController.swift */; };
 		CC49563A2B9995BF003B3341 /* Secret.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4956392B9995BF003B3341 /* Secret.swift */; };
 		CC49563E2B9997F2003B3341 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = CC49563D2B9997F2003B3341 /* .gitignore */; };
+		CC5A55FF2B9B223F0012F661 /* PostManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5A55FE2B9B223F0012F661 /* PostManager.swift */; };
 		CCCCCCED2B9A946C00355EAA /* ConnectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCCCCCEC2B9A946C00355EAA /* ConnectViewModel.swift */; };
 /* End PBXBuildFile section */
 
@@ -94,8 +95,8 @@
 		CC4955F42B998EB9003B3341 /* String +.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String +.swift"; sourceTree = "<group>"; };
 		CC4955F62B998EC2003B3341 /* UIDevice +.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIDevice +.swift"; sourceTree = "<group>"; };
 		CC4955F92B998F94003B3341 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
-		CC4955FB2B998F9E003B3341 /* FirestoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreManager.swift; sourceTree = "<group>"; };
-		CC4955FD2B998FA4003B3341 /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
+		CC4955FB2B998F9E003B3341 /* UserManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserManager.swift; sourceTree = "<group>"; };
+		CC4955FD2B998FA4003B3341 /* Posts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Posts.swift; sourceTree = "<group>"; };
 		CC4955FF2B998FAB003B3341 /* AlertManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertManager.swift; sourceTree = "<group>"; };
 		CC4956012B998FB3003B3341 /* SMTPManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMTPManager.swift; sourceTree = "<group>"; };
 		CC4956042B9991CC003B3341 /* RegisterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterView.swift; sourceTree = "<group>"; };
@@ -122,6 +123,7 @@
 		CC4956372B999485003B3341 /* WithdrawalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WithdrawalViewController.swift; sourceTree = "<group>"; };
 		CC4956392B9995BF003B3341 /* Secret.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Secret.swift; sourceTree = "<group>"; };
 		CC49563D2B9997F2003B3341 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		CC5A55FE2B9B223F0012F661 /* PostManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostManager.swift; sourceTree = "<group>"; };
 		CCCCCCEC2B9A946C00355EAA /* ConnectViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -199,7 +201,7 @@
 				CC4956032B9991B8003B3341 /* RegisterPage */,
 				CC4956082B9991F1003B3341 /* LoginPage */,
 				CC49560D2B999238003B3341 /* MainPage */,
-				CC4956142B99928B003B3341 /* MyPage */,
+				CC4956142B99928B003B3341 /* ProfilePage */,
 				CC49559A2B998CE5003B3341 /* Assets.xcassets */,
 				CC49559C2B998CE5003B3341 /* LaunchScreen.storyboard */,
 				CC49559F2B998CE5003B3341 /* Info.plist */,
@@ -222,10 +224,12 @@
 			isa = PBXGroup;
 			children = (
 				CC4955F92B998F94003B3341 /* User.swift */,
-				CC4955FB2B998F9E003B3341 /* FirestoreManager.swift */,
-				CC4955FD2B998FA4003B3341 /* Post.swift */,
+				CC4955FD2B998FA4003B3341 /* Posts.swift */,
+				CC4955FB2B998F9E003B3341 /* UserManager.swift */,
+				CC5A55FE2B9B223F0012F661 /* PostManager.swift */,
 				CC4955FF2B998FAB003B3341 /* AlertManager.swift */,
 				CC4956012B998FB3003B3341 /* SMTPManager.swift */,
+				CC49561B2B9992F3003B3341 /* Observable.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -258,20 +262,17 @@
 			path = MainPage;
 			sourceTree = "<group>";
 		};
-		CC4956142B99928B003B3341 /* MyPage */ = {
+		CC4956142B99928B003B3341 /* ProfilePage */ = {
 			isa = PBXGroup;
 			children = (
-				CC4956152B9992B6003B3341 /* MyPageView.swift */,
-				CC4956172B9992C0003B3341 /* MyPageViewController.swift */,
-				CC4956192B9992CC003B3341 /* MyPageViewModel.swift */,
-				CC49561B2B9992F3003B3341 /* Observable.swift */,
+				CC5A56002B9B24EE0012F661 /* MyPage */,
 				CC49561E2B99930F003B3341 /* WebPage */,
 				CC4956252B999353003B3341 /* ConnectPage */,
 				CC49562A2B9993E2003B3341 /* NicknameEditPage */,
 				CC49562F2B99941B003B3341 /* PasswordEditPage */,
 				CC4956342B999458003B3341 /* WithdrawalPage */,
 			);
-			path = MyPage;
+			path = ProfilePage;
 			sourceTree = "<group>";
 		};
 		CC49561E2B99930F003B3341 /* WebPage */ = {
@@ -319,6 +320,16 @@
 				CC4956372B999485003B3341 /* WithdrawalViewController.swift */,
 			);
 			path = WithdrawalPage;
+			sourceTree = "<group>";
+		};
+		CC5A56002B9B24EE0012F661 /* MyPage */ = {
+			isa = PBXGroup;
+			children = (
+				CC4956152B9992B6003B3341 /* MyPageView.swift */,
+				CC4956172B9992C0003B3341 /* MyPageViewController.swift */,
+				CC4956192B9992CC003B3341 /* MyPageViewModel.swift */,
+			);
+			path = MyPage;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -458,7 +469,7 @@
 				CC49561C2B9992F3003B3341 /* Observable.swift in Sources */,
 				CC4956312B999434003B3341 /* PasswordEditView.swift in Sources */,
 				CC4955942B998CE4003B3341 /* SceneDelegate.swift in Sources */,
-				CC4955FE2B998FA4003B3341 /* Post.swift in Sources */,
+				CC4955FE2B998FA4003B3341 /* Posts.swift in Sources */,
 				CC49560F2B999246003B3341 /* MainView.swift in Sources */,
 				CC49560A2B999205003B3341 /* LoginView.swift in Sources */,
 				CC4955FA2B998F94003B3341 /* User.swift in Sources */,
@@ -466,8 +477,9 @@
 				CC4956072B9991D6003B3341 /* RegisterViewController.swift in Sources */,
 				CC4956022B998FB3003B3341 /* SMTPManager.swift in Sources */,
 				CC4956222B99932E003B3341 /* PrivacyPolicyViewController.swift in Sources */,
-				CC4955FC2B998F9E003B3341 /* FirestoreManager.swift in Sources */,
+				CC4955FC2B998F9E003B3341 /* UserManager.swift in Sources */,
 				CC4956292B999373003B3341 /* ConnectViewController.swift in Sources */,
+				CC5A55FF2B9B223F0012F661 /* PostManager.swift in Sources */,
 				CC4956242B99933E003B3341 /* TermsViewController.swift in Sources */,
 				CC4956132B99925A003B3341 /* MainViewModel.swift in Sources */,
 			);

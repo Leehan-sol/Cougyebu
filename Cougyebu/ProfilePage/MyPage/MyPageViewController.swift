@@ -44,17 +44,15 @@ class MyPageViewController: UIViewController {
         viewModel.setUser()
     }
     
-    // ✨ 커플닉네임 처리하기
     func setBinding() {
         viewModel.observableUser?.bind { [weak self] user in
             self?.myPageView.nicknameLabel.text = user.nickname
-            self?.myPageView.coupleNicknameLabel.text = user.coupleEmail
+            if user.isConnect {
+                self?.myPageView.coupleNicknameLabel.text = user.coupleNickname
+            }
         }
     }
-    
-    
- 
-    
+
     
 }
 

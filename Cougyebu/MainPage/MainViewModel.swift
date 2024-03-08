@@ -8,9 +8,27 @@
 import Foundation
 
 class MainViewModel {
-    private let fsManager = FirestoreManager()
+    private let userManager = UserManager()
+    private let postManager = PostManager()
     
-//    var mainObservable: MainObservable<User>?
+    var observablePost: Observable<[Posts]> = Observable([])
+    var userEmail: String
     
-
+    init(userEmail: String) {
+        self.userEmail = userEmail
+    }
+    
+//    func loadPost(date: String) {
+//        postManager.loadPost(email: userEmail, date: date) { posts in
+//            guard let posts = posts else { return }
+//            self.observablePost.value = posts
+//        }
+//    }
+//    
+    func addPost(date: String, posts: [Posts]) {
+        postManager.addPost(email: userEmail, date: date, posts: posts)
+        observablePost.value.append(contentsOf: posts)
+    }
+    
+    
 }

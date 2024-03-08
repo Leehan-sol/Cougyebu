@@ -10,7 +10,7 @@ import FirebaseAuth
 
 class WithdrawalViewController: UIViewController {
     private let withdrawalView = WithdrawalView()
-    private let fsManager = FirestoreManager()
+    private let userManager = UserManager()
     private let user: Observable<User>?
     
     init(user: Observable<User>?) {
@@ -72,7 +72,7 @@ class WithdrawalViewController: UIViewController {
                 print("비밀번호 확인 성공")
                 AlertManager.showAlertTwoButton(from: self, title: "회원탈퇴", message: "정말 탈퇴하시겠습니까?", button1Title: "확인", button2Title: "취소") {
                     if let user = Auth.auth().currentUser {
-                        self.fsManager.deleteUser(user: user)
+                        self.userManager.deleteUser(user: user)
                         user.delete { error in
                             if let error = error {
                                 print("Firebase Error: \(error)")

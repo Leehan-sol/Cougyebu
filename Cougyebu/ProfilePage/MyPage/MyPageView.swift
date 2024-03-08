@@ -24,7 +24,7 @@ class MyPageView: UIView {
     
     let coupleNicknameLabel: UILabel = {
         let label = UILabel()
-        label.text = "커플 닉네임"
+        label.text = "내 짝꿍"
         label.font = UIFont.boldSystemFont(ofSize: 18)
         return label
     }()

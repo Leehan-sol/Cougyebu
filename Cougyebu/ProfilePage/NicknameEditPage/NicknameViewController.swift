@@ -10,7 +10,7 @@ import FirebaseAuth
 
 class NicknameEditViewController: UIViewController {
     private let nicknameEditView = NicknameEditView()
-    private let fsManager = FirestoreManager()
+    private let userManager = UserManager()
     private let user: Observable<User>?
     private var checkNickname = false
     
@@ -55,7 +55,7 @@ class NicknameEditViewController: UIViewController {
     @objc func nicknameCheckButtonTapped() {
         if let nickname = nicknameEditView.nicknameTextField.text?.trimmingCharacters(in: .whitespaces) {
             if !nickname.isEmpty {
-                fsManager.findNickname(nickname: nickname) { isUsed in
+                userManager.findNickname(nickname: nickname) { isUsed in
                     if isUsed != nil {
                         AlertManager.showAlertOneButton(from: self, title: "사용 불가능", message: "이미 사용중인 닉네임입니다.", buttonTitle: "확인")
                         self.nicknameEditView.nicknameCheckButton.backgroundColor = .systemGray6
@@ -85,11 +85,11 @@ class NicknameEditViewController: UIViewController {
                 return
             }
             
-            fsManager.findNickname(nickname: newNickname) { exists in
+            userManager.findNickname(nickname: newNickname) { exists in
                 if (exists != nil) {
                     AlertManager.showAlertOneButton(from: self, title: "중복 확인", message: "이미 사용 중인 닉네임입니다.", buttonTitle: "확인")
                 } else {
-                    self.fsManager.updateUser(email: userEmail, updatedFields: ["nickname": newNickname]) { success in
+                    self.userManager.updateUser(email: userEmail, updatedFields: ["nickname": newNickname]) { success in
                         if success != nil && success! {
                             self.user?.value.nickname = newNickname
                             AlertManager.showAlertOneButton(from: self, title: "닉네임 변경", message: "닉네임이 변경되었습니다.", buttonTitle: "확인"){

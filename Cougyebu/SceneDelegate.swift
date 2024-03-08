@@ -19,7 +19,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.window = window
         
         if let currentUserEmail = Auth.auth().currentUser?.email {
-            let mainVC = MainViewController()
+            let mainVM = MainViewModel(userEmail: currentUserEmail)
+            let mainVC = MainViewController(viewModel: mainVM)
             let mainNavi = UINavigationController(rootViewController: mainVC)
             
             let myPageVM = MyPageViewModel(userEmail: currentUserEmail)

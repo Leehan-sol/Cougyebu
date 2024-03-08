@@ -14,7 +14,7 @@ class RegisterViewController: UIViewController {
     
     // MARK: - Properties
     private let registerView = RegisterView()
-    private let fsManager = FirestoreManager()
+    private let userManager = UserManager()
     private var userAuthCode = 0
     private var seconds = 181
     private var timer: Timer?
@@ -94,7 +94,7 @@ class RegisterViewController: UIViewController {
             return
         }
         
-        fsManager.findUser(email: email) { [weak self] isUsed in
+        userManager.findUser(email: email) { [weak self] isUsed in
             guard let self = self else { return }
             if isUsed != nil {
                 AlertManager.showAlertOneButton(from: self, title: "사용 불가능", message: "이미 사용중인 아이디입니다.", buttonTitle: "확인")
@@ -147,7 +147,7 @@ class RegisterViewController: UIViewController {
     @objc func nicknameCheckButtonTapped() {
         if let nickname = registerView.nicknameTextField.text?.trimmingCharacters(in: .whitespaces) {
             if !nickname.isEmpty {
-                fsManager.findNickname(nickname: nickname) { isUsed in
+                userManager.findNickname(nickname: nickname) { isUsed in
                     if isUsed != nil {
                         AlertManager.showAlertOneButton(from: self, title: "사용 불가능", message: "이미 사용중인 닉네임입니다.", buttonTitle: "확인")
                         self.registerView.nicknameCheckButton.backgroundColor = .systemGray6
@@ -216,7 +216,7 @@ class RegisterViewController: UIViewController {
                     if let e = error {
                         AlertManager.showAlertOneButton(from: self, title: "오류", message: e.localizedDescription, buttonTitle: "확인")
                     } else {
-                        self.fsManager.addUser(user: newUser)
+                        self.userManager.addUser(user: newUser)
                         self.navigationController?.popViewController(animated: true)
                     }
                 }
