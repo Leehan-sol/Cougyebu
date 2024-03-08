@@ -58,18 +58,11 @@ class MainViewController: UIViewController {
     
     @objc func floatingButtonTapped() {
         // ✨ posts의 data는 시간까지 저장해야됨
-        
-        viewModel.addPost(date: "2024.02.04", posts: [Posts(date: "2024.02.05", category: "카테고리", content: "내용", cost: 1600)])
+        let postingVM = PostingViewModel(observablePost: viewModel.observablePost, userEmail: viewModel.userEmail)
+        let postingVC = PostingViewController(viewModel: postingVM)
+        present(postingVC, animated: true)
     }
-    
-//   func floatingButtonTapped(_ sender: Any) {
-//        let storyboard = UIStoryboard(name: "NewAlarm", bundle: nil)
-//        let vc = storyboard.instantiateViewController(withIdentifier: "NewAlarmViewController") as! NewAlarmViewController
-//    //        vc.modalPresentationStyle = .fullScreen
-//        present(vc, animated: true)
-//    }
-    
-    
+
     
 }
 

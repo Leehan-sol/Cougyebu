@@ -27,10 +27,6 @@ class MainViewModel {
         }
     }
     
-    func addPost(date: String, posts: [Posts]) {
-        postManager.addPost(email: userEmail, date: date, posts: posts)
-        observablePost.value.append(contentsOf: posts)
-    }
-    
+
     
 }

@@ -86,7 +86,7 @@ class ConnectView: UIView {
         addSubview(connectButton)
         
         coupleEmailLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(95)
+            $0.top.equalToSuperview().offset(120)
             $0.left.equalToSuperview().offset(24)
         }
         coupleEmailTextField.snp.makeConstraints {
