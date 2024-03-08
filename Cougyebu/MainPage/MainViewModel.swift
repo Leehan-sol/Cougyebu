@@ -18,13 +18,15 @@ class MainViewModel {
         self.userEmail = userEmail
     }
     
-//    func loadPost(date: String) {
-//        postManager.loadPost(email: userEmail, date: date) { posts in
-//            guard let posts = posts else { return }
-//            self.observablePost.value = posts
-//        }
-//    }
-//    
+    lazy var postCount = observablePost.value.count
+    
+    func loadPost(date: String) {
+        postManager.loadPosts(userEmail: userEmail, date: date) { posts in
+            guard let posts = posts else { return }
+            self.observablePost.value = posts
+        }
+    }
+    
     func addPost(date: String, posts: [Posts]) {
         postManager.addPost(email: userEmail, date: date, posts: posts)
         observablePost.value.append(contentsOf: posts)

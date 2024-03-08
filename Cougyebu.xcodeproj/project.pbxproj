@@ -80,6 +80,10 @@
 		CC49563A2B9995BF003B3341 /* Secret.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4956392B9995BF003B3341 /* Secret.swift */; };
 		CC49563E2B9997F2003B3341 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = CC49563D2B9997F2003B3341 /* .gitignore */; };
 		CC5A55FF2B9B223F0012F661 /* PostManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5A55FE2B9B223F0012F661 /* PostManager.swift */; };
+		CC5A56022B9B3CAC0012F661 /* UIButton +.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5A56012B9B3CAC0012F661 /* UIButton +.swift */; };
+		CC5A56052B9B42AC0012F661 /* PostingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5A56042B9B42AC0012F661 /* PostingView.swift */; };
+		CC5A56072B9B42B60012F661 /* PostingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5A56062B9B42B60012F661 /* PostingViewController.swift */; };
+		CC5A56092B9B42BF0012F661 /* PostingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5A56082B9B42BF0012F661 /* PostingViewModel.swift */; };
 		CCCCCCED2B9A946C00355EAA /* ConnectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCCCCCEC2B9A946C00355EAA /* ConnectViewModel.swift */; };
 /* End PBXBuildFile section */
 
@@ -124,6 +128,10 @@
 		CC4956392B9995BF003B3341 /* Secret.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Secret.swift; sourceTree = "<group>"; };
 		CC49563D2B9997F2003B3341 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		CC5A55FE2B9B223F0012F661 /* PostManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostManager.swift; sourceTree = "<group>"; };
+		CC5A56012B9B3CAC0012F661 /* UIButton +.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton +.swift"; sourceTree = "<group>"; };
+		CC5A56042B9B42AC0012F661 /* PostingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostingView.swift; sourceTree = "<group>"; };
+		CC5A56062B9B42B60012F661 /* PostingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostingViewController.swift; sourceTree = "<group>"; };
+		CC5A56082B9B42BF0012F661 /* PostingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostingViewModel.swift; sourceTree = "<group>"; };
 		CCCCCCEC2B9A946C00355EAA /* ConnectViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -213,9 +221,10 @@
 		CC4955F12B998E98003B3341 /* Extension */ = {
 			isa = PBXGroup;
 			children = (
-				CC4955F22B998EAF003B3341 /* UITextField +.swift */,
 				CC4955F42B998EB9003B3341 /* String +.swift */,
+				CC4955F22B998EAF003B3341 /* UITextField +.swift */,
 				CC4955F62B998EC2003B3341 /* UIDevice +.swift */,
+				CC5A56012B9B3CAC0012F661 /* UIButton +.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -258,6 +267,7 @@
 				CC49560E2B999246003B3341 /* MainView.swift */,
 				CC4956102B999250003B3341 /* MainViewController.swift */,
 				CC4956122B99925A003B3341 /* MainViewModel.swift */,
+				CC5A56032B9B429A0012F661 /* PostingPage */,
 			);
 			path = MainPage;
 			sourceTree = "<group>";
@@ -330,6 +340,16 @@
 				CC4956192B9992CC003B3341 /* MyPageViewModel.swift */,
 			);
 			path = MyPage;
+			sourceTree = "<group>";
+		};
+		CC5A56032B9B429A0012F661 /* PostingPage */ = {
+			isa = PBXGroup;
+			children = (
+				CC5A56042B9B42AC0012F661 /* PostingView.swift */,
+				CC5A56062B9B42B60012F661 /* PostingViewController.swift */,
+				CC5A56082B9B42BF0012F661 /* PostingViewModel.swift */,
+			);
+			path = PostingPage;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -450,6 +470,7 @@
 				CC4956182B9992C0003B3341 /* MyPageViewController.swift in Sources */,
 				CC4955F72B998EC2003B3341 /* UIDevice +.swift in Sources */,
 				CC49562C2B9993FE003B3341 /* NicknameEditView.swift in Sources */,
+				CC5A56072B9B42B60012F661 /* PostingViewController.swift in Sources */,
 				CC4956202B999321003B3341 /* AppNoticeViewController.swift in Sources */,
 				CC49563A2B9995BF003B3341 /* Secret.swift in Sources */,
 				CC4956272B999365003B3341 /* ConnectView.swift in Sources */,
@@ -465,6 +486,7 @@
 				CCCCCCED2B9A946C00355EAA /* ConnectViewModel.swift in Sources */,
 				CC49562E2B999409003B3341 /* NicknameViewController.swift in Sources */,
 				CC4956382B999485003B3341 /* WithdrawalViewController.swift in Sources */,
+				CC5A56092B9B42BF0012F661 /* PostingViewModel.swift in Sources */,
 				CC4956112B999250003B3341 /* MainViewController.swift in Sources */,
 				CC49561C2B9992F3003B3341 /* Observable.swift in Sources */,
 				CC4956312B999434003B3341 /* PasswordEditView.swift in Sources */,
@@ -477,8 +499,10 @@
 				CC4956072B9991D6003B3341 /* RegisterViewController.swift in Sources */,
 				CC4956022B998FB3003B3341 /* SMTPManager.swift in Sources */,
 				CC4956222B99932E003B3341 /* PrivacyPolicyViewController.swift in Sources */,
+				CC5A56052B9B42AC0012F661 /* PostingView.swift in Sources */,
 				CC4955FC2B998F9E003B3341 /* UserManager.swift in Sources */,
 				CC4956292B999373003B3341 /* ConnectViewController.swift in Sources */,
+				CC5A56022B9B3CAC0012F661 /* UIButton +.swift in Sources */,
 				CC5A55FF2B9B223F0012F661 /* PostManager.swift in Sources */,
 				CC4956242B99933E003B3341 /* TermsViewController.swift in Sources */,
 				CC4956132B99925A003B3341 /* MainViewModel.swift in Sources */,

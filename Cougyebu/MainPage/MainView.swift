@@ -15,14 +15,15 @@ class MainView: UIView {
         tv.separatorStyle = .none
         return tv
     }()
-    
-    let postButton: UIButton = {
+
+    let floatingButton: UIButton = {
         let btn = UIButton()
-        btn.setTitle("게시글 등록", for: .normal)
-        btn.setTitleColor(.black, for: .normal)
+        let image = UIImage(systemName: "plus.circle")
+        let resizedImage = btn.resizeImageButton(image: image, width: 40, height: 40, color: UIColor.black)
+        btn.setImage(resizedImage, for: .normal)
         return btn
     }()
-    
+
    
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -39,15 +40,15 @@ class MainView: UIView {
         self.backgroundColor = .systemBackground
 
         addSubview(tableView)
-        addSubview(postButton)
+        addSubview(floatingButton)
         
         tableView.snp.makeConstraints {
             $0.top.left.right.bottom.equalToSuperview()
         }
         
-        postButton.snp.makeConstraints {
-            $0.centerX.equalToSuperview()
-            $0.centerY.equalToSuperview()
+        floatingButton.snp.makeConstraints {
+            $0.right.equalToSuperview().offset(-30)
+            $0.bottom.equalToSuperview().offset(-100)
         }
     
         

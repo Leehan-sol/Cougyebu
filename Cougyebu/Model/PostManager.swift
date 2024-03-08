@@ -13,35 +13,46 @@ class PostManager {
     private let db = Firestore.firestore()
     
     // 게시글 로드
-//    func loadPost(email: String, date: String, completion: @escaping ([Posts]?) -> Void) {
-//        let userDB = db.collection(email)
-//        let query = userDB.whereField("date", isEqualTo: date)
-//        
-//        query.getDocuments { (snapshot, error) in
-//            if let error = error {
-//                print(error.localizedDescription)
-//                return
-//            }
-//            
-//            guard let snapshot = snapshot, !snapshot.isEmpty else { return }
-//            guard let data = snapshot.documents.first?.data() else { return }
-//            
-//            var posts: [Posts] = []
-//            
-//            for document in snapshot.documents {
-//                let date = data["date"] as? String ?? ""
-//                let category = data["category"] as? String ?? ""
-//                let content = data["content"] as? String ?? ""
-//                let cost = data["cost"] as? Int ?? 0
-//                
-//                let post = Posts(date: date, posts: [])
-//                posts.append(post)
-//            }
-//            completion(posts)
-//            print(posts)
-//        }
-//    }
-    
+    func loadPosts(userEmail: String, date: String, completion: @escaping ([Posts]?) -> Void) {
+        let userDB = db.collection(userEmail)
+        let databaseRef = userDB.document(date)
+        
+        databaseRef.getDocument { snapshot, error in
+            if let error = error {
+                print("Error getting document: \(error)")
+                completion(nil)
+                return
+            }
+            
+            guard let snapshot = snapshot, snapshot.exists else {
+                print("Document does not exist")
+                completion(nil)
+                return
+            }
+            
+            guard let data = snapshot.data(), let postsData = data["posts"] as? [[String: Any]] else {
+                print("Posts data is missing or not in expected format")
+                completion(nil)
+                return
+            }
+            
+            var posts: [Posts] = []
+            for postData in postsData {
+                if let date = postData["date"] as? String,
+                   let category = postData["category"] as? String,
+                   let content = postData["content"] as? String,
+                   let cost = postData["cost"] as? Int {
+                    let post = Posts(date: date, category: category, content: content, cost: cost)
+                    posts.append(post)
+                } else {
+                    print("Error parsing post data")
+                }
+            }
+            
+            completion(posts)
+        }
+    }
+
     
     
     // 게시글 등록
