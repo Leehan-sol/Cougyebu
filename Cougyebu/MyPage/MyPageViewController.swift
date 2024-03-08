@@ -31,7 +31,7 @@ class MyPageViewController: UIViewController {
         super.viewDidLoad()
         setTableView()
         setViewModelUser()
-        // setBinding()
+        setBinding()
     }
     
     func setTableView() {
@@ -44,32 +44,16 @@ class MyPageViewController: UIViewController {
         viewModel.setUser()
     }
     
-    // ✨ 레이블 변경 로직
-    //    func setBinding() {
-    //        viewModel.observableUser?.bind { [weak self] user in
-    //            guard let userEmail = self?.viewModel.userEmail else {
-    //                return
-    //            }
-    //            self?.myPageView.nicknameLabel.text = userEmail
-    //        }
-    //    }
+    // ✨ 커플닉네임 처리하기
+    func setBinding() {
+        viewModel.observableUser?.bind { [weak self] user in
+            self?.myPageView.nicknameLabel.text = user.nickname
+            self?.myPageView.coupleNicknameLabel.text = user.coupleEmail
+        }
+    }
     
     
-    // ✨ 얼랏으로 이메일 입력받기, 코드 있는지 없는지 확인 후 없으면 코드 생성, 있으면 코드 입력해라 / 코드 맞아야 connectUser()메소드 실행
-    // ✨ 코드 생성할때 커플계정에도 생성하기
-    //    @objc func connectButtonTapped() {
-    //        AlertManager.showAlertWithTwoTF(from: self, title: "커플 연결", message: "", placeholder1: "상대방의 이메일을 입력하세요.", placeholder2: "연결 코드를 입력해주세요.", button1Title: "확인", button2Title: "취소") { email, code in
-    //            guard let email = email, let code = code else {
-    //                // 왜 안되는지 알려주기
-    //                return
-    //            }
-    //
-    //            // Use the email and code values
-    //            self.viewModel.connectUser(inputEmail: email, inputCode: Int(code) ?? 0)
-    //        }
-    //
-    //    }
-    
+ 
     
     
 }
@@ -112,9 +96,12 @@ extension MyPageViewController: UITableViewDelegate {
             self.navigationController?.pushViewController(termsVC, animated: true)
         case "문의하기":
             setMail()
+            // ✨ 커플 연결 로직 구현
         case "커플 연결":
-            let connectVC = ConnectViewController()
+            let connectVM = ConnectViewModel(observableUser: viewModel.observableUser!)
+            let connectVC = ConnectViewController(viewModel: connectVM)
             self.navigationController?.pushViewController(connectVC, animated: true)
+            // ✨ 닉네임 변경 로직 구현
         case "닉네임 변경":
             let nicknameEditVC = NicknameEditViewController()
             self.navigationController?.pushViewController(nicknameEditVC, animated: true)
@@ -132,7 +119,7 @@ extension MyPageViewController: UITableViewDelegate {
             let passwordEditVC = PasswordEditViewController()
             self.navigationController?.pushViewController(passwordEditVC, animated: true)
         case "회원탈퇴":
-            let withdrawalVC = WithdrawalViewController()
+            let withdrawalVC = WithdrawalViewController(user: viewModel.observableUser)
             self.navigationController?.pushViewController(withdrawalVC, animated: true)
         default:
             break

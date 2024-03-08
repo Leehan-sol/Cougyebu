@@ -80,6 +80,7 @@
 		CC4956382B999485003B3341 /* WithdrawalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4956372B999485003B3341 /* WithdrawalViewController.swift */; };
 		CC49563A2B9995BF003B3341 /* Secret.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4956392B9995BF003B3341 /* Secret.swift */; };
 		CC49563E2B9997F2003B3341 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = CC49563D2B9997F2003B3341 /* .gitignore */; };
+		CCCCCCED2B9A946C00355EAA /* ConnectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCCCCCEC2B9A946C00355EAA /* ConnectViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -123,6 +124,7 @@
 		CC4956372B999485003B3341 /* WithdrawalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WithdrawalViewController.swift; sourceTree = "<group>"; };
 		CC4956392B9995BF003B3341 /* Secret.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Secret.swift; sourceTree = "<group>"; };
 		CC49563D2B9997F2003B3341 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		CCCCCCEC2B9A946C00355EAA /* ConnectViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -290,6 +292,7 @@
 			children = (
 				CC4956262B999365003B3341 /* ConnectView.swift */,
 				CC4956282B999373003B3341 /* ConnectViewController.swift */,
+				CCCCCCEC2B9A946C00355EAA /* ConnectViewModel.swift */,
 			);
 			path = ConnectPage;
 			sourceTree = "<group>";
@@ -452,6 +455,7 @@
 				CC4956332B999440003B3341 /* PasswordEditViewController.swift in Sources */,
 				CC49561A2B9992CC003B3341 /* MyPageViewModel.swift in Sources */,
 				CC4955922B998CE4003B3341 /* AppDelegate.swift in Sources */,
+				CCCCCCED2B9A946C00355EAA /* ConnectViewModel.swift in Sources */,
 				CC49562E2B999409003B3341 /* NicknameViewController.swift in Sources */,
 				CC4956382B999485003B3341 /* WithdrawalViewController.swift in Sources */,
 				CC4956112B999250003B3341 /* MainViewController.swift in Sources */,
