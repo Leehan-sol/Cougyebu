@@ -16,7 +16,7 @@ class PostingView: UIView {
         return label
     }()
     
-    private let datePicker: UIDatePicker = {
+    let datePicker: UIDatePicker = {
         let picker = UIDatePicker()
         picker.datePickerMode = .date
         return picker
@@ -28,7 +28,7 @@ class PostingView: UIView {
         return label
     }()
     
-    private let categoryPicker: UIPickerView = {
+    let categoryPicker: UIPickerView = {
         let picker = UIPickerView()
         picker.backgroundColor = .systemGray6
         return picker
@@ -40,7 +40,7 @@ class PostingView: UIView {
         return label
     }()
     
-    private let contentTextField: UITextField = {
+    let contentTextField: UITextField = {
         let tf = UITextField()
         tf.placeholder = "내용을 입력하세요"
         tf.borderStyle = .roundedRect
@@ -53,7 +53,7 @@ class PostingView: UIView {
         return label
     }()
     
-    private let priceTextField: UITextField = {
+    let priceTextField: UITextField = {
         let tf = UITextField()
         tf.placeholder = "가격을 입력하세요"
         tf.borderStyle = .roundedRect

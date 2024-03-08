@@ -10,6 +10,8 @@ import Foundation
 class PostingViewModel {
     private let userManager = UserManager()
     private let postManager = PostManager()
+    // userEmail로 cateogory 필드 로드해서 데이터가 없으면 기본값으로 설정, 있으면 변경
+    let categories = ["생활비", "교통비", "식비"]
     
     var observablePost: Observable<[Posts]>
     var userEmail: String

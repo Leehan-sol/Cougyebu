@@ -29,7 +29,7 @@ class MainViewController: UIViewController {
         setAddtarget()
         setTableView()
         setBinding()
-        loadPost(date: "2024.02.04")
+        loadPost()
     }
     
     func setAddtarget() {
@@ -42,7 +42,6 @@ class MainViewController: UIViewController {
         mainView.tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
     }
     
-    
     func setBinding() {
         viewModel.observablePost.bind { [weak self] _ in
             DispatchQueue.main.async {
@@ -51,13 +50,12 @@ class MainViewController: UIViewController {
         }
     }
     
-    func loadPost(date: String) {
+    func loadPost(date: String = Date().toString(format: "yyyy.MM.dd")) {
         viewModel.loadPost(date: date)
     }
 
     
     @objc func floatingButtonTapped() {
-        // ✨ posts의 data는 시간까지 저장해야됨
         let postingVM = PostingViewModel(observablePost: viewModel.observablePost, userEmail: viewModel.userEmail)
         let postingVC = PostingViewController(viewModel: postingVM)
         present(postingVC, animated: true)
@@ -91,3 +89,6 @@ extension MainViewController: UITableViewDataSource {
     }
     
 }
+
+
+

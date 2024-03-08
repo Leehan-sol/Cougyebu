@@ -101,6 +101,9 @@ extension MyPageViewController: UITableViewDelegate {
         case "닉네임 변경":
             let nicknameEditVC = NicknameEditViewController(user: viewModel.observableUser!)
             self.navigationController?.pushViewController(nicknameEditVC, animated: true)
+        case "카테고리 설정":
+            let categoryVC = CategoryViewController(user: viewModel.observableUser!)
+            self.navigationController?.pushViewController(categoryVC, animated: true)
         case "로그아웃":
             AlertManager.showAlertTwoButton(from: self, title: "로그아웃", message: "정말 로그아웃하시겠습니까?", button1Title: "확인", button2Title: "취소") {
                 do {

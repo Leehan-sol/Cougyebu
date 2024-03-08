@@ -10,6 +10,7 @@ import Foundation
 class MainViewModel {
     private let userManager = UserManager()
     private let postManager = PostManager()
+
     
     var observablePost: Observable<[Posts]> = Observable([])
     var userEmail: String
@@ -23,6 +24,7 @@ class MainViewModel {
     func loadPost(date: String) {
         postManager.loadPosts(userEmail: userEmail, date: date) { posts in
             guard let posts = posts else { return }
+            // ✨ 날짜 일치할때만 추가
             self.observablePost.value = posts
         }
     }

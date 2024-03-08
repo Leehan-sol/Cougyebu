@@ -84,6 +84,9 @@
 		CC5A56052B9B42AC0012F661 /* PostingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5A56042B9B42AC0012F661 /* PostingView.swift */; };
 		CC5A56072B9B42B60012F661 /* PostingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5A56062B9B42B60012F661 /* PostingViewController.swift */; };
 		CC5A56092B9B42BF0012F661 /* PostingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5A56082B9B42BF0012F661 /* PostingViewModel.swift */; };
+		CC5A560B2B9B55630012F661 /* Date +.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5A560A2B9B55630012F661 /* Date +.swift */; };
+		CC5A560E2B9B5A870012F661 /* CategoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5A560D2B9B5A870012F661 /* CategoryView.swift */; };
+		CC5A56102B9B5A930012F661 /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5A560F2B9B5A930012F661 /* CategoryViewController.swift */; };
 		CCCCCCED2B9A946C00355EAA /* ConnectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCCCCCEC2B9A946C00355EAA /* ConnectViewModel.swift */; };
 /* End PBXBuildFile section */
 
@@ -132,6 +135,9 @@
 		CC5A56042B9B42AC0012F661 /* PostingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostingView.swift; sourceTree = "<group>"; };
 		CC5A56062B9B42B60012F661 /* PostingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostingViewController.swift; sourceTree = "<group>"; };
 		CC5A56082B9B42BF0012F661 /* PostingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostingViewModel.swift; sourceTree = "<group>"; };
+		CC5A560A2B9B55630012F661 /* Date +.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date +.swift"; sourceTree = "<group>"; };
+		CC5A560D2B9B5A870012F661 /* CategoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryView.swift; sourceTree = "<group>"; };
+		CC5A560F2B9B5A930012F661 /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
 		CCCCCCEC2B9A946C00355EAA /* ConnectViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -225,6 +231,7 @@
 				CC4955F22B998EAF003B3341 /* UITextField +.swift */,
 				CC4955F62B998EC2003B3341 /* UIDevice +.swift */,
 				CC5A56012B9B3CAC0012F661 /* UIButton +.swift */,
+				CC5A560A2B9B55630012F661 /* Date +.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -279,6 +286,7 @@
 				CC49561E2B99930F003B3341 /* WebPage */,
 				CC4956252B999353003B3341 /* ConnectPage */,
 				CC49562A2B9993E2003B3341 /* NicknameEditPage */,
+				CC5A560C2B9B5A1C0012F661 /* CategoryPage */,
 				CC49562F2B99941B003B3341 /* PasswordEditPage */,
 				CC4956342B999458003B3341 /* WithdrawalPage */,
 			);
@@ -350,6 +358,15 @@
 				CC5A56082B9B42BF0012F661 /* PostingViewModel.swift */,
 			);
 			path = PostingPage;
+			sourceTree = "<group>";
+		};
+		CC5A560C2B9B5A1C0012F661 /* CategoryPage */ = {
+			isa = PBXGroup;
+			children = (
+				CC5A560D2B9B5A870012F661 /* CategoryView.swift */,
+				CC5A560F2B9B5A930012F661 /* CategoryViewController.swift */,
+			);
+			path = CategoryPage;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -467,6 +484,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CC5A560B2B9B55630012F661 /* Date +.swift in Sources */,
 				CC4956182B9992C0003B3341 /* MyPageViewController.swift in Sources */,
 				CC4955F72B998EC2003B3341 /* UIDevice +.swift in Sources */,
 				CC49562C2B9993FE003B3341 /* NicknameEditView.swift in Sources */,
@@ -482,6 +500,7 @@
 				CC4956162B9992B6003B3341 /* MyPageView.swift in Sources */,
 				CC4956332B999440003B3341 /* PasswordEditViewController.swift in Sources */,
 				CC49561A2B9992CC003B3341 /* MyPageViewModel.swift in Sources */,
+				CC5A56102B9B5A930012F661 /* CategoryViewController.swift in Sources */,
 				CC4955922B998CE4003B3341 /* AppDelegate.swift in Sources */,
 				CCCCCCED2B9A946C00355EAA /* ConnectViewModel.swift in Sources */,
 				CC49562E2B999409003B3341 /* NicknameViewController.swift in Sources */,
@@ -506,6 +525,7 @@
 				CC5A55FF2B9B223F0012F661 /* PostManager.swift in Sources */,
 				CC4956242B99933E003B3341 /* TermsViewController.swift in Sources */,
 				CC4956132B99925A003B3341 /* MainViewModel.swift in Sources */,
+				CC5A560E2B9B5A870012F661 /* CategoryView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

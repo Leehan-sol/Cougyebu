@@ -51,11 +51,11 @@ class UserManager {
                     }
                     
                     coupleNickname = data["nickname"] as? String
-                    let user = User(email: email, nickname: nickname, isConnect: isConnect, code: code, coupleEmail: coupleEmail, coupleNickname: coupleNickname, requestUser: requestUser, postRef: nil)
+                    let user = User(email: email, nickname: nickname, isConnect: isConnect, code: code, coupleEmail: coupleEmail, coupleNickname: coupleNickname, requestUser: requestUser)
                     completion(user)
                 }
             } else {
-                let user = User(email: email, nickname: nickname, isConnect: isConnect, code: code, coupleEmail: coupleEmail, coupleNickname: nil, requestUser: requestUser, postRef: nil)
+                let user = User(email: email, nickname: nickname, isConnect: isConnect, code: code, coupleEmail: coupleEmail, coupleNickname: nil, requestUser: requestUser)
                 completion(user)
             }
         }
@@ -110,7 +110,6 @@ class UserManager {
             "isConnect": user.isConnect as Any,
             "coupleEmail": user.coupleEmail as Any,
             "coupleNickname": user.coupleNickname as Any,
-            "postRef": user.postRef as Any
         ]) { error in
             if let error = error {
                 print("Error: \(error)")
