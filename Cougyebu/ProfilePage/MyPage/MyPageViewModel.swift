@@ -20,7 +20,7 @@ class MyPageViewModel {
         self.observableUser = Observable<User>(User(email: "", nickname: "", isConnect: false))
     }
     
-    // observableUser 세팅
+    // user 세팅
     func setUser() {
         guard let email = userEmail else { return }
         

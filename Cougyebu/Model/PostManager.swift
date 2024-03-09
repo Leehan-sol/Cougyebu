@@ -41,7 +41,7 @@ class PostManager {
                 if let date = postData["date"] as? String,
                    let category = postData["category"] as? String,
                    let content = postData["content"] as? String,
-                   let cost = postData["cost"] as? Int,
+                   let cost = postData["cost"] as? String,
                    let uuid = postData["uuid"] as? String {
                     let post = Posts(date: date, category: category, content: content, cost: cost, uuid: uuid)
                     posts.append(post)

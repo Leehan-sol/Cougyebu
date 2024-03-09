@@ -39,6 +39,13 @@ class PostingViewController: UIViewController {
         postingView.categoryPicker.dataSource = self
     }
     
+    func makeComma(num: Int) -> String {
+        let numberFormatter: NumberFormatter = NumberFormatter()
+        numberFormatter.numberStyle = .decimal
+        let costResult: String = numberFormatter.string(for: num) ?? ""
+        return costResult
+    }
+    
     @objc func addButtonTapped() {
         let dateString = postingView.datePicker.date.toString(format: "yyyy.MM.dd")
         
@@ -51,13 +58,14 @@ class PostingViewController: UIViewController {
         let category = viewModel.userCategory[selectedCategoryIndex]
         let uuid = UUID().uuidString
         
-        guard let costText = postingView.priceTextField.text?.trimmingCharacters(in: .whitespaces),
-              let cost = Int(costText) else {
+        guard let cost = postingView.priceTextField.text?.trimmingCharacters(in: .whitespaces) else {
             AlertManager.showAlertOneButton(from: self, title: "가격 입력", message: "가격을 입력하세요", buttonTitle: "확인")
             return
         }
+        guard let intCost = Int(cost) else { return }
+        let resultCost = makeComma(num: intCost)
         
-        viewModel.addPost(date: dateString, posts: [Posts(date: dateString, category: category, content: content, cost: cost, uuid: uuid)])
+        viewModel.addPost(date: dateString, posts: [Posts(date: dateString, category: category, content: content, cost: resultCost, uuid: uuid)])
         dismiss(animated: true)
     }
     
@@ -69,6 +77,7 @@ extension PostingViewController: UITextFieldDelegate {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
     }
+    
     
 }
 

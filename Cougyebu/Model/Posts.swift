@@ -11,7 +11,7 @@ struct Posts {
     var date: String
     var category: String
     var content: String
-    var cost: Int
+    var cost: String
     var uuid: String
 }
 

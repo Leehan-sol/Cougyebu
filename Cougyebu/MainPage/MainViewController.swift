@@ -28,9 +28,9 @@ class MainViewController: UIViewController {
         super.viewDidLoad()
         setAddtarget()
         setTableView()
-        setBinding()
+        setViewModelUser()
         loadPost()
-        loadCategory()
+        setBinding()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -38,6 +38,7 @@ class MainViewController: UIViewController {
     }
     
     func setAddtarget() {
+        mainView.datePicker.addTarget(self, action: #selector(datePickerValueChanged(_:)), for: .valueChanged)
         mainView.floatingButton.addTarget(self, action: #selector(floatingButtonTapped), for: .touchUpInside)
     }
     
@@ -45,6 +46,20 @@ class MainViewController: UIViewController {
         mainView.tableView.delegate = self
         mainView.tableView.dataSource = self
         mainView.tableView.register(MainTableViewCell.self, forCellReuseIdentifier: "MainCell")
+    }
+    
+    func setViewModelUser() {
+        viewModel.setUser()
+    }
+    
+    // ✨ 오늘날짜 기본값으로 로드되도록 메소드 사용해주기
+//    func loadPost(date: String) {
+        func loadPost(date: String = Date().toString(format: "yyyy.MM.dd")) {
+        viewModel.loadPost(email: viewModel.userEmail, date: date)
+    }
+
+    func loadCategory() {
+        viewModel.loadCategory()
     }
     
     func setBinding() {
@@ -55,12 +70,10 @@ class MainViewController: UIViewController {
         }
     }
     
-    func loadPost(date: String = Date().toString(format: "yyyy.MM.dd")) {
-        viewModel.loadPost(date: date)
-    }
-    
-    func loadCategory() {
-        viewModel.loadCategory()
+    @objc func datePickerValueChanged(_ sender: UIDatePicker) {
+        let selectedDate = sender.date
+        let dateString = selectedDate.toString(format: "yyyy.MM.dd")
+        viewModel.loadPost(email: viewModel.userEmail, date: dateString)
     }
     
     @objc func floatingButtonTapped() {
@@ -68,7 +81,7 @@ class MainViewController: UIViewController {
         let postingVC = PostingViewController(viewModel: postingVM)
         present(postingVC, animated: true)
     }
-
+    
     
 }
 

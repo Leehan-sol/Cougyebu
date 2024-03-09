@@ -24,7 +24,8 @@ class PostingViewModel {
 
     func addPost(date: String, posts: [Posts]) {
         postManager.addPost(email: userEmail, date: date, posts: posts)
-        observablePost.value.append(contentsOf: posts)
+        // ✨ mainView에서 날짜 받아와서 date가 맞아야 포함시키기
+       // observablePost.value.append(contentsOf: posts)
     }
     
     
