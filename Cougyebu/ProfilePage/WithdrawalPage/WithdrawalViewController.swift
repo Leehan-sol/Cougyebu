@@ -79,6 +79,7 @@ class WithdrawalViewController: UIViewController {
                             } else {
                                 print("회원탈퇴 성공")
                                 // ✨ 화면이동 로직 구현
+                                // ✨ 데이터 삭제 로직 구현
                                 let loginViewController = LoginViewController()
                              //   self.transitionToRootView(view: UINavigationController(rootViewController: loginViewController))
                             }

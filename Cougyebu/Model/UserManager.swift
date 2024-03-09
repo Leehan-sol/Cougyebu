@@ -22,45 +22,53 @@ class UserManager {
         query.getDocuments { (snapshot, error) in
             if let error = error {
                 print(error.localizedDescription)
+                completion(nil)
                 return
             }
             
-            guard let snapshot = snapshot, !snapshot.isEmpty else { return }
-            guard let data = snapshot.documents.first?.data() else { return }
-            
-            let email = data["email"] as? String ?? ""
-            let nickname = data["nickname"] as? String ?? ""
-            let isConnect = data["isConnect"] as? Bool ?? false
-            let code = data["code"] as? String
-            let coupleEmail = data["coupleEmail"] as? String
-            let requestUser = data["requestUser"] as? Bool
-            
-            // 커플 닉네임 가져오기
-            var coupleNickname: String?
-            if let coupleNicknameRef = data["coupleNickname"] as? DocumentReference {
-                coupleNicknameRef.getDocument { (snapshot, error) in
-                    if let error = error {
-                        print(error.localizedDescription)
-                        completion(nil)
-                        return
+            if let snapshot = snapshot, !snapshot.isEmpty {
+                guard let data = snapshot.documents.first?.data() else {
+                    completion(nil)
+                    return
+                }
+                
+                let email = data["email"] as? String ?? ""
+                let nickname = data["nickname"] as? String ?? ""
+                let isConnect = data["isConnect"] as? Bool ?? false
+                let code = data["code"] as? String
+                let coupleEmail = data["coupleEmail"] as? String
+                let requestUser = data["requestUser"] as? Bool
+                let category = data["category"] as? [String]
+                
+                // 커플 닉네임 가져오기
+                var coupleNickname: String?
+                if let coupleNicknameRef = data["coupleNickname"] as? DocumentReference {
+                    coupleNicknameRef.getDocument { (snapshot, error) in
+                        if let error = error {
+                            print(error.localizedDescription)
+                            completion(nil)
+                            return
+                        }
+                        
+                        guard let snapshot = snapshot, let data = snapshot.data() else {
+                            completion(nil)
+                            return
+                        }
+                        
+                        coupleNickname = data["nickname"] as? String
+                        let user = User(email: email, nickname: nickname, isConnect: isConnect, code: code, coupleEmail: coupleEmail, coupleNickname: coupleNickname, requestUser: requestUser, category: category)
+                        completion(user)
                     }
-                    
-                    guard let snapshot = snapshot, let data = snapshot.data() else {
-                        completion(nil)
-                        return
-                    }
-                    
-                    coupleNickname = data["nickname"] as? String
-                    let user = User(email: email, nickname: nickname, isConnect: isConnect, code: code, coupleEmail: coupleEmail, coupleNickname: coupleNickname, requestUser: requestUser)
+                } else {
+                    let user = User(email: email, nickname: nickname, isConnect: isConnect, code: code, coupleEmail: coupleEmail, coupleNickname: nil, requestUser: requestUser, category: category)
                     completion(user)
                 }
             } else {
-                let user = User(email: email, nickname: nickname, isConnect: isConnect, code: code, coupleEmail: coupleEmail, coupleNickname: nil, requestUser: requestUser)
-                completion(user)
+                completion(nil)
             }
         }
     }
-
+    
     // 아이디 찾기
     func findId(email: String, completion: @escaping (Bool) -> Void) {
         let userDB = db.collection("User")
@@ -101,6 +109,26 @@ class UserManager {
         }
     }
     
+    // 카테고리 찾기
+    func findCategory(email: String, completion: @escaping ([String]?) -> Void) {
+        let userDB = db.collection("User")
+        let query = userDB.whereField("email", isEqualTo: email)
+        
+        query.getDocuments { (snapshot, error) in
+            if let error = error {
+                print(error.localizedDescription)
+                return
+            }
+            
+            if let snapshot = snapshot, !snapshot.isEmpty {
+                guard let data = snapshot.documents.first?.data() else { return }
+                
+                let category = data["category"] as? [String]
+                completion(category)
+            }
+        }
+    }
+    
     // 유저 생성
     func addUser(user: User) {
         db.collection("User").document(user.email).setData([
@@ -110,6 +138,7 @@ class UserManager {
             "isConnect": user.isConnect as Any,
             "coupleEmail": user.coupleEmail as Any,
             "coupleNickname": user.coupleNickname as Any,
+            "category": user.category as Any
         ]) { error in
             if let error = error {
                 print("Error: \(error)")
@@ -218,7 +247,7 @@ class UserManager {
             }
         }
     }
-
+    
     
 }
 

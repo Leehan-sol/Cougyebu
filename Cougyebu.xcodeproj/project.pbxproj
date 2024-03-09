@@ -87,6 +87,7 @@
 		CC5A560B2B9B55630012F661 /* Date +.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5A560A2B9B55630012F661 /* Date +.swift */; };
 		CC5A560E2B9B5A870012F661 /* CategoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5A560D2B9B5A870012F661 /* CategoryView.swift */; };
 		CC5A56102B9B5A930012F661 /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5A560F2B9B5A930012F661 /* CategoryViewController.swift */; };
+		CC62E3082B9BECFE00E0438F /* MainTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC62E3072B9BECFE00E0438F /* MainTableViewCell.swift */; };
 		CCCCCCED2B9A946C00355EAA /* ConnectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCCCCCEC2B9A946C00355EAA /* ConnectViewModel.swift */; };
 /* End PBXBuildFile section */
 
@@ -138,6 +139,7 @@
 		CC5A560A2B9B55630012F661 /* Date +.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date +.swift"; sourceTree = "<group>"; };
 		CC5A560D2B9B5A870012F661 /* CategoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryView.swift; sourceTree = "<group>"; };
 		CC5A560F2B9B5A930012F661 /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
+		CC62E3072B9BECFE00E0438F /* MainTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTableViewCell.swift; sourceTree = "<group>"; };
 		CCCCCCEC2B9A946C00355EAA /* ConnectViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -212,7 +214,6 @@
 				CC4955932B998CE4003B3341 /* SceneDelegate.swift */,
 				CC4955F12B998E98003B3341 /* Extension */,
 				CC4955F82B998F84003B3341 /* Model */,
-				CC4956032B9991B8003B3341 /* RegisterPage */,
 				CC4956082B9991F1003B3341 /* LoginPage */,
 				CC49560D2B999238003B3341 /* MainPage */,
 				CC4956142B99928B003B3341 /* ProfilePage */,
@@ -264,6 +265,7 @@
 			children = (
 				CC4956092B999205003B3341 /* LoginView.swift */,
 				CC49560B2B999214003B3341 /* LoginViewController.swift */,
+				CC4956032B9991B8003B3341 /* RegisterPage */,
 			);
 			path = LoginPage;
 			sourceTree = "<group>";
@@ -274,6 +276,7 @@
 				CC49560E2B999246003B3341 /* MainView.swift */,
 				CC4956102B999250003B3341 /* MainViewController.swift */,
 				CC4956122B99925A003B3341 /* MainViewModel.swift */,
+				CC62E3072B9BECFE00E0438F /* MainTableViewCell.swift */,
 				CC5A56032B9B429A0012F661 /* PostingPage */,
 			);
 			path = MainPage;
@@ -498,6 +501,7 @@
 				CC49560C2B999215003B3341 /* LoginViewController.swift in Sources */,
 				CC4955F52B998EB9003B3341 /* String +.swift in Sources */,
 				CC4956162B9992B6003B3341 /* MyPageView.swift in Sources */,
+				CC62E3082B9BECFE00E0438F /* MainTableViewCell.swift in Sources */,
 				CC4956332B999440003B3341 /* PasswordEditViewController.swift in Sources */,
 				CC49561A2B9992CC003B3341 /* MyPageViewModel.swift in Sources */,
 				CC5A56102B9B5A930012F661 /* CategoryViewController.swift in Sources */,

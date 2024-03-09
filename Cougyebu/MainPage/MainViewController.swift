@@ -39,7 +39,7 @@ class MainViewController: UIViewController {
     func setTableView() {
         mainView.tableView.delegate = self
         mainView.tableView.dataSource = self
-        mainView.tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        mainView.tableView.register(MainTableViewCell.self, forCellReuseIdentifier: "MainCell")
     }
     
     func setBinding() {
@@ -68,7 +68,7 @@ class MainViewController: UIViewController {
 extension MainViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+        tableView.deselectRow(at: indexPath, animated: true)
     }
     
 }
@@ -82,9 +82,13 @@ extension MainViewController: UITableViewDataSource {
     
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
-        cell.textLabel?.text = viewModel.observablePost.value[indexPath.row].content
-   
+        let cell = tableView.dequeueReusableCell(withIdentifier: "MainCell", for: indexPath) as! MainTableViewCell
+        let post = viewModel.observablePost.value[indexPath.row]
+        
+        cell.categoryLabel.text = post.category
+        cell.contentLabel.text = post.content
+        cell.priceLabel.text = "\(post.cost)원"
+        
         return cell
     }
     

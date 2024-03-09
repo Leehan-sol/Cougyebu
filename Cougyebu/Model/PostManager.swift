@@ -41,8 +41,9 @@ class PostManager {
                 if let date = postData["date"] as? String,
                    let category = postData["category"] as? String,
                    let content = postData["content"] as? String,
-                   let cost = postData["cost"] as? Int {
-                    let post = Posts(date: date, category: category, content: content, cost: cost)
+                   let cost = postData["cost"] as? Int,
+                   let uuid = postData["uuid"] as? String {
+                    let post = Posts(date: date, category: category, content: content, cost: cost, uuid: uuid)
                     posts.append(post)
                 } else {
                     print("Error parsing post data")
@@ -52,7 +53,7 @@ class PostManager {
             completion(posts)
         }
     }
-
+    
     
     
     // 게시글 등록
@@ -63,7 +64,8 @@ class PostManager {
                 "date": post.date,
                 "category": post.category,
                 "content": post.content,
-                "cost": post.cost
+                "cost": post.cost,
+                "uuid": post.uuid
             ]
             postsData.append(postData)
         }
@@ -93,7 +95,7 @@ class PostManager {
             }
         }
     }
-
+    
     
     
 }

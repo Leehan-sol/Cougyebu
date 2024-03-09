@@ -29,6 +29,10 @@ class PostingViewController: UIViewController {
         setPickerView()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        loadCategory()
+    }
+    
     func setAddTarget() {
         postingView.addButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
     }
@@ -37,7 +41,13 @@ class PostingViewController: UIViewController {
         postingView.categoryPicker.delegate = self
         postingView.categoryPicker.dataSource = self
     }
- 
+    
+    func loadCategory() {
+        viewModel.loadCategory { [weak self] in
+            self?.postingView.categoryPicker.reloadAllComponents()
+        }
+    }
+    
     @objc func addButtonTapped() {
         let dateString = postingView.datePicker.date.toString(format: "yyyy.MM.dd")
         
@@ -47,20 +57,21 @@ class PostingViewController: UIViewController {
         }
         
         let selectedCategoryIndex = postingView.categoryPicker.selectedRow(inComponent: 0)
-        let category = viewModel.categories[selectedCategoryIndex]
-        
+        let category = viewModel.userCategory[selectedCategoryIndex]
         if let costText = postingView.priceTextField.text?.trimmingCharacters(in: .whitespaces),
            let cost = Int(costText) {
-            viewModel.addPost(date: dateString, posts: [Posts(date: dateString, category: category, content: content, cost: cost)])
+            let uuid = UUID().uuidString
+            viewModel.addPost(date: dateString, posts: [Posts(date: dateString, category: category, content: content, cost: cost, uuid: uuid)])
         } else {
             AlertManager.showAlertOneButton(from: self, title: "가격 입력", message: "가격을 입력하세요", buttonTitle: "확인")
+            return
         }
+        AlertManager.showAlertOneButton(from: self, title: "카테고리 선택", message: "카테고리를 선택하세요", buttonTitle: "확인")
+        
         dismiss(animated: true)
     }
     
-    
 }
-
 
 // MARK: - UITextFieldDelegate
 extension PostingViewController: UITextFieldDelegate {
@@ -79,11 +90,11 @@ extension PostingViewController: UIPickerViewDataSource, UIPickerViewDelegate {
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return viewModel.categories.count
+        return viewModel.userCategory.count
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return viewModel.categories[row]
+        return viewModel.userCategory[row]
     }
     
 }

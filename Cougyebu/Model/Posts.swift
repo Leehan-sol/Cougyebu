@@ -12,6 +12,7 @@ struct Posts {
     var category: String
     var content: String
     var cost: Int
+    var uuid: String
 }
 
 struct Post {

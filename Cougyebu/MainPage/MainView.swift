@@ -10,12 +10,18 @@ import SnapKit
 
 class MainView: UIView {
     
+    let datePicker: UIDatePicker = {
+        let picker = UIDatePicker()
+        picker.datePickerMode = .date
+        return picker
+    }()
+    
     let tableView: UITableView = {
         let tv = UITableView()
         tv.separatorStyle = .none
         return tv
     }()
-
+    
     let floatingButton: UIButton = {
         let btn = UIButton()
         let image = UIImage(systemName: "plus.circle")
@@ -23,8 +29,8 @@ class MainView: UIView {
         btn.setImage(resizedImage, for: .normal)
         return btn
     }()
-
-   
+    
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setUI()
@@ -38,19 +44,24 @@ class MainView: UIView {
     
     func setUI() {
         self.backgroundColor = .systemBackground
-
+        addSubview(datePicker)
         addSubview(tableView)
         addSubview(floatingButton)
         
+        datePicker.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(70)
+            $0.centerX.equalToSuperview()
+        }
+        
         tableView.snp.makeConstraints {
-            $0.top.left.right.bottom.equalToSuperview()
+            $0.top.equalTo(datePicker.snp.bottom).offset(10)
+            $0.left.right.bottom.equalToSuperview()
         }
         
         floatingButton.snp.makeConstraints {
             $0.right.equalToSuperview().offset(-30)
             $0.bottom.equalToSuperview().offset(-100)
         }
-    
         
     }
     
