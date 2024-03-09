@@ -13,6 +13,7 @@ class PostingView: UIView {
     private let dateLabel: UILabel = {
         let label = UILabel()
         label.text = "날짜"
+        label.font = UIFont.boldSystemFont(ofSize: 16)
         return label
     }()
     
@@ -25,6 +26,7 @@ class PostingView: UIView {
     private let categoryLabel: UILabel = {
         let label = UILabel()
         label.text = "카테고리"
+        label.font = UIFont.boldSystemFont(ofSize: 16)
         return label
     }()
     
@@ -37,28 +39,39 @@ class PostingView: UIView {
     private let contentLabel: UILabel = {
         let label = UILabel()
         label.text = "내용"
+        label.font = UIFont.boldSystemFont(ofSize: 16)
         return label
     }()
     
     let contentTextField: UITextField = {
         let tf = UITextField()
-        tf.placeholder = "내용을 입력하세요"
-        tf.borderStyle = .roundedRect
+        tf.setPlaceholderFontSize(size: 14, text: "내용을 입력하세요")
         return tf
+    }()
+    
+    private let contentBottom: UIView = {
+        let view = UIView()
+        view.backgroundColor = .systemGray2
+        return view
     }()
     
     private let priceLabel: UILabel = {
         let label = UILabel()
         label.text = "가격"
+        label.font = UIFont.boldSystemFont(ofSize: 16)
         return label
     }()
     
     let priceTextField: UITextField = {
         let tf = UITextField()
-        tf.placeholder = "가격을 입력하세요"
-        tf.borderStyle = .roundedRect
-        tf.keyboardType = .numberPad
+        tf.setPlaceholderFontSize(size: 14, text: "가격을 입력하세요")
         return tf
+    }()
+    
+    private let priceBottom: UIView = {
+        let view = UIView()
+        view.backgroundColor = .systemGray2
+        return view
     }()
     
     let addButton: UIButton = {
@@ -92,8 +105,10 @@ class PostingView: UIView {
         addSubview(categoryPicker)
         addSubview(contentLabel)
         addSubview(contentTextField)
+        addSubview(contentBottom)
         addSubview(priceLabel)
         addSubview(priceTextField)
+        addSubview(priceBottom)
         addSubview(addButton)
         
         
@@ -126,10 +141,18 @@ class PostingView: UIView {
         }
 
         contentTextField.snp.makeConstraints {
-            $0.top.equalTo(categoryPicker.snp.bottom).offset(40)
-            $0.left.equalTo(contentLabel.snp.right).offset(40)
+            $0.top.equalTo(categoryPicker.snp.bottom).offset(50)
+            $0.left.equalToSuperview().inset(130)
             $0.right.equalToSuperview().offset(-20)
         }
+        
+        contentBottom.snp.makeConstraints {
+            $0.right.equalToSuperview().inset(24)
+            $0.left.equalToSuperview().inset(130)
+            $0.bottom.equalTo(contentTextField.snp.bottom).offset(4)
+            $0.height.equalTo(1)
+        }
+        
 
         priceLabel.snp.makeConstraints {
             $0.centerY.equalTo(priceTextField)
@@ -137,14 +160,22 @@ class PostingView: UIView {
         }
 
         priceTextField.snp.makeConstraints {
-            $0.top.equalTo(contentTextField.snp.bottom).offset(40)
-            $0.left.equalTo(priceLabel.snp.right).offset(40)
+            $0.top.equalTo(contentTextField.snp.bottom).offset(50)
+            $0.left.equalToSuperview().inset(130)
             $0.right.equalToSuperview().offset(-20)
         }
         
+        priceBottom.snp.makeConstraints {
+            $0.right.equalToSuperview().inset(24)
+            $0.left.equalToSuperview().inset(130)
+            $0.bottom.equalTo(priceTextField.snp.bottom).offset(4)
+            $0.height.equalTo(1)
+        }
+        
+        
         addButton.snp.makeConstraints {
+            $0.top.equalTo(priceBottom.snp.bottom).offset(150)
             $0.left.right.equalToSuperview().inset(24)
-            $0.bottom.equalToSuperview().offset(-60)
             $0.height.equalTo(45)
         }
 
