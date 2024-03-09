@@ -19,6 +19,7 @@ class PostingViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
     override func loadView() {
         view = postingView
     }
@@ -29,10 +30,6 @@ class PostingViewController: UIViewController {
         setPickerView()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        loadCategory()
-    }
-    
     func setAddTarget() {
         postingView.addButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
     }
@@ -40,12 +37,6 @@ class PostingViewController: UIViewController {
     func setPickerView() {
         postingView.categoryPicker.delegate = self
         postingView.categoryPicker.dataSource = self
-    }
-    
-    func loadCategory() {
-        viewModel.loadCategory { [weak self] in
-            self?.postingView.categoryPicker.reloadAllComponents()
-        }
     }
     
     @objc func addButtonTapped() {
@@ -58,18 +49,18 @@ class PostingViewController: UIViewController {
         
         let selectedCategoryIndex = postingView.categoryPicker.selectedRow(inComponent: 0)
         let category = viewModel.userCategory[selectedCategoryIndex]
-        if let costText = postingView.priceTextField.text?.trimmingCharacters(in: .whitespaces),
-           let cost = Int(costText) {
-            let uuid = UUID().uuidString
-            viewModel.addPost(date: dateString, posts: [Posts(date: dateString, category: category, content: content, cost: cost, uuid: uuid)])
-        } else {
+        let uuid = UUID().uuidString
+        
+        guard let costText = postingView.priceTextField.text?.trimmingCharacters(in: .whitespaces),
+              let cost = Int(costText) else {
             AlertManager.showAlertOneButton(from: self, title: "가격 입력", message: "가격을 입력하세요", buttonTitle: "확인")
             return
         }
-        AlertManager.showAlertOneButton(from: self, title: "카테고리 선택", message: "카테고리를 선택하세요", buttonTitle: "확인")
         
+        viewModel.addPost(date: dateString, posts: [Posts(date: dateString, category: category, content: content, cost: cost, uuid: uuid)])
         dismiss(animated: true)
     }
+    
     
 }
 

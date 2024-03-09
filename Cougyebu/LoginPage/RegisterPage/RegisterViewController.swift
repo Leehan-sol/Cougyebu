@@ -28,13 +28,19 @@ class RegisterViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.title = "회원가입"
+        setNavigationBar()
         setTextField()
         setAddTarget()
     }
     
     
     // MARK: - Methods
+    func setNavigationBar() {
+        self.title = "회원가입"
+        navigationController?.navigationBar.tintColor = .black
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 18)]
+    }
+    
     func setTextField(){
         registerView.idTextField.delegate = self
         registerView.authTextField.delegate = self

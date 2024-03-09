@@ -30,6 +30,11 @@ class MainViewController: UIViewController {
         setTableView()
         setBinding()
         loadPost()
+        loadCategory()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        loadCategory()
     }
     
     func setAddtarget() {
@@ -53,10 +58,13 @@ class MainViewController: UIViewController {
     func loadPost(date: String = Date().toString(format: "yyyy.MM.dd")) {
         viewModel.loadPost(date: date)
     }
-
+    
+    func loadCategory() {
+        viewModel.loadCategory()
+    }
     
     @objc func floatingButtonTapped() {
-        let postingVM = PostingViewModel(observablePost: viewModel.observablePost, userEmail: viewModel.userEmail)
+        let postingVM = PostingViewModel(observablePost: viewModel.observablePost, userEmail: viewModel.userEmail, userCategory: viewModel.userCategory)
         let postingVC = PostingViewController(viewModel: postingVM)
         present(postingVC, animated: true)
     }
@@ -79,7 +87,6 @@ extension MainViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.observablePost.value.count
     }
-    
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MainCell", for: indexPath) as! MainTableViewCell

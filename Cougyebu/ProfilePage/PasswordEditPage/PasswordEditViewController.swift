@@ -26,6 +26,7 @@ class PasswordEditViewController: UIViewController {
     // MARK: - Methods
     func setNavigationBar() {
         self.title = "비밀번호 변경"
+        navigationController?.navigationBar.tintColor = .black
         navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 18)]
     }
     

@@ -36,7 +36,7 @@ class ConnectViewController: UIViewController {
     
     func setNavigationBar() {
         self.title = "커플 연결"
-        
+        navigationController?.navigationBar.tintColor = .black
         navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 18)]
     }
     

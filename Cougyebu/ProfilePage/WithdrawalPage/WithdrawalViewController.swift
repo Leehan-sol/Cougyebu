@@ -35,6 +35,7 @@ class WithdrawalViewController: UIViewController {
     
     func setNavigationBar() {
         self.title = "회원탈퇴"
+        navigationController?.navigationBar.tintColor = .black
         navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 18)]
     }
     

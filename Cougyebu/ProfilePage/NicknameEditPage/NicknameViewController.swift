@@ -37,7 +37,7 @@ class NicknameEditViewController: UIViewController {
     
     func setNavigationBar() {
         self.title = "닉네임 변경"
-        
+        navigationController?.navigationBar.tintColor = .black
         navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 18)]
     }
     

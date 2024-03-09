@@ -85,7 +85,7 @@ class UserManager {
         }
     }
     
-    // 닉네임 중복확인
+    // 닉네임 찾기
     func findNickname(nickname: String, completion: @escaping (User?) -> Void) {
         let userDB = db.collection("User")
         let query = userDB.whereField("nickname", isEqualTo: nickname)
@@ -128,6 +128,68 @@ class UserManager {
             }
         }
     }
+    
+    // 카테고리 추가
+    func addCategory(email: String, category: String) {
+        let userDB = db.collection("User")
+        let query = userDB.whereField("email", isEqualTo: email)
+        
+        query.getDocuments { (snapshot, error) in
+            if let error = error {
+                print(error.localizedDescription)
+                return
+            }
+            
+            if let snapshot = snapshot, !snapshot.isEmpty {
+                guard let document = snapshot.documents.first else { return }
+                
+                var updatedData = document.data()
+                var currentCategories = updatedData["category"] as? [String] ?? []
+                currentCategories.append(category)
+                updatedData["category"] = currentCategories
+                
+                document.reference.setData(updatedData) { error in
+                    if let error = error {
+                        print("Error adding category: \(error.localizedDescription)")
+                    } else {
+                        print("Category added successfully.")
+                    }
+                }
+            }
+        }
+    }
+
+    
+    // 카테고리 삭제
+    func deleteCategory(email: String, category: String) {
+        let userDB = db.collection("User")
+        let query = userDB.whereField("email", isEqualTo: email)
+        
+        query.getDocuments { (snapshot, error) in
+            if let error = error {
+                print("Error: \(error.localizedDescription)")
+                return
+            }
+            
+            if let snapshot = snapshot, !snapshot.isEmpty {
+                for document in snapshot.documents {
+                    var categories = document.data()["category"] as? [String] ?? []
+                    // 카테고리에서 삭제할 항목을 찾아서 제거
+                    categories.removeAll { $0 == category }
+                    // 업데이트된 카테고리 정보로 사용자 업데이트
+                    self.updateUser(email: email, updatedFields: ["category": categories]) { success in
+                        if let success = success, success {
+                            print("사용자 카테고리 삭제 성공")
+                        } else {
+                            print("사용자 카테고리 삭제 실패")
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    
     
     // 유저 생성
     func addUser(user: User) {
@@ -247,6 +309,7 @@ class UserManager {
             }
         }
     }
+    
     
     
 }
