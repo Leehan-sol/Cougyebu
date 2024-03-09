@@ -43,19 +43,20 @@ class MainViewModel {
     
     
     func loadPost(email: String, date: String) {
-        postManager.loadPosts(userEmail: email, date: date) { posts in
-            if let post = posts {
+        
+        if let coupleEmail = coupleEmail, isConnect == true {
+            self.postManager.loadPosts(userEmail: coupleEmail, date: date) { posts in
+                guard let post = posts else { return }
                 self.observablePost.value.append(contentsOf: post)
             }
         }
-        
-        guard let coupleEmail = coupleEmail else { return }
-        if isConnect == true {
-            self.postManager.loadPosts(userEmail: coupleEmail, date: date) { posts in
-                guard let posts = posts else { return }
-                self.observablePost.value.append(contentsOf: posts)
+        postManager.loadPosts(userEmail: email, date: date) { posts in
+            if let post = posts {
+                self.observablePost.value = post
             }
         }
+        
+        
     }
     
     func loadCategory() {
