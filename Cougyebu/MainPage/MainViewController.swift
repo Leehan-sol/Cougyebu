@@ -35,6 +35,7 @@ class MainViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         loadCategory()
+        loadTotalCost()
     }
     
     func setAddtarget() {
@@ -52,20 +53,40 @@ class MainViewController: UIViewController {
         viewModel.setUser()
     }
     
-    // ✨ 오늘날짜 기본값으로 로드되도록 메소드 사용해주기
-//    func loadPost(date: String) {
-        func loadPost(date: String = Date().toString(format: "yyyy.MM.dd")) {
+    func setPlaceholderLabel() {
+        if viewModel.observablePost.value.isEmpty {
+            mainView.placeholderLabel.isHidden = false
+        } else {
+            mainView.placeholderLabel.isHidden = true
+        }
+    }
+    
+    func loadPost(date: String = Date().toString(format: "yyyy.MM.dd")) {
         viewModel.loadPost(email: viewModel.userEmail, date: date)
     }
-
+    
     func loadCategory() {
         viewModel.loadCategory()
+    }
+    
+    func loadTotalCost() {
+        let cost = self.viewModel.addCost()
+        mainView.totalLabel.text = "\(makeComma(num: cost))원"
+    }
+    
+    func makeComma(num: Int) -> String {
+        let numberFormatter: NumberFormatter = NumberFormatter()
+        numberFormatter.numberStyle = .decimal
+        let costResult: String = numberFormatter.string(for: num) ?? ""
+        return costResult
     }
     
     func setBinding() {
         viewModel.observablePost.bind { [weak self] _ in
             DispatchQueue.main.async {
                 self?.mainView.tableView.reloadData()
+                self?.loadTotalCost()
+                self?.setPlaceholderLabel()
             }
         }
     }
@@ -113,6 +134,3 @@ extension MainViewController: UITableViewDataSource {
     }
     
 }
-
-
-

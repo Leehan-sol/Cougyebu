@@ -18,7 +18,7 @@ class MainViewModel {
     var userCategory: [String] = []
     var coupleEmail: String?
     var isConnect: Bool?
-    
+
     init(userEmail: String) {
         self.userEmail = userEmail
         self.observableUser = Observable<User>(User(email: "", nickname: "", isConnect: false))
@@ -43,20 +43,33 @@ class MainViewModel {
     
     
     func loadPost(email: String, date: String) {
-        
         if let coupleEmail = coupleEmail, isConnect == true {
             self.postManager.loadPosts(userEmail: coupleEmail, date: date) { posts in
                 guard let post = posts else { return }
                 self.observablePost.value.append(contentsOf: post)
             }
+        } else {
+            self.observablePost.value = []
         }
         postManager.loadPosts(userEmail: email, date: date) { posts in
             if let post = posts {
                 self.observablePost.value = post
+            } else {
+                self.observablePost.value = []
             }
         }
-        
-        
+    }
+
+    
+    func addCost() -> Int {
+        var totalCost = 0
+        for post in observablePost.value {
+            let costStringWithoutComma = post.cost.replacingOccurrences(of: ",", with: "")
+            if let cost = Int(costStringWithoutComma) {
+                totalCost += cost
+            }
+        }
+        return totalCost
     }
     
     func loadCategory() {
