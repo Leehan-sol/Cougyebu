@@ -6,22 +6,52 @@
 //
 
 import UIKit
+import FSCalendar
 import SnapKit
 
 class MainView: UIView {
     
-    let datePicker: UIDatePicker = {
-        let picker = UIDatePicker()
-        picker.datePickerMode = .date
-        return picker
+    let startButton: UIButton = {
+        let btn = UIButton()
+        btn.setTitle("시작날짜", for: .normal)
+        btn.setTitleColor(.black, for: .normal)
+        btn.titleLabel?.font = UIFont.boldSystemFont(ofSize: 15)
+        return btn
     }()
     
-    let sumLabel: UILabel = {
-        let label = UILabel()
-        label.text = "합계"
-        label.textColor = .darkGray
-        label.font = UIFont.boldSystemFont(ofSize: 13)
-        return label
+    let waveButton: UIButton = {
+        let btn = UIButton()
+        btn.setTitle("~", for: .normal)
+        btn.setTitleColor(.black, for: .normal)
+        btn.titleLabel?.font = UIFont.systemFont(ofSize: 15)
+        return btn
+    }()
+    
+    let lastButton: UIButton = {
+        let btn = UIButton()
+        btn.setTitle("종료날짜", for: .normal)
+        btn.setTitleColor(.black, for: .normal)
+        btn.titleLabel?.font = UIFont.boldSystemFont(ofSize: 15)
+        return btn
+    }()
+    
+    let calendar : FSCalendar = {
+        let calendar = FSCalendar(frame: .zero)
+        calendar.scope = .month
+        calendar.firstWeekday = 2
+        calendar.placeholderType = .none
+        calendar.allowsMultipleSelection = true
+        calendar.appearance.todayColor = .clear
+        calendar.locale = Locale(identifier: "ko_KR")
+        calendar.headerHeight = 55
+        calendar.appearance.headerMinimumDissolvedAlpha = 0.0
+        calendar.appearance.headerDateFormat = "yy년 MM월"
+        calendar.appearance.headerTitleColor = .black
+        calendar.appearance.titleTodayColor = .black
+        calendar.appearance.weekdayTextColor = .black
+        calendar.backgroundColor = .systemGray6
+        calendar.calendarWeekdayView.weekdayLabels.last!.textColor = .red
+        return calendar
     }()
     
     let totalLabel: UILabel = {
@@ -30,6 +60,15 @@ class MainView: UIView {
         label.textColor = .darkGray
         label.backgroundColor = .systemGray6
         label.font = UIFont.systemFont(ofSize: 14)
+        return label
+    }()
+    
+    let sumLabel: UILabel = {
+        let label = UILabel()
+        label.text = "합계"
+        label.textColor = .darkGray
+        label.backgroundColor = .systemGray6
+        label.font = UIFont.boldSystemFont(ofSize: 13)
         return label
     }()
     
@@ -69,26 +108,45 @@ class MainView: UIView {
     
     func setUI() {
         self.backgroundColor = .systemBackground
-        addSubview(datePicker)
-        addSubview(sumLabel)
-        addSubview(totalLabel)
         addSubview(tableView)
+        addSubview(totalLabel)
+        addSubview(sumLabel)
+        addSubview(calendar)
+        addSubview(startButton)
+        addSubview(waveButton)
+        addSubview(lastButton)
         addSubview(placeholderLabel)
         addSubview(floatingButton)
         
-        datePicker.snp.makeConstraints {
+        startButton.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(70)
+            $0.right.equalTo(waveButton.snp.left).offset(-10)
+        }
+        
+        waveButton.snp.makeConstraints {
             $0.top.equalToSuperview().offset(70)
             $0.centerX.equalToSuperview()
         }
         
-        sumLabel.snp.makeConstraints {
+        lastButton.snp.makeConstraints {
             $0.top.equalToSuperview().offset(70)
-            $0.right.equalToSuperview().offset(-20)
+            $0.left.equalTo(waveButton.snp.right).offset(10)
+        }
+        
+        calendar.snp.makeConstraints {
+            $0.top.equalTo(lastButton.snp.bottom).offset(10)
+            $0.left.right.equalToSuperview().inset(10)
+            $0.bottom.equalToSuperview().offset(-480)
         }
         
         totalLabel.snp.makeConstraints {
-            $0.top.equalTo(sumLabel.snp.bottom).offset(5)
+            $0.top.equalTo(lastButton.snp.bottom).offset(10)
             $0.right.equalToSuperview().offset(-20)
+        }
+        
+        sumLabel.snp.makeConstraints {
+            $0.top.equalTo(lastButton.snp.bottom).offset(10)
+            $0.right.equalTo(totalLabel.snp.left).offset(-15)
         }
         
         placeholderLabel.snp.makeConstraints {
@@ -97,7 +155,7 @@ class MainView: UIView {
         }
         
         tableView.snp.makeConstraints {
-            $0.top.equalTo(datePicker.snp.bottom).offset(10)
+            $0.top.equalTo(sumLabel.snp.bottom).offset(10)
             $0.left.right.bottom.equalToSuperview()
         }
         

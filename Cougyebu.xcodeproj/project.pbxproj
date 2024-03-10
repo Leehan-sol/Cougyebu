@@ -88,6 +88,7 @@
 		CC5A560E2B9B5A870012F661 /* CategoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5A560D2B9B5A870012F661 /* CategoryView.swift */; };
 		CC5A56102B9B5A930012F661 /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5A560F2B9B5A930012F661 /* CategoryViewController.swift */; };
 		CC62E3082B9BECFE00E0438F /* MainTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC62E3072B9BECFE00E0438F /* MainTableViewCell.swift */; };
+		CC62E3332B9CA25600E0438F /* FSCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = CC62E3322B9CA25600E0438F /* FSCalendar */; };
 		CCCCCCED2B9A946C00355EAA /* ConnectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCCCCCEC2B9A946C00355EAA /* ConnectViewModel.swift */; };
 /* End PBXBuildFile section */
 
@@ -161,6 +162,7 @@
 				CC4955B22B998DAB003B3341 /* SnapKit in Frameworks */,
 				CC4955C62B998E79003B3341 /* FirebaseAppDistribution-Beta in Frameworks */,
 				CC4955E62B998E79003B3341 /* FirebaseMessaging in Frameworks */,
+				CC62E3332B9CA25600E0438F /* FSCalendar in Frameworks */,
 				CC4955E42B998E79003B3341 /* FirebaseMLModelDownloader in Frameworks */,
 				CC4955E82B998E79003B3341 /* FirebasePerformance in Frameworks */,
 				CC4955AF2B998D50003B3341 /* FirebaseAppCheck in Frameworks */,
@@ -424,6 +426,7 @@
 				CC4955EB2B998E79003B3341 /* FirebaseRemoteConfigSwift */,
 				CC4955ED2B998E79003B3341 /* FirebaseStorage */,
 				CC4955EF2B998E79003B3341 /* FirebaseStorageCombine-Community */,
+				CC62E3322B9CA25600E0438F /* FSCalendar */,
 			);
 			productName = Cougyebu;
 			productReference = CC49558E2B998CE4003B3341 /* Cougyebu.app */;
@@ -458,6 +461,7 @@
 				CC4955B02B998DAA003B3341 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				CC4955B32B998DB8003B3341 /* XCRemoteSwiftPackageReference "Swift-SMTP" */,
 				CC4955B62B998DC9003B3341 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */,
+				CC62E3312B9CA25600E0438F /* XCRemoteSwiftPackageReference "FSCalendar" */,
 			);
 			productRefGroup = CC49558F2B998CE4003B3341 /* Products */;
 			projectDirPath = "";
@@ -776,6 +780,14 @@
 				minimumVersion = 5.1.1;
 			};
 		};
+		CC62E3312B9CA25600E0438F /* XCRemoteSwiftPackageReference "FSCalendar" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/WenchaoD/FSCalendar.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.8.4;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -953,6 +965,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CC4955A52B998D50003B3341 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = "FirebaseStorageCombine-Community";
+		};
+		CC62E3322B9CA25600E0438F /* FSCalendar */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CC62E3312B9CA25600E0438F /* XCRemoteSwiftPackageReference "FSCalendar" */;
+			productName = FSCalendar;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
