@@ -11,6 +11,8 @@ import FSCalendar
 class MainViewController: UIViewController {
     private let mainView = MainView()
     private let viewModel: MainViewModel
+    var tapGestureRecognizer: UITapGestureRecognizer!
+    
     let dateFormatter = DateFormatter()
     var firstDate: Date?
     var lastDate: Date?
@@ -50,7 +52,12 @@ class MainViewController: UIViewController {
         mainView.lastButton.addTarget(self, action: #selector(showCalendar), for: .touchUpInside)
         mainView.floatingButton.addTarget(self, action: #selector(floatingButtonTapped), for: .touchUpInside)
     }
-
+    
+    func setGesture() {
+        tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(toggleCalender(_:)))
+        mainView.tableView.addGestureRecognizer(tapGestureRecognizer)
+    }
+    
     
     func setCalendar() {
         mainView.calendar.delegate = self
@@ -106,18 +113,31 @@ class MainViewController: UIViewController {
         }
     }
     
+    func updateButtons() {
+        if let startDate = firstDate, let endDate = lastDate {
+            let startData = dateFormatter.string(from: startDate)
+            let lastData = dateFormatter.string(from: endDate)
+            mainView.startButton.setTitle(startData, for: .normal)
+            mainView.lastButton.setTitle(lastData, for: .normal)
+        }
+    }
     
     // ✨ 데이터 선택하면 뷰모델에 로드하는 로직 필요
-//    @objc func datePickerValueChanged(_ sender: UIDatePicker) {
-//        let selectedDate = sender.date
-//        let dateString = selectedDate.toString(format: "yyyy.MM.dd")
-//        viewModel.loadPost(email: viewModel.userEmail, date: dateString)
-//    }
+    //    @objc func datePickerValueChanged(_ sender: UIDatePicker) {
+    //        let selectedDate = sender.date
+    //        let dateString = selectedDate.toString(format: "yyyy.MM.dd")
+    //        viewModel.loadPost(email: viewModel.userEmail, date: dateString)
+    //    }
     
     @objc func showCalendar() {
         print(#function)
         mainView.calendar.isHidden = false
-        
+        setGesture()
+    }
+    
+    @objc func toggleCalender(_ sender: UITapGestureRecognizer) {
+        mainView.calendar.isHidden = true
+        mainView.tableView.removeGestureRecognizer(tapGestureRecognizer)
     }
     
     @objc func floatingButtonTapped() {
@@ -205,7 +225,7 @@ extension MainViewController: FSCalendarDelegate {
         
         // case 3. 두 개가 모두 선택되어 있는 상태 -> 현재 선택된 날짜 모두 해제 후 선택 날짜를 firstDate로 설정
         if firstDate != nil && lastDate != nil {
-
+            
             for day in calendar.selectedDates {
                 calendar.deselect(day)
             }
@@ -219,30 +239,21 @@ extension MainViewController: FSCalendarDelegate {
         }
     }
     
-    func updateButtons() {
-        if let startDate = firstDate, let endDate = lastDate {
-            let startData = dateFormatter.string(from: startDate)
-            let lastData = dateFormatter.string(from: endDate)
-            mainView.startButton.setTitle(startData, for: .normal)
-            mainView.lastButton.setTitle(lastData, for: .normal)
-        }
-    }
-
-
+    
     // 이미 선택된 날짜들 중 하나를 선택 -> 선택된 날짜 모두 초기화
-      func calendar(_ calendar: FSCalendar, didDeselect date: Date, at monthPosition: FSCalendarMonthPosition) {
-          let arr = datesRange
-          if !arr.isEmpty {
-              for day in arr {
-                  calendar.deselect(day)
-              }
-          }
-          firstDate = nil
-          lastDate = nil
-          datesRange = []
-          
-          mainView.calendar.reloadData()
-      }
+    func calendar(_ calendar: FSCalendar, didDeselect date: Date, at monthPosition: FSCalendarMonthPosition) {
+        let arr = datesRange
+        if !arr.isEmpty {
+            for day in arr {
+                calendar.deselect(day)
+            }
+        }
+        firstDate = nil
+        lastDate = nil
+        datesRange = []
+        
+        mainView.calendar.reloadData()
+    }
     
     // 날짜 선택 개수 제한, 31개까지 선택 가능
     func calendar(_ calendar: FSCalendar, shouldSelect date: Date, at monthPosition: FSCalendarMonthPosition) -> Bool {
