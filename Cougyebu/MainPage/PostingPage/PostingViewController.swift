@@ -10,6 +10,11 @@ import UIKit
 class PostingViewController: UIViewController {
     private let postingView = PostingView()
     private let viewModel: PostingViewModel
+    private let charSet: CharacterSet = {
+        var cs = CharacterSet.lowercaseLetters
+        cs.insert(charactersIn: "0123456789-")
+        return cs.inverted
+    }()
     
     init(viewModel: PostingViewModel) {
         self.viewModel = viewModel
@@ -26,8 +31,14 @@ class PostingViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setTextField()
         setAddTarget()
         setPickerView()
+    }
+    
+    func setTextField() {
+        postingView.contentTextField.delegate = self
+        postingView.priceTextField.delegate = self
     }
     
     func setAddTarget() {
@@ -62,7 +73,10 @@ class PostingViewController: UIViewController {
             AlertManager.showAlertOneButton(from: self, title: "가격 입력", message: "가격을 입력하세요", buttonTitle: "확인")
             return
         }
-        guard let intCost = Int(cost) else { return }
+        guard let intCost = Int(cost) else {
+            AlertManager.showAlertOneButton(from: self, title: "가격 입력", message: "가격을 입력하세요", buttonTitle: "확인")
+            return
+        }
         let resultCost = makeComma(num: intCost)
         
         viewModel.addPost(date: dateString, posts: [Posts(date: dateString, category: category, content: content, cost: resultCost, uuid: uuid)])
@@ -78,6 +92,13 @@ extension PostingViewController: UITextFieldDelegate {
         self.view.endEditing(true)
     }
     
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        if textField == postingView.priceTextField, string.count > 0 {
+            guard string.rangeOfCharacter(from: charSet) == nil else { return false }
+        }
+        
+        return true
+    }
     
 }
 

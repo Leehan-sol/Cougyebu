@@ -14,19 +14,25 @@ class PostingViewModel {
     var observablePost: Observable<[Posts]>
     var userEmail: String
     var userCategory: [String]
+    var datesRange: [String]
     
-    init(observablePost: Observable<[Posts]>, userEmail: String, userCategory: [String]) {
+    init(observablePost: Observable<[Posts]>, userEmail: String, userCategory: [String], datesRange: [String]) {
         self.observablePost = observablePost
         self.userEmail = userEmail
         self.userCategory = userCategory
+        self.datesRange = datesRange
     }
-
-
+    
+    
     func addPost(date: String, posts: [Posts]) {
         postManager.addPost(email: userEmail, date: date, posts: posts)
-        // ✨ mainView에서 날짜 받아와서 date가 맞아야 포함시키기
-       // observablePost.value.append(contentsOf: posts)
+        
+        if datesRange.contains(date) {
+            observablePost.value += posts
+            observablePost.value = observablePost.value.sorted(by: { $0.date < $1.date })
+        }
     }
+
     
     
 }

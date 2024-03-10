@@ -17,6 +17,10 @@ class MainViewController: UIViewController {
     private var firstDate: Date?
     private var lastDate: Date?
     private var datesRange: [String] = []
+    private let currentDate = Date()
+    private lazy var startOfMonth = currentDate.startOfMonth().toString(format: "yyyy.MM.dd")
+    private lazy var endOfMonth = currentDate.endOfMonth().toString(format: "yyyy.MM.dd")
+
     
     init(viewModel: MainViewModel) {
         self.viewModel = viewModel
@@ -34,10 +38,10 @@ class MainViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setAddtarget()
+        setButton()
         setCalendar()
         setTableView()
         setViewModelUser()
-  //    loadPost()
         setBinding()
     }
     
@@ -53,6 +57,11 @@ class MainViewController: UIViewController {
         mainView.waveButton.addTarget(self, action: #selector(showCalendar), for: .touchUpInside)
         mainView.lastButton.addTarget(self, action: #selector(showCalendar), for: .touchUpInside)
         mainView.floatingButton.addTarget(self, action: #selector(floatingButtonTapped), for: .touchUpInside)
+    }
+    
+    func setButton() {
+        mainView.startButton.setTitle(startOfMonth, for: .normal)
+        mainView.lastButton.setTitle(endOfMonth, for: .normal)
     }
     
     func setCalendar() {
@@ -89,8 +98,7 @@ class MainViewController: UIViewController {
         }
     }
     
-    // ✨ 기본값 현재날짜 일주일기간으로 변경하기
-    func loadPost(dates: [String]) { //= Date().toString(format: "yyyy.MM.dd")) {
+    func loadPost(dates: [String]) {
         viewModel.loadPost(dates: dates)
     }
     
@@ -138,7 +146,8 @@ class MainViewController: UIViewController {
     }
     
     @objc func floatingButtonTapped() {
-        let postingVM = PostingViewModel(observablePost: viewModel.observablePost, userEmail: viewModel.userEmail, userCategory: viewModel.userCategory)
+        datesRange = viewModel.allDatesInMonth
+        let postingVM = PostingViewModel(observablePost: viewModel.observablePost, userEmail: viewModel.userEmail, userCategory: viewModel.userCategory, datesRange: datesRange)
         let postingVC = PostingViewController(viewModel: postingVM)
         present(postingVC, animated: true)
     }
@@ -266,7 +275,7 @@ extension MainViewController: FSCalendarDelegate {
 
     // 날짜 31개까지 선택 가능
     func calendar(_ calendar: FSCalendar, shouldSelect date: Date, at monthPosition: FSCalendarMonthPosition) -> Bool {
-        if calendar.selectedDates.count > 30 {
+        if calendar.selectedDates.count > 31 {
             return false
         } else {
             return true

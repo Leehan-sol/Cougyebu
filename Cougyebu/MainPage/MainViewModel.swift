@@ -18,6 +18,8 @@ class MainViewModel {
     var userCategory: [String] = []
     var coupleEmail: String?
     var isConnect: Bool?
+    private let currentDate = Date()
+    lazy var allDatesInMonth: [String] = currentDate.getAllDatesInMonthAsString()
     
     init(userEmail: String) {
         self.userEmail = userEmail
@@ -26,17 +28,14 @@ class MainViewModel {
     
     // user 세팅
     func setUser() {
-        userManager.findUser(email: userEmail) { user in
+        userManager.findUser(email: userEmail) { [self] user in
             guard let user = user else { return }
             self.observableUser?.value = user
             self.coupleEmail = user.coupleEmail
             self.isConnect = user.isConnect
             
-            if let coupleEmail = user.coupleEmail, user.isConnect == true {
-                self.postManager.loadPosts(userEmail: coupleEmail, date: Date().toString(format: "yyyy.MM.dd")){ post in
-                    guard let posts = post else { return }
-                    self.observablePost.value.append(contentsOf: posts)
-                }
+            if user.coupleEmail != nil, user.isConnect == true {
+                self.loadPost(dates: allDatesInMonth)
             }
         }
     }
@@ -51,16 +50,15 @@ class MainViewModel {
                     if let post = posts {
                         loadedPosts.append(contentsOf: post)
                     }
-                    self?.observablePost.value = loadedPosts // 데이터 갱신
+                    self?.observablePost.value = loadedPosts.sorted(by: { $0.date < $1.date }) // 데이터 갱신
                 }
             }
-            
             // 사용자 이메일
             postManager.loadPosts(userEmail: userEmail, date: date) { [weak self] posts in
                 if let post = posts {
                     loadedPosts.append(contentsOf: post)
                 }
-                self?.observablePost.value = loadedPosts // 데이터 갱신
+                self?.observablePost.value = loadedPosts.sorted(by: { $0.date < $1.date }) // 데이터 갱신
             }
         }
     }

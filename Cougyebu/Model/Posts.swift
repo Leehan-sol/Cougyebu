@@ -15,8 +15,8 @@ struct Posts {
     var uuid: String
 }
 
-struct Post {
-    var posts: [Posts]
-}
+//struct Post {
+//    var posts: [Posts]
+//}
 
 

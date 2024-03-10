@@ -15,7 +15,7 @@ class MainView: UIView {
         let btn = UIButton()
         btn.setTitle("시작날짜", for: .normal)
         btn.setTitleColor(.black, for: .normal)
-        btn.titleLabel?.font = UIFont.boldSystemFont(ofSize: 15)
+        btn.titleLabel?.font = UIFont.boldSystemFont(ofSize: 17)
         return btn
     }()
     
@@ -23,7 +23,7 @@ class MainView: UIView {
         let btn = UIButton()
         btn.setTitle("~", for: .normal)
         btn.setTitleColor(.black, for: .normal)
-        btn.titleLabel?.font = UIFont.systemFont(ofSize: 15)
+        btn.titleLabel?.font = UIFont.systemFont(ofSize: 17)
         return btn
     }()
     
@@ -31,7 +31,7 @@ class MainView: UIView {
         let btn = UIButton()
         btn.setTitle("종료날짜", for: .normal)
         btn.setTitleColor(.black, for: .normal)
-        btn.titleLabel?.font = UIFont.boldSystemFont(ofSize: 15)
+        btn.titleLabel?.font = UIFont.boldSystemFont(ofSize: 17)
         return btn
     }()
     
@@ -111,11 +111,11 @@ class MainView: UIView {
         addSubview(tableView)
         addSubview(totalLabel)
         addSubview(sumLabel)
+        addSubview(placeholderLabel)
         addSubview(calendar)
         addSubview(startButton)
         addSubview(waveButton)
         addSubview(lastButton)
-        addSubview(placeholderLabel)
         addSubview(floatingButton)
         
         startButton.snp.makeConstraints {
