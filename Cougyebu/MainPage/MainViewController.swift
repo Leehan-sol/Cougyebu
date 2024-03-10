@@ -162,7 +162,27 @@ extension MainViewController: UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
-    // ✨ 수정, 삭제 처리
+    
+    // ✨ 수정
+    
+    
+    // ✨ 삭제 
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            let post = viewModel.observablePost.value[indexPath.row]
+            
+            viewModel.deletePost(date: post.date, uuid: post.uuid) { bool in
+                if bool == true {
+                    self.viewModel.observablePost.value.remove(at: indexPath.row)
+                    tableView.deleteRows(at: [indexPath], with: .fade)
+                } else {
+                    AlertManager.showAlertOneButton(from: self, title: "삭제 실패", message: "삭제 실패했습니다.", buttonTitle: "확인")
+                }
+            }
+        }
+    }
+    
+    
     
 }
 

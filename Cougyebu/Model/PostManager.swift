@@ -13,8 +13,8 @@ class PostManager {
     private let db = Firestore.firestore()
     
     // 게시글 로드
-    func loadPosts(userEmail: String, date: String, completion: @escaping ([Posts]?) -> Void) {
-        let userDB = db.collection(userEmail)
+    func loadPosts(email: String, date: String, completion: @escaping ([Posts]?) -> Void) {
+        let userDB = db.collection(email)
         let databaseRef = userDB.document(date)
         
         databaseRef.getDocument { snapshot, error in
@@ -96,6 +96,76 @@ class PostManager {
         }
     }
     
+    func deletePost(email: String, date: String, uuid: String, completion: ((Bool?) -> Void)?) {
+        let postDocRef = db.collection(email).document(date)
+        
+        postDocRef.getDocument { snapshot, error in
+            if let error = error {
+                print("Error getting document: \(error)")
+                completion?(false)
+                return
+            }
+            
+            guard let snapshot = snapshot, snapshot.exists else {
+                print("Document does not exist")
+                completion?(false)
+                return
+            }
+            
+            // 문서가 존재하면 해당 문서의 "posts" 필드를 가져옴
+            var posts = snapshot.data()?["posts"] as? [[String: Any]] ?? []
+            
+            // uuid가 같은 데이터를 찾아서 삭제
+            if let index = posts.firstIndex(where: { $0["uuid"] as? String == uuid }) {
+                posts.remove(at: index)
+            } else {
+                // 해당 uuid를 가진 데이터를 찾지 못한 경우
+                print("Post with UUID \(uuid) not found")
+                completion?(false)
+                return
+            }
+            
+            // 업데이트된 데이터로 문서 업데이트
+            postDocRef.updateData(["posts": posts]) { error in
+                if let error = error {
+                    print("Error updating document: \(error)")
+                    completion?(false)
+                } else {
+                    print("Post successfully deleted")
+                    completion?(true)
+                }
+            }
+        }
+    }
+
+
     
+//    func deleteCategory(email: String, category: String) {
+//        let userDB = db.collection("User")
+//        let query = userDB.whereField("email", isEqualTo: email)
+//        
+//        query.getDocuments { (snapshot, error) in
+//            if let error = error {
+//                print("Error: \(error.localizedDescription)")
+//                return
+//            }
+//            
+//            if let snapshot = snapshot, !snapshot.isEmpty {
+//                for document in snapshot.documents {
+//                    var categories = document.data()["category"] as? [String] ?? []
+//                    // 카테고리에서 삭제할 항목을 찾아서 제거
+//                    categories.removeAll { $0 == category }
+//                    // 업데이트된 카테고리 정보로 사용자 업데이트
+//                    self.updateUser(email: email, updatedFields: ["category": categories]) { success in
+//                        if let success = success, success {
+//                            print("사용자 카테고리 삭제 성공")
+//                        } else {
+//                            print("사용자 카테고리 삭제 실패")
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
     
 }

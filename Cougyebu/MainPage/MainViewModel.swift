@@ -46,7 +46,7 @@ class MainViewModel {
         for date in dates {
             // 커플 이메일
             if let coupleEmail = coupleEmail, isConnect == true {
-                postManager.loadPosts(userEmail: coupleEmail, date: date) { [weak self] posts in
+                postManager.loadPosts(email: coupleEmail, date: date) { [weak self] posts in
                     if let post = posts {
                         loadedPosts.append(contentsOf: post)
                     }
@@ -54,7 +54,7 @@ class MainViewModel {
                 }
             }
             // 사용자 이메일
-            postManager.loadPosts(userEmail: userEmail, date: date) { [weak self] posts in
+            postManager.loadPosts(email: userEmail, date: date) { [weak self] posts in
                 if let post = posts {
                     loadedPosts.append(contentsOf: post)
                 }
@@ -63,7 +63,13 @@ class MainViewModel {
         }
     }
  
-
+    
+    func deletePost(date: String, uuid: String, completion: ((Bool?) -> Void)?) {
+        postManager.deletePost(email: userEmail, date: date, uuid: uuid) { bool in
+            completion?(bool)
+        }
+    }
+    
     
     func addCost() -> Int {
         var totalCost = 0

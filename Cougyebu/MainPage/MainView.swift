@@ -140,13 +140,13 @@ class MainView: UIView {
         }
         
         totalLabel.snp.makeConstraints {
-            $0.top.equalTo(lastButton.snp.bottom).offset(10)
-            $0.right.equalToSuperview().offset(-20)
+            $0.centerY.equalTo(sumLabel)
+            $0.right.equalToSuperview().offset(-10)
         }
         
         sumLabel.snp.makeConstraints {
             $0.top.equalTo(lastButton.snp.bottom).offset(10)
-            $0.right.equalTo(totalLabel.snp.left).offset(-15)
+            $0.right.equalTo(totalLabel.snp.left).offset(-5)
         }
         
         placeholderLabel.snp.makeConstraints {
