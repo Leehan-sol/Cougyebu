@@ -8,6 +8,13 @@
 import UIKit
 
 class MainTableViewCell: UITableViewCell {
+    let dateLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .darkGray
+        label.font = UIFont.systemFont(ofSize: 14)
+        return label
+    }()
+    
     let categoryLabel: UILabel = {
         let label = UILabel()
         label.textColor = .darkGray
@@ -47,14 +54,20 @@ class MainTableViewCell: UITableViewCell {
     }
     
     func setUI() {
+        contentView.addSubview(dateLabel)
         contentView.addSubview(stackView)
         stackView.addArrangedSubview(categoryLabel)
         stackView.addArrangedSubview(contentLabel)
         stackView.addArrangedSubview(priceLabel)
 
+        dateLabel.snp.makeConstraints {
+            $0.top.bottom.equalTo(contentView).inset(10)
+            $0.left.equalTo(contentView).inset(20)
+        }
         stackView.snp.makeConstraints {
             $0.top.bottom.equalTo(contentView).inset(10)
-            $0.left.right.equalTo(contentView).inset(20)
+            $0.left.equalTo(dateLabel.snp.right).offset(20)
+            $0.right.equalTo(contentView).inset(20)
         }
         
     }

@@ -18,7 +18,7 @@ class MainViewModel {
     var userCategory: [String] = []
     var coupleEmail: String?
     var isConnect: Bool?
-
+    
     init(userEmail: String) {
         self.userEmail = userEmail
         self.observableUser = Observable<User>(User(email: "", nickname: "", isConnect: false))
@@ -41,24 +41,30 @@ class MainViewModel {
         }
     }
     
-    
-    func loadPost(email: String, date: String) {
-        if let coupleEmail = coupleEmail, isConnect == true {
-            self.postManager.loadPosts(userEmail: coupleEmail, date: date) { posts in
-                guard let post = posts else { return }
-                self.observablePost.value.append(contentsOf: post)
+    func loadPost(dates: [String]) {
+        var loadedPosts: [Posts] = []
+        
+        for date in dates {
+            // 커플 이메일
+            if let coupleEmail = coupleEmail, isConnect == true {
+                postManager.loadPosts(userEmail: coupleEmail, date: date) { [weak self] posts in
+                    if let post = posts {
+                        loadedPosts.append(contentsOf: post)
+                    }
+                    self?.observablePost.value = loadedPosts // 데이터 갱신
+                }
             }
-        } else {
-            self.observablePost.value = []
-        }
-        postManager.loadPosts(userEmail: email, date: date) { posts in
-            if let post = posts {
-                self.observablePost.value = post
-            } else {
-                self.observablePost.value = []
+            
+            // 사용자 이메일
+            postManager.loadPosts(userEmail: userEmail, date: date) { [weak self] posts in
+                if let post = posts {
+                    loadedPosts.append(contentsOf: post)
+                }
+                self?.observablePost.value = loadedPosts // 데이터 갱신
             }
         }
     }
+ 
 
     
     func addCost() -> Int {
@@ -72,8 +78,9 @@ class MainViewModel {
         return totalCost
     }
     
+    
     func loadCategory() {
-        userManager.findCategory(email: userEmail){ category in
+        userManager.findCategory(email: userEmail) { category in
             guard let userCategory = category else { return }
             self.userCategory = userCategory
         }

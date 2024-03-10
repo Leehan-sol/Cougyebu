@@ -11,12 +11,12 @@ import FSCalendar
 class MainViewController: UIViewController {
     private let mainView = MainView()
     private let viewModel: MainViewModel
-    var tapGestureRecognizer: UITapGestureRecognizer!
+    private var tapGestureRecognizer: UITapGestureRecognizer!
     
-    let dateFormatter = DateFormatter()
-    var firstDate: Date?
-    var lastDate: Date?
-    var datesRange: [Date] = []
+    private let dateFormatter = DateFormatter()
+    private var firstDate: Date?
+    private var lastDate: Date?
+    private var datesRange: [String] = []
     
     init(viewModel: MainViewModel) {
         self.viewModel = viewModel
@@ -37,7 +37,7 @@ class MainViewController: UIViewController {
         setCalendar()
         setTableView()
         setViewModelUser()
-        loadPost()
+  //    loadPost()
         setBinding()
     }
     
@@ -46,18 +46,14 @@ class MainViewController: UIViewController {
         loadTotalCost()
     }
     
+    
+    // MARK: - Method
     func setAddtarget() {
         mainView.startButton.addTarget(self, action: #selector(showCalendar), for: .touchUpInside)
         mainView.waveButton.addTarget(self, action: #selector(showCalendar), for: .touchUpInside)
         mainView.lastButton.addTarget(self, action: #selector(showCalendar), for: .touchUpInside)
         mainView.floatingButton.addTarget(self, action: #selector(floatingButtonTapped), for: .touchUpInside)
     }
-    
-    func setGesture() {
-        tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(toggleCalender(_:)))
-        mainView.tableView.addGestureRecognizer(tapGestureRecognizer)
-    }
-    
     
     func setCalendar() {
         mainView.calendar.delegate = self
@@ -75,6 +71,16 @@ class MainViewController: UIViewController {
         viewModel.setUser()
     }
     
+    func setBinding() {
+        viewModel.observablePost.bind { [weak self] _ in
+            DispatchQueue.main.async {
+                self?.mainView.tableView.reloadData()
+                self?.loadTotalCost()
+                self?.setPlaceholderLabel()
+            }
+        }
+    }
+    
     func setPlaceholderLabel() {
         if viewModel.observablePost.value.isEmpty {
             mainView.placeholderLabel.isHidden = false
@@ -83,8 +89,9 @@ class MainViewController: UIViewController {
         }
     }
     
-    func loadPost(date: String = Date().toString(format: "yyyy.MM.dd")) {
-        viewModel.loadPost(email: viewModel.userEmail, date: date)
+    // ✨ 기본값 현재날짜 일주일기간으로 변경하기
+    func loadPost(dates: [String]) { //= Date().toString(format: "yyyy.MM.dd")) {
+        viewModel.loadPost(dates: dates)
     }
     
     func loadCategory() {
@@ -96,21 +103,9 @@ class MainViewController: UIViewController {
         mainView.totalLabel.text = "\(makeComma(num: cost))원"
     }
     
-    func makeComma(num: Int) -> String {
-        let numberFormatter: NumberFormatter = NumberFormatter()
-        numberFormatter.numberStyle = .decimal
-        let costResult: String = numberFormatter.string(for: num) ?? ""
-        return costResult
-    }
-    
-    func setBinding() {
-        viewModel.observablePost.bind { [weak self] _ in
-            DispatchQueue.main.async {
-                self?.mainView.tableView.reloadData()
-                self?.loadTotalCost()
-                self?.setPlaceholderLabel()
-            }
-        }
+    func setGesture() {
+        tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(toggleCalender(_:)))
+        mainView.tableView.addGestureRecognizer(tapGestureRecognizer)
     }
     
     func updateButtons() {
@@ -122,13 +117,15 @@ class MainViewController: UIViewController {
         }
     }
     
-    // ✨ 데이터 선택하면 뷰모델에 로드하는 로직 필요
-    //    @objc func datePickerValueChanged(_ sender: UIDatePicker) {
-    //        let selectedDate = sender.date
-    //        let dateString = selectedDate.toString(format: "yyyy.MM.dd")
-    //        viewModel.loadPost(email: viewModel.userEmail, date: dateString)
-    //    }
+    func makeComma(num: Int) -> String {
+        let numberFormatter: NumberFormatter = NumberFormatter()
+        numberFormatter.numberStyle = .decimal
+        let costResult: String = numberFormatter.string(for: num) ?? ""
+        return costResult
+    }
     
+    
+    // MARK: - @objc
     @objc func showCalendar() {
         print(#function)
         mainView.calendar.isHidden = false
@@ -156,6 +153,8 @@ extension MainViewController: UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
+    // ✨ 수정, 삭제 처리
+    
 }
 
 
@@ -169,6 +168,11 @@ extension MainViewController: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MainCell", for: indexPath) as! MainTableViewCell
         let post = viewModel.observablePost.value[indexPath.row]
         
+        let dateString = post.date
+        let startIndex = dateString.index(dateString.startIndex, offsetBy: 5)
+        let formattedDate = String(dateString[startIndex...])
+
+        cell.dateLabel.text = formattedDate
         cell.categoryLabel.text = post.category
         cell.contentLabel.text = post.content
         cell.priceLabel.text = "\(post.cost)원"
@@ -183,68 +187,73 @@ extension MainViewController: UITableViewDataSource {
 extension MainViewController: FSCalendarDelegate {
     
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
-        // case 1. 현재 아무것도 선택되지 않은 경우: 선택 date를 firstDate 설정
+        // case 1. 선택 x: 선택 date를 firstDate 설정
         if firstDate == nil {
             firstDate = date
-            datesRange = [firstDate!]
-            
+            datesRange = []
             mainView.calendar.reloadData()
-            updateButtons()
             return
         }
         
-        // case 2. 현재 firstDate 하나만 선택된 경우
+        //  case 2. firstDate 하나만 선택된 경우
         if firstDate != nil && lastDate == nil {
             // case 2-1. firstDate 이전 날짜 선택: firstDate 변경
             if date < firstDate! {
                 calendar.deselect(firstDate!)
                 firstDate = date
-                datesRange = [firstDate!]
+                datesRange = []
                 mainView.calendar.reloadData()
-                updateButtons()
+                calendar.select(date)
                 return
-            }
-            // case 2-2. firstDate 이후 날짜 선택: 범위 선택
-            else {
+                // case 2-2. firstDate 이후 날짜 선택: 범위 선택
+            } else {
                 var range: [Date] = []
                 var currentDate = firstDate!
                 while currentDate <= date {
                     range.append(currentDate)
                     currentDate = Calendar.current.date(byAdding: .day, value: 1, to: currentDate)!
                 }
+
+                var rangeString: [String] = []
                 for day in range {
+                    let dateString = dateFormatter.string(from: day)
+                    rangeString.append(dateString)
                     calendar.select(day)
                 }
+              
+                for dateString in rangeString {
+                    datesRange.append(dateString)
+                }
+
                 lastDate = range.last
-                datesRange = range
                 mainView.calendar.reloadData()
                 updateButtons()
+                loadPost(dates: datesRange)
                 return
             }
         }
-        
-        // case 3. 두 개가 모두 선택되어 있는 상태 -> 현재 선택된 날짜 모두 해제 후 선택 날짜를 firstDate로 설정
+
+        // case 3. 두개 선택: 선택날짜 전체해제 후 선택 날짜를 firstDate로 설정
         if firstDate != nil && lastDate != nil {
             
             for day in calendar.selectedDates {
                 calendar.deselect(day)
             }
+            
             lastDate = nil
             firstDate = date
+            datesRange = []
             calendar.select(date)
-            datesRange = [firstDate!]
             mainView.calendar.reloadData()
             updateButtons()
             return
         }
     }
     
-    
-    // 이미 선택된 날짜들 중 하나를 선택 -> 선택된 날짜 모두 초기화
+    // 선택된 날짜들중에 선택: 선택날짜 모두 초기화
     func calendar(_ calendar: FSCalendar, didDeselect date: Date, at monthPosition: FSCalendarMonthPosition) {
-        let arr = datesRange
-        if !arr.isEmpty {
-            for day in arr {
+        for dateString in datesRange {
+            if let day = dateFormatter.date(from: dateString) {
                 calendar.deselect(day)
             }
         }
@@ -254,8 +263,8 @@ extension MainViewController: FSCalendarDelegate {
         
         mainView.calendar.reloadData()
     }
-    
-    // 날짜 선택 개수 제한, 31개까지 선택 가능
+
+    // 날짜 31개까지 선택 가능
     func calendar(_ calendar: FSCalendar, shouldSelect date: Date, at monthPosition: FSCalendarMonthPosition) -> Bool {
         if calendar.selectedDates.count > 30 {
             return false
