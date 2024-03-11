@@ -96,6 +96,7 @@ class PostManager {
         }
     }
     
+    
     func updatePost(email: String, date: String, uuid: String, post: Posts, completion: ((Bool?) -> Void)?) {
         let postDocRef = db.collection(email).document(date)
         
@@ -138,7 +139,7 @@ class PostManager {
             }
         }
     }
-
+    
     
     func deletePost(email: String, date: String, uuid: String, completion: ((Bool?) -> Void)?) {
         let postDocRef = db.collection(email).document(date)
@@ -155,7 +156,7 @@ class PostManager {
                 completion?(false)
                 return
             }
-        
+            
             var posts = snapshot.data()?["posts"] as? [[String: Any]] ?? []
             if let index = posts.firstIndex(where: { $0["uuid"] as? String == uuid }) {
                 posts.remove(at: index)
@@ -165,19 +166,32 @@ class PostManager {
                 return
             }
             
-            postDocRef.updateData(["posts": posts]) { error in
-                if let error = error {
-                    print("Error updating document: \(error)")
-                    completion?(false)
-                } else {
-                    print("Post successfully deleted")
-                    completion?(true)
+            // 삭제 후 문서가 비어있는지 확인하고, 비어있으면 문서를 삭제합니다.
+            if posts.isEmpty {
+                postDocRef.delete { error in
+                    if let error = error {
+                        print("Error deleting document: \(error)")
+                        completion?(false)
+                    } else {
+                        print("Document successfully deleted")
+                        completion?(true)
+                    }
+                }
+            } else {
+                postDocRef.updateData(["posts": posts]) { error in
+                    if let error = error {
+                        print("Error updating document: \(error)")
+                        completion?(false)
+                    } else {
+                        print("Post successfully deleted")
+                        completion?(true)
+                    }
                 }
             }
         }
     }
-
-
+    
+    
     
     func deleteAllPost(email: String, completion: ((Bool) -> Void)?) {
         let userCollectionRef = db.collection(email)
@@ -203,7 +217,7 @@ class PostManager {
             completion?(true)
         }
     }
-
+    
     
     
 }
