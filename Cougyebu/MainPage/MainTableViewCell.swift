@@ -11,28 +11,28 @@ class MainTableViewCell: UITableViewCell {
     let dateLabel: UILabel = {
         let label = UILabel()
         label.textColor = .darkGray
-        label.font = UIFont.systemFont(ofSize: 14)
+        label.font = UIFont.systemFont(ofSize: 15)
         return label
     }()
     
     let categoryLabel: UILabel = {
         let label = UILabel()
         label.textColor = .darkGray
-        label.font = UIFont.systemFont(ofSize: 14)
+        label.font = UIFont.systemFont(ofSize: 15)
         return label
     }()
     
     let contentLabel: UILabel = {
         let label = UILabel()
         label.textColor = .black
-        label.font = UIFont.systemFont(ofSize: 15)
+        label.font = UIFont.systemFont(ofSize: 16)
         return label
     }()
     
     let priceLabel: UILabel = {
         let label = UILabel()
         label.textColor = .black
-        label.font = UIFont.systemFont(ofSize: 15)
+        label.font = UIFont.systemFont(ofSize: 16)
         label.textAlignment = .right
         return label
     }()

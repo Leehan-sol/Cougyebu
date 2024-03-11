@@ -145,8 +145,8 @@ class PostingView: UIView {
 
         groupPicker.snp.makeConstraints {
             $0.top.equalTo(datePicker.snp.bottom).offset(40)
-            $0.width.equalTo(150)
-            $0.height.equalTo(100)
+            $0.width.equalTo(130)
+            $0.height.equalTo(80)
             $0.right.equalToSuperview().offset(-40)
         }
 
@@ -157,8 +157,8 @@ class PostingView: UIView {
 
         categoryPicker.snp.makeConstraints {
             $0.top.equalTo(groupPicker.snp.bottom).offset(40)
-            $0.width.equalTo(150)
-            $0.height.equalTo(100)
+            $0.width.equalTo(130)
+            $0.height.equalTo(80)
             $0.right.equalToSuperview().offset(-40)
         }
 
