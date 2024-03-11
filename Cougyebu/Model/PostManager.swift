@@ -117,6 +117,7 @@ class PostManager {
             if let index = posts.firstIndex(where: { $0["uuid"] as? String == uuid }) {
                 posts[index] = [
                     "date": post.date,
+                    "group": post.group,
                     "category": post.category,
                     "content": post.content,
                     "cost": post.cost,

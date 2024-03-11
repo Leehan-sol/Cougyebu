@@ -15,6 +15,7 @@ struct User {
     var coupleEmail: String?
     var coupleNickname: String?
     var requestUser: Bool?
-    var category: [String]?
+    var incomeCategory: [String]?
+    var expenditureCategory: [String]?
 }
 

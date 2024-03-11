@@ -15,7 +15,8 @@ class MainViewModel {
     var observablePost: Observable<[Posts]> = Observable([])
     
     var userEmail: String
-    var userCategory: [String] = []
+    var userIncomeCategory: [String] = []
+    var userExpenditureCategory: [String] = []
     var coupleEmail: String?
     var isConnect: Bool?
     private let currentDate = Date()
@@ -33,10 +34,7 @@ class MainViewModel {
             self.observableUser?.value = user
             self.coupleEmail = user.coupleEmail
             self.isConnect = user.isConnect
-            
-            if user.coupleEmail != nil, user.isConnect == true {
-                self.loadPost(dates: allDatesInMonth)
-            }
+            self.loadPost(dates: allDatesInMonth)
         }
     }
     
@@ -62,7 +60,7 @@ class MainViewModel {
             }
         }
     }
- 
+    
     
     func deletePost(date: String, uuid: String, completion: ((Bool?) -> Void)?) {
         postManager.deletePost(email: userEmail, date: date, uuid: uuid) { [weak self] bool in
@@ -101,13 +99,17 @@ class MainViewModel {
         
         return (totalIncome, totalExpenditure, netIncome)
     }
-
+    
     
     
     func loadCategory() {
-        userManager.findCategory(email: userEmail) { category in
-            guard let userCategory = category else { return }
-            self.userCategory = userCategory
+        userManager.findCategory(email: userEmail) { incomeCategory, expenditureCategory in
+            if let incomeCategory = incomeCategory {
+                self.userIncomeCategory = incomeCategory
+            }
+            if let expenditureCategory = expenditureCategory {
+                self.userExpenditureCategory = expenditureCategory
+            }
         }
     }
     

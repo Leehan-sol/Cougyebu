@@ -38,7 +38,8 @@ class UserManager {
                 let code = data["code"] as? String
                 let coupleEmail = data["coupleEmail"] as? String
                 let requestUser = data["requestUser"] as? Bool
-                let category = data["category"] as? [String]
+                let incomeCategory = data["incomeCategory"] as? [String]
+                let expenditureCategory = data["expenditureCategory"] as? [String]
                 
                 // 커플 닉네임 가져오기
                 var coupleNickname: String?
@@ -56,11 +57,11 @@ class UserManager {
                         }
                         
                         coupleNickname = data["nickname"] as? String
-                        let user = User(email: email, nickname: nickname, isConnect: isConnect, code: code, coupleEmail: coupleEmail, coupleNickname: coupleNickname, requestUser: requestUser, category: category)
+                        let user = User(email: email, nickname: nickname, isConnect: isConnect, code: code, coupleEmail: coupleEmail, coupleNickname: coupleNickname, requestUser: requestUser, incomeCategory: incomeCategory, expenditureCategory: expenditureCategory)
                         completion(user)
                     }
                 } else {
-                    let user = User(email: email, nickname: nickname, isConnect: isConnect, code: code, coupleEmail: coupleEmail, coupleNickname: nil, requestUser: requestUser, category: category)
+                    let user = User(email: email, nickname: nickname, isConnect: isConnect, code: code, coupleEmail: coupleEmail, coupleNickname: nil, requestUser: requestUser, incomeCategory: incomeCategory, expenditureCategory: expenditureCategory)
                     completion(user)
                 }
             } else {
@@ -113,24 +114,32 @@ class UserManager {
     
     
     // 카테고리 찾기
-    func findCategory(email: String, completion: @escaping ([String]?) -> Void) {
+    func findCategory(email: String, completion: @escaping (([String]?, [String]?) -> Void)) {
         let userDB = db.collection("User")
         let query = userDB.whereField("email", isEqualTo: email)
         
         query.getDocuments { (snapshot, error) in
             if let error = error {
                 print(error.localizedDescription)
+                completion(nil, nil)
                 return
             }
             
             if let snapshot = snapshot, !snapshot.isEmpty {
-                guard let data = snapshot.documents.first?.data() else { return }
+                guard let data = snapshot.documents.first?.data() else {
+                    completion(nil, nil)
+                    return
+                }
                 
-                let category = data["category"] as? [String]
-                completion(category)
+                let incomeCategory = data["incomeCategory"] as? [String]
+                let expenditureCategory = data["expenditureCategory"] as? [String]
+                completion(incomeCategory, expenditureCategory)
+            } else {
+                completion(nil, nil)
             }
         }
     }
+
     
     
     // 유저 생성
@@ -142,7 +151,8 @@ class UserManager {
             "isConnect": user.isConnect as Any,
             "coupleEmail": user.coupleEmail as Any,
             "coupleNickname": user.coupleNickname as Any,
-            "category": user.category as Any
+            "incomeCategory": user.incomeCategory as Any,
+            "expenditureCategory": user.expenditureCategory as Any
         ]) { error in
             if let error = error {
                 print("Error: \(error)")
@@ -258,7 +268,8 @@ class UserManager {
     
     
     // 카테고리 추가
-    func addCategory(email: String, category: String) {
+    func addCategory(email: String?, category: String, categoryType: String) {
+        guard let email = email else { return }
         let userDB = db.collection("User")
         let query = userDB.whereField("email", isEqualTo: email)
         
@@ -272,9 +283,19 @@ class UserManager {
                 guard let document = snapshot.documents.first else { return }
                 
                 var updatedData = document.data()
-                var currentCategories = updatedData["category"] as? [String] ?? []
+                var currentCategories: [String]
+                if categoryType == "income" {
+                    currentCategories = updatedData["incomeCategory"] as? [String] ?? []
+                } else {
+                    currentCategories = updatedData["expenditureCategory"] as? [String] ?? []
+                }
                 currentCategories.append(category)
-                updatedData["category"] = currentCategories
+                
+                if categoryType == "income" {
+                    updatedData["incomeCategory"] = currentCategories
+                } else {
+                    updatedData["expenditureCategory"] = currentCategories
+                }
                 
                 document.reference.setData(updatedData) { error in
                     if let error = error {
@@ -289,7 +310,7 @@ class UserManager {
 
     
     // 카테고리 삭제
-    func deleteCategory(email: String, category: String) {
+    func deleteCategory(email: String, category: String, categoryType: String) {
         let userDB = db.collection("User")
         let query = userDB.whereField("email", isEqualTo: email)
         
@@ -301,11 +322,23 @@ class UserManager {
             
             if let snapshot = snapshot, !snapshot.isEmpty {
                 for document in snapshot.documents {
-                    var categories = document.data()["category"] as? [String] ?? []
-                    // 카테고리에서 삭제할 항목을 찾아서 제거
+                    var categories: [String] = []
+                    if categoryType == "income" {
+                        categories = document.data()["incomeCategory"] as? [String] ?? []
+                    } else {
+                        categories = document.data()["expenditureCategory"] as? [String] ?? []
+                    }
+                    
                     categories.removeAll { $0 == category }
-                    // 업데이트된 카테고리 정보로 사용자 업데이트
-                    self.updateUser(email: email, updatedFields: ["category": categories]) { success in
+                    
+                    var updatedFields: [String: Any] = [:]
+                    if categoryType == "income" {
+                        updatedFields["incomeCategory"] = categories
+                    } else {
+                        updatedFields["expenditureCategory"] = categories
+                    }
+                    
+                    self.updateUser(email: email, updatedFields: updatedFields) { success in
                         if let success = success, success {
                             print("사용자 카테고리 삭제 성공")
                         } else {
@@ -316,6 +349,7 @@ class UserManager {
             }
         }
     }
+
     
 }
 

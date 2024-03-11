@@ -95,14 +95,17 @@ extension MyPageViewController: UITableViewDelegate {
         case "문의하기":
             setMail()
         case "커플 연결":
-            let connectVM = ConnectViewModel(observableUser: viewModel.observableUser!)
+            guard let user = viewModel.observableUser else { return }
+            let connectVM = ConnectViewModel(observableUser: user)
             let connectVC = ConnectViewController(viewModel: connectVM)
             self.navigationController?.pushViewController(connectVC, animated: true)
         case "닉네임 변경":
-            let nicknameEditVC = NicknameEditViewController(user: viewModel.observableUser!)
+            guard let user = viewModel.observableUser else { return }
+            let nicknameEditVC = NicknameEditViewController(user: user)
             self.navigationController?.pushViewController(nicknameEditVC, animated: true)
         case "카테고리 설정":
-            let categoryVC = CategoryViewController(user: viewModel.observableUser!)
+            guard let user = viewModel.observableUser else { return }
+            let categoryVC = CategoryViewController(user: user)
             self.navigationController?.pushViewController(categoryVC, animated: true)
         case "로그아웃":
             AlertManager.showAlertTwoButton(from: self, title: "로그아웃", message: "정말 로그아웃하시겠습니까?", button1Title: "확인", button2Title: "취소") {

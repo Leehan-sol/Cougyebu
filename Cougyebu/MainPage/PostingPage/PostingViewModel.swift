@@ -14,15 +14,17 @@ class PostingViewModel {
     var observablePost: Observable<[Posts]>
     var userEmail: String
     var coupleEmail: String
-    var userCategory: [String]
+    var userIncomeCategory: [String]
+    var userExpenditureCategory: [String]
     var datesRange: [String]?
     var post: Posts?
     
-    init(observablePost: Observable<[Posts]>, userEmail: String, coupleEmail: String, userCategory: [String]) {
+    init(observablePost: Observable<[Posts]>, userEmail: String, coupleEmail: String, userIncomeCategory: [String], userExpenditureCategory: [String]) {
         self.observablePost = observablePost
         self.userEmail = userEmail
         self.coupleEmail = coupleEmail
-        self.userCategory = userCategory
+        self.userIncomeCategory = userIncomeCategory
+        self.userExpenditureCategory = userExpenditureCategory
     }
     
     

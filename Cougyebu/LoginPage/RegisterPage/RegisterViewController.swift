@@ -217,7 +217,7 @@ class RegisterViewController: UIViewController {
             } else if !validPw {
                 AlertManager.showAlertOneButton(from: self, title: "유효하지 않은 비밀번호", message: "비밀번호는 대소문자, 특수문자, 숫자 8자 이상이여야합니다.", buttonTitle: "확인")
             } else {
-                let newUser = User(email: email, nickname: nickname, isConnect: false, category: ["🏡 생활비", "🍚 식비", "🚗 교통비"])
+                let newUser = User(email: email, nickname: nickname, isConnect: false, incomeCategory: ["💸 월급", "🐷 용돈", "💌 상여금"], expenditureCategory: ["🏡 생활비", "🍚 식비", "🚗 교통비"])
                 Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
                     if let e = error {
                         AlertManager.showAlertOneButton(from: self, title: "오류", message: e.localizedDescription, buttonTitle: "확인")

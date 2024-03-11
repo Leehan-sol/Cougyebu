@@ -63,39 +63,40 @@ class WithdrawalViewController: UIViewController {
     }
     
     @objc func withdrawalButtonTapped() {
-          let user = Auth.auth().currentUser
-          let credential = EmailAuthProvider.credential(withEmail: user?.email ?? "", password: withdrawalView.passwordTextField.text ?? "")
-          
-          user?.reauthenticate(with: credential) { _, error in
-              if let error = error {
-                  print("현재 비밀번호 확인 실패: \(error.localizedDescription)")
-                  AlertManager.showAlertOneButton(from: self, title: "비밀번호 확인 실패", message: "입력한 비밀번호가 올바르지 않습니다.", buttonTitle: "확인")
-              } else {
-                  print("비밀번호 확인 성공")
-                  AlertManager.showAlertTwoButton(from: self, title: "회원탈퇴", message: "정말 탈퇴하시겠습니까?", button1Title: "확인", button2Title: "취소") {
-                      if let user = Auth.auth().currentUser {
-                          self.userManager.deleteUser(user: user)
-                          user.delete { error in
-                              if let error = error {
-                                  print("Firebase Error: \(error)")
-                              } else {
-                                  print("회원탈퇴 성공") 
-                                  // ✨ 데이터 삭제 로직 구현
-                                  guard let coupleEmail = self.user?.value.coupleEmail else { return }
-                                  guard let email = self.user?.value.email else { return }
-                                  self.postManager.deleteAllPost(email: email) { _ in }
-                                  self.userManager.disconnectUser(inputEmail: coupleEmail) { _ in }
-                                  let loginVC = LoginViewController()
-                                  let loginNavi = UINavigationController(rootViewController: loginVC)
-                                  UIApplication.shared.windows.first?.rootViewController = loginNavi
-                                  UIApplication.shared.windows.first?.makeKeyAndVisible()
-                              }
-                          }
-                      }
-                  }
-              }
-          }
-      }
+        let user = Auth.auth().currentUser
+        let credential = EmailAuthProvider.credential(withEmail: user?.email ?? "", password: withdrawalView.passwordTextField.text ?? "")
+        
+        user?.reauthenticate(with: credential) { _, error in
+            if let error = error {
+                print("현재 비밀번호 확인 실패: \(error.localizedDescription)")
+                AlertManager.showAlertOneButton(from: self, title: "비밀번호 확인 실패", message: "입력한 비밀번호가 올바르지 않습니다.", buttonTitle: "확인")
+            } else {
+                print("비밀번호 확인 성공")
+                AlertManager.showAlertTwoButton(from: self, title: "회원탈퇴", message: "정말 탈퇴하시겠습니까?", button1Title: "확인", button2Title: "취소") {
+                    if let user = Auth.auth().currentUser {
+                        user.delete { error in
+                            if let error = error {
+                                print("Firebase Error: \(error)")
+                            } else {
+                                if let coupleEmail = self.user?.value.coupleEmail, let email = self.user?.value.email {
+                                    self.userManager.deleteUser(user: user)
+                                    self.postManager.deleteAllPost(email: email) { _ in }
+                                    self.userManager.disconnectUser(inputEmail: coupleEmail) { _ in }
+                                    
+                                    // 로그인 화면으로 이동
+                                    let loginVC = LoginViewController()
+                                    let loginNavi = UINavigationController(rootViewController: loginVC)
+                                    UIApplication.shared.windows.first?.rootViewController = loginNavi
+                                    UIApplication.shared.windows.first?.makeKeyAndVisible()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     
     
     

@@ -128,7 +128,6 @@ class MainViewController: UIViewController {
         }
     }
 
-    
     func setGesture() {
         tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(toggleCalender(_:)))
         mainView.tableView.addGestureRecognizer(tapGestureRecognizer)
@@ -163,7 +162,7 @@ class MainViewController: UIViewController {
     }
     
     @objc func floatingButtonTapped() {
-        let postingVM = PostingViewModel(observablePost: viewModel.observablePost, userEmail: viewModel.userEmail, coupleEmail: viewModel.coupleEmail ?? "", userCategory: viewModel.userCategory)
+        let postingVM = PostingViewModel(observablePost: viewModel.observablePost, userEmail: viewModel.userEmail, coupleEmail: viewModel.coupleEmail ?? "", userIncomeCategory: viewModel.userIncomeCategory, userExpenditureCategory: viewModel.userExpenditureCategory)
         postingVM.datesRange = viewModel.allDatesInMonth
         let postingVC = PostingViewController(viewModel: postingVM)
         present(postingVC, animated: true)
@@ -179,7 +178,7 @@ extension MainViewController: UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
         
         let post = viewModel.observablePost.value[indexPath.row]
-        let postingVM = PostingViewModel(observablePost: viewModel.observablePost, userEmail: viewModel.userEmail, coupleEmail: viewModel.coupleEmail ?? "", userCategory: viewModel.userCategory)
+        let postingVM = PostingViewModel(observablePost: viewModel.observablePost, userEmail: viewModel.userEmail, coupleEmail: viewModel.coupleEmail ?? "", userIncomeCategory: viewModel.userIncomeCategory, userExpenditureCategory: viewModel.userExpenditureCategory)
         postingVM.post = post
         let postingVC = PostingViewController(viewModel: postingVM)
         
