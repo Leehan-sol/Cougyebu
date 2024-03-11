@@ -54,12 +54,41 @@ class MainView: UIView {
         return calendar
     }()
     
-    let totalLabel: UILabel = {
+    let labelStackView: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .horizontal
+        sv.distribution = .equalCentering
+        sv.spacing = 5
+        return sv
+    }()
+    
+    let incomeLabel: UILabel = {
+        let label = UILabel()
+        label.text = "수입"
+        label.textColor = .systemBlue
+        label.font = UIFont.systemFont(ofSize: 14)
+        return label
+    }()
+    
+    let incomePriceLabel: UILabel = {
         let label = UILabel()
         label.text = "55,000원"
-        label.textColor = .darkGray
-        label.backgroundColor = .systemGray6
+        label.font = UIFont.boldSystemFont(ofSize: 14)
+        return label
+    }()
+    
+    let expenditureLabel: UILabel = {
+        let label = UILabel()
+        label.text = "지출"
+        label.textColor = .systemRed
         label.font = UIFont.systemFont(ofSize: 14)
+        return label
+    }()
+    
+    let expenditurePriceLabel: UILabel = {
+        let label = UILabel()
+        label.text = "33,000원"
+        label.font = UIFont.boldSystemFont(ofSize: 14)
         return label
     }()
     
@@ -67,8 +96,14 @@ class MainView: UIView {
         let label = UILabel()
         label.text = "합계"
         label.textColor = .darkGray
-        label.backgroundColor = .systemGray6
-        label.font = UIFont.boldSystemFont(ofSize: 13)
+        label.font = UIFont.systemFont(ofSize: 14)
+        return label
+    }()
+    
+    let sumPriceLabel: UILabel = {
+        let label = UILabel()
+        label.text = "22,000원"
+        label.font = UIFont.boldSystemFont(ofSize: 14)
         return label
     }()
     
@@ -109,8 +144,13 @@ class MainView: UIView {
     func setUI() {
         self.backgroundColor = .systemBackground
         addSubview(tableView)
-        addSubview(totalLabel)
-        addSubview(sumLabel)
+        addSubview(labelStackView)
+        labelStackView.addArrangedSubview(incomeLabel)
+        labelStackView.addArrangedSubview(incomePriceLabel)
+        labelStackView.addArrangedSubview(expenditureLabel)
+        labelStackView.addArrangedSubview(expenditurePriceLabel)
+        labelStackView.addArrangedSubview(sumLabel)
+        labelStackView.addArrangedSubview(sumPriceLabel)
         addSubview(placeholderLabel)
         addSubview(calendar)
         addSubview(startButton)
@@ -138,15 +178,10 @@ class MainView: UIView {
             $0.left.right.equalToSuperview().inset(10)
             $0.bottom.equalToSuperview().offset(-480)
         }
-        
-        totalLabel.snp.makeConstraints {
-            $0.centerY.equalTo(sumLabel)
-            $0.right.equalToSuperview().offset(-10)
-        }
-        
-        sumLabel.snp.makeConstraints {
-            $0.top.equalTo(lastButton.snp.bottom).offset(10)
-            $0.right.equalTo(totalLabel.snp.left).offset(-5)
+ 
+        labelStackView.snp.makeConstraints {
+            $0.top.equalTo(waveButton.snp.bottom).offset(10)
+            $0.left.right.equalToSuperview().inset(10)
         }
         
         placeholderLabel.snp.makeConstraints {
@@ -155,7 +190,7 @@ class MainView: UIView {
         }
         
         tableView.snp.makeConstraints {
-            $0.top.equalTo(sumLabel.snp.bottom).offset(10)
+            $0.top.equalTo(labelStackView.snp.bottom).offset(10)
             $0.left.right.bottom.equalToSuperview()
         }
         

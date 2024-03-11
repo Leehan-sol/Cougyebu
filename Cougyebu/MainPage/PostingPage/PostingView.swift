@@ -20,6 +20,20 @@ class PostingView: UIView {
     let datePicker: UIDatePicker = {
         let picker = UIDatePicker()
         picker.datePickerMode = .date
+        picker.locale = Locale(identifier: "ko_KR")
+        return picker
+    }()
+    
+    private let groupLabel: UILabel = {
+        let label = UILabel()
+        label.text = "수입 / 지출"
+        label.font = UIFont.boldSystemFont(ofSize: 16)
+        return label
+    }()
+    
+    let groupPicker: UIPickerView = {
+        let picker = UIPickerView()
+        picker.backgroundColor = .systemGray6
         return picker
     }()
     
@@ -55,14 +69,14 @@ class PostingView: UIView {
         return view
     }()
     
-    private let priceLabel: UILabel = {
+    private let costLabel: UILabel = {
         let label = UILabel()
         label.text = "가격"
         label.font = UIFont.boldSystemFont(ofSize: 16)
         return label
     }()
     
-    let priceTextField: UITextField = {
+    let costTextField: UITextField = {
         let tf = UITextField()
         tf.setPlaceholderFontSize(size: 14, text: "가격을 입력하세요")
         return tf
@@ -76,7 +90,7 @@ class PostingView: UIView {
     
     let addButton: UIButton = {
         let btn = UIButton()
-        btn.setTitle("추가", for: .normal)
+        btn.setTitle("추가하기", for: .normal)
         btn.setTitleColor(UIColor.white, for: .normal)
         btn.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
         btn.backgroundColor = .black
@@ -98,7 +112,8 @@ class PostingView: UIView {
     private func setUI() {
         self.backgroundColor = .white
         
-        
+        addSubview(groupLabel)
+        addSubview(groupPicker)
         addSubview(dateLabel)
         addSubview(datePicker)
         addSubview(categoryLabel)
@@ -106,8 +121,8 @@ class PostingView: UIView {
         addSubview(contentLabel)
         addSubview(contentTextField)
         addSubview(contentBottom)
-        addSubview(priceLabel)
-        addSubview(priceTextField)
+        addSubview(costLabel)
+        addSubview(costTextField)
         addSubview(priceBottom)
         addSubview(addButton)
         
@@ -119,7 +134,19 @@ class PostingView: UIView {
 
         datePicker.snp.makeConstraints {
             $0.top.equalToSuperview().offset(50)
-            $0.left.equalTo(dateLabel.snp.right).offset(20)
+            $0.left.equalTo(groupLabel.snp.right).offset(20)
+            $0.right.equalToSuperview().offset(-40)
+        }
+        
+        groupLabel.snp.makeConstraints {
+            $0.centerY.equalTo(groupPicker)
+            $0.left.equalToSuperview().offset(40)
+        }
+
+        groupPicker.snp.makeConstraints {
+            $0.top.equalTo(datePicker.snp.bottom).offset(40)
+            $0.width.equalTo(150)
+            $0.height.equalTo(100)
             $0.right.equalToSuperview().offset(-40)
         }
 
@@ -129,10 +156,10 @@ class PostingView: UIView {
         }
 
         categoryPicker.snp.makeConstraints {
-            $0.top.equalTo(datePicker.snp.bottom).offset(40)
+            $0.top.equalTo(groupPicker.snp.bottom).offset(40)
             $0.width.equalTo(150)
             $0.height.equalTo(100)
-            $0.right.equalToSuperview().offset(-20)
+            $0.right.equalToSuperview().offset(-40)
         }
 
         contentLabel.snp.makeConstraints {
@@ -143,38 +170,36 @@ class PostingView: UIView {
         contentTextField.snp.makeConstraints {
             $0.top.equalTo(categoryPicker.snp.bottom).offset(50)
             $0.left.equalToSuperview().inset(130)
-            $0.right.equalToSuperview().offset(-20)
+            $0.right.equalToSuperview().offset(-40)
         }
         
         contentBottom.snp.makeConstraints {
-            $0.right.equalToSuperview().inset(24)
+            $0.right.equalToSuperview().inset(40)
             $0.left.equalToSuperview().inset(130)
             $0.bottom.equalTo(contentTextField.snp.bottom).offset(4)
             $0.height.equalTo(1)
         }
         
-
-        priceLabel.snp.makeConstraints {
-            $0.centerY.equalTo(priceTextField)
+        costLabel.snp.makeConstraints {
+            $0.centerY.equalTo(costTextField)
             $0.left.equalToSuperview().offset(40)
         }
 
-        priceTextField.snp.makeConstraints {
+        costTextField.snp.makeConstraints {
             $0.top.equalTo(contentTextField.snp.bottom).offset(50)
             $0.left.equalToSuperview().inset(130)
-            $0.right.equalToSuperview().offset(-20)
+            $0.right.equalToSuperview().offset(-40)
         }
         
         priceBottom.snp.makeConstraints {
-            $0.right.equalToSuperview().inset(24)
+            $0.right.equalToSuperview().inset(40)
             $0.left.equalToSuperview().inset(130)
-            $0.bottom.equalTo(priceTextField.snp.bottom).offset(4)
+            $0.bottom.equalTo(costTextField.snp.bottom).offset(4)
             $0.height.equalTo(1)
         }
         
-        
         addButton.snp.makeConstraints {
-            $0.top.equalTo(priceBottom.snp.bottom).offset(150)
+            $0.top.equalTo(priceBottom.snp.bottom).offset(100)
             $0.left.right.equalToSuperview().inset(24)
             $0.height.equalTo(45)
         }

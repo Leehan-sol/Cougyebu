@@ -107,10 +107,11 @@ extension MyPageViewController: UITableViewDelegate {
         case "로그아웃":
             AlertManager.showAlertTwoButton(from: self, title: "로그아웃", message: "정말 로그아웃하시겠습니까?", button1Title: "확인", button2Title: "취소") {
                 do {
-                    // ✨ 화면이동 로직 구현 
                     try Auth.auth().signOut()
                     let loginVC = LoginViewController()
-                    self.navigationController?.pushViewController(loginVC, animated: true)
+                    let loginNavi = UINavigationController(rootViewController: loginVC)
+                    UIApplication.shared.windows.first?.rootViewController = loginNavi
+                    UIApplication.shared.windows.first?.makeKeyAndVisible()
                 } catch let error as NSError {
                     print(error.localizedDescription)
                 }

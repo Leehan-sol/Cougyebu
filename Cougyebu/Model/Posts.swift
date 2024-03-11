@@ -9,14 +9,11 @@ import Foundation
 
 struct Posts {
     var date: String
+    var group: String
     var category: String
     var content: String
     var cost: String
     var uuid: String
 }
-
-//struct Post {
-//    var posts: [Posts]
-//}
 
 

@@ -89,6 +89,7 @@ class LoginViewController: UIViewController {
             tabBarVC.setViewControllers([mainNavi, myPageNavi], animated: false)
             tabBarVC.modalPresentationStyle = .fullScreen
             tabBarVC.tabBar.backgroundColor = .white
+            tabBarVC.tabBar.tintColor = .black
             
             if let items = tabBarVC.tabBar.items {
                 items[0].title = "Main"

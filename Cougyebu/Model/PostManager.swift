@@ -25,13 +25,11 @@ class PostManager {
             }
             
             guard let snapshot = snapshot, snapshot.exists else {
-                print("Document does not exist")
                 completion(nil)
                 return
             }
             
             guard let data = snapshot.data(), let postsData = data["posts"] as? [[String: Any]] else {
-                print("Posts data is missing or not in expected format")
                 completion(nil)
                 return
             }
@@ -39,11 +37,12 @@ class PostManager {
             var posts: [Posts] = []
             for postData in postsData {
                 if let date = postData["date"] as? String,
+                   let group = postData["group"] as? String,
                    let category = postData["category"] as? String,
                    let content = postData["content"] as? String,
                    let cost = postData["cost"] as? String,
                    let uuid = postData["uuid"] as? String {
-                    let post = Posts(date: date, category: category, content: content, cost: cost, uuid: uuid)
+                    let post = Posts(date: date, group: group, category: category, content: content, cost: cost, uuid: uuid)
                     posts.append(post)
                 } else {
                     print("Error parsing post data")
@@ -62,6 +61,7 @@ class PostManager {
         for post in posts {
             let postData: [String: Any] = [
                 "date": post.date,
+                "group": post.group,
                 "category": post.category,
                 "content": post.content,
                 "cost": post.cost,
@@ -96,7 +96,7 @@ class PostManager {
         }
     }
     
-    func deletePost(email: String, date: String, uuid: String, completion: ((Bool?) -> Void)?) {
+    func updatePost(email: String, date: String, uuid: String, post: Posts, completion: ((Bool?) -> Void)?) {
         let postDocRef = db.collection(email).document(date)
         
         postDocRef.getDocument { snapshot, error in
@@ -112,20 +112,59 @@ class PostManager {
                 return
             }
             
-            // 문서가 존재하면 해당 문서의 "posts" 필드를 가져옴
             var posts = snapshot.data()?["posts"] as? [[String: Any]] ?? []
-            
-            // uuid가 같은 데이터를 찾아서 삭제
             if let index = posts.firstIndex(where: { $0["uuid"] as? String == uuid }) {
-                posts.remove(at: index)
+                posts[index] = [
+                    "date": post.date,
+                    "category": post.category,
+                    "content": post.content,
+                    "cost": post.cost,
+                    "uuid": post.uuid
+                ]
             } else {
-                // 해당 uuid를 가진 데이터를 찾지 못한 경우
                 print("Post with UUID \(uuid) not found")
                 completion?(false)
                 return
             }
             
-            // 업데이트된 데이터로 문서 업데이트
+            postDocRef.updateData(["posts": posts]) { error in
+                if let error = error {
+                    print("Error updating document: \(error)")
+                    completion?(false)
+                } else {
+                    print("Post successfully updated")
+                    completion?(true)
+                }
+            }
+        }
+    }
+
+    
+    func deletePost(email: String, date: String, uuid: String, completion: ((Bool?) -> Void)?) {
+        let postDocRef = db.collection(email).document(date)
+        
+        postDocRef.getDocument { snapshot, error in
+            if let error = error {
+                print("Error getting document: \(error)")
+                completion?(false)
+                return
+            }
+            
+            guard let snapshot = snapshot, snapshot.exists else {
+                print("Document does not exist")
+                completion?(false)
+                return
+            }
+        
+            var posts = snapshot.data()?["posts"] as? [[String: Any]] ?? []
+            if let index = posts.firstIndex(where: { $0["uuid"] as? String == uuid }) {
+                posts.remove(at: index)
+            } else {
+                print("Post with UUID \(uuid) not found")
+                completion?(false)
+                return
+            }
+            
             postDocRef.updateData(["posts": posts]) { error in
                 if let error = error {
                     print("Error updating document: \(error)")
@@ -140,32 +179,31 @@ class PostManager {
 
 
     
-//    func deleteCategory(email: String, category: String) {
-//        let userDB = db.collection("User")
-//        let query = userDB.whereField("email", isEqualTo: email)
-//        
-//        query.getDocuments { (snapshot, error) in
-//            if let error = error {
-//                print("Error: \(error.localizedDescription)")
-//                return
-//            }
-//            
-//            if let snapshot = snapshot, !snapshot.isEmpty {
-//                for document in snapshot.documents {
-//                    var categories = document.data()["category"] as? [String] ?? []
-//                    // 카테고리에서 삭제할 항목을 찾아서 제거
-//                    categories.removeAll { $0 == category }
-//                    // 업데이트된 카테고리 정보로 사용자 업데이트
-//                    self.updateUser(email: email, updatedFields: ["category": categories]) { success in
-//                        if let success = success, success {
-//                            print("사용자 카테고리 삭제 성공")
-//                        } else {
-//                            print("사용자 카테고리 삭제 실패")
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
+    func deleteAllPost(email: String, completion: ((Bool) -> Void)?) {
+        let userCollectionRef = db.collection(email)
+        
+        userCollectionRef.getDocuments { (snapshot, error) in
+            if let error = error {
+                print("Error getting documents: \(error)")
+                completion?(false)
+                return
+            }
+            
+            guard let snapshot = snapshot else {
+                print("Snapshot is nil")
+                completion?(false)
+                return
+            }
+            
+            for document in snapshot.documents {
+                document.reference.delete()
+            }
+            
+            print("All documents successfully deleted")
+            completion?(true)
+        }
+    }
+
+    
     
 }

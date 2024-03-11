@@ -37,6 +37,7 @@ class MainViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setNavigationBar()
         setAddtarget()
         setButton()
         setCalendar()
@@ -47,11 +48,15 @@ class MainViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         loadCategory()
-        loadTotalCost()
     }
     
     
     // MARK: - Method
+    
+    func setNavigationBar() {
+        navigationController?.isNavigationBarHidden = true
+    }
+    
     func setAddtarget() {
         mainView.startButton.addTarget(self, action: #selector(showCalendar), for: .touchUpInside)
         mainView.waveButton.addTarget(self, action: #selector(showCalendar), for: .touchUpInside)
@@ -84,10 +89,15 @@ class MainViewController: UIViewController {
         viewModel.observablePost.bind { [weak self] _ in
             DispatchQueue.main.async {
                 self?.mainView.tableView.reloadData()
-                self?.loadTotalCost()
+                self?.loadPrice()
                 self?.setPlaceholderLabel()
+                self?.setLabelColor()
             }
         }
+    }
+    
+    func loadCategory() {
+        viewModel.loadCategory()
     }
     
     func setPlaceholderLabel() {
@@ -102,14 +112,22 @@ class MainViewController: UIViewController {
         viewModel.loadPost(dates: dates)
     }
     
-    func loadCategory() {
-        viewModel.loadCategory()
+    func loadPrice() {
+        let (totalIncome, totalExpenditure, totalPrice) = self.viewModel.calculatePrice()
+        mainView.incomePriceLabel.text = "\(makeComma(num: totalIncome))원"
+        mainView.expenditurePriceLabel.text = "\(makeComma(num: totalExpenditure))원"
+        mainView.sumPriceLabel.text = "\(makeComma(num: totalPrice))원"
     }
     
-    func loadTotalCost() {
-        let cost = self.viewModel.addCost()
-        mainView.totalLabel.text = "\(makeComma(num: cost))원"
+    func setLabelColor() {
+        for i in 0..<viewModel.observablePost.value.count {
+            let post = viewModel.observablePost.value[i]
+            if let cell = mainView.tableView.cellForRow(at: IndexPath(row: i, section: 0)) as? MainTableViewCell {
+                cell.priceLabel.textColor = post.group == "수입" ? .systemBlue : .systemRed
+            }
+        }
     }
+
     
     func setGesture() {
         tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(toggleCalender(_:)))
@@ -135,7 +153,6 @@ class MainViewController: UIViewController {
     
     // MARK: - @objc
     @objc func showCalendar() {
-        print(#function)
         mainView.calendar.isHidden = false
         setGesture()
     }
@@ -146,8 +163,8 @@ class MainViewController: UIViewController {
     }
     
     @objc func floatingButtonTapped() {
-        datesRange = viewModel.allDatesInMonth
-        let postingVM = PostingViewModel(observablePost: viewModel.observablePost, userEmail: viewModel.userEmail, userCategory: viewModel.userCategory, datesRange: datesRange)
+        let postingVM = PostingViewModel(observablePost: viewModel.observablePost, userEmail: viewModel.userEmail, coupleEmail: viewModel.coupleEmail ?? "", userCategory: viewModel.userCategory)
+        postingVM.datesRange = viewModel.allDatesInMonth
         let postingVC = PostingViewController(viewModel: postingVM)
         present(postingVC, animated: true)
     }
@@ -160,13 +177,23 @@ extension MainViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        
+        let post = viewModel.observablePost.value[indexPath.row]
+        let postingVM = PostingViewModel(observablePost: viewModel.observablePost, userEmail: viewModel.userEmail, coupleEmail: viewModel.coupleEmail ?? "", userCategory: viewModel.userCategory)
+        postingVM.post = post
+        let postingVC = PostingViewController(viewModel: postingVM)
+        
+        postingVC.updatePostHandler = { [weak self] updatedPost in
+            guard let self = self else { return }
+            guard let index = self.viewModel.observablePost.value.firstIndex(where: { $0.uuid == updatedPost.uuid }) else { return }
+            self.viewModel.observablePost.value[index] = updatedPost
+        }
+        
+        present(postingVC, animated: true)
     }
+
     
     
-    // ✨ 수정
-    
-    
-    // ✨ 삭제 
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             let post = viewModel.observablePost.value[indexPath.row]

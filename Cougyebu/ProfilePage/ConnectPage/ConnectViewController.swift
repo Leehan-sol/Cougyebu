@@ -27,6 +27,7 @@ class ConnectViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setNavigationBar()
+        setTextField()
         setAddTarget()
     }
     
@@ -38,6 +39,11 @@ class ConnectViewController: UIViewController {
         self.title = "커플 연결"
         navigationController?.navigationBar.tintColor = .black
         navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 18)]
+    }
+    
+    func setTextField() {
+        connectView.coupleEmailTextField.delegate = self
+        connectView.coupleCodeTextField.delegate = self
     }
     
     func setUI() {
@@ -146,6 +152,13 @@ class ConnectViewController: UIViewController {
     
     
     
+}
+
+// MARK: - UITextFieldDelegate
+extension ConnectViewController: UITextFieldDelegate {
     
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        view.endEditing(true)
+    }
     
 }

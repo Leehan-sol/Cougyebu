@@ -65,22 +65,43 @@ class MainViewModel {
  
     
     func deletePost(date: String, uuid: String, completion: ((Bool?) -> Void)?) {
-        postManager.deletePost(email: userEmail, date: date, uuid: uuid) { bool in
-            completion?(bool)
+        postManager.deletePost(email: userEmail, date: date, uuid: uuid) { [weak self] bool in
+            if bool == true {
+                completion?(true)
+            } else {
+                guard let self = self else { return }
+                guard let coupleEmail = coupleEmail else { return }
+                self.postManager.deletePost(email: coupleEmail, date: date, uuid: uuid) { bool in
+                    if bool == true {
+                        completion?(true)
+                    } else {
+                        completion?(false)
+                    }
+                }
+            }
         }
     }
     
-    
-    func addCost() -> Int {
-        var totalCost = 0
+    func calculatePrice() -> (income: Int, expenditure: Int, netIncome: Int) {
+        var totalIncome = 0
+        var totalExpenditure = 0
+        
         for post in observablePost.value {
             let costStringWithoutComma = post.cost.replacingOccurrences(of: ",", with: "")
             if let cost = Int(costStringWithoutComma) {
-                totalCost += cost
+                if post.group == "수입" {
+                    totalIncome += cost
+                } else if post.group == "지출" {
+                    totalExpenditure += cost
+                }
             }
         }
-        return totalCost
+        
+        let netIncome = totalIncome - totalExpenditure
+        
+        return (totalIncome, totalExpenditure, netIncome)
     }
+
     
     
     func loadCategory() {
