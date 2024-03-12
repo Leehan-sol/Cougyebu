@@ -12,7 +12,7 @@ class MainViewModel {
     private let postManager = PostManager()
     
     var observableUser: Observable<User>?
-    var observablePost: Observable<[Posts]> = Observable([])
+    var observablePost: Observable<[Posts]> = Observable<[Posts]>([])
     
     var userEmail: String
     var userIncomeCategory: [String] = []

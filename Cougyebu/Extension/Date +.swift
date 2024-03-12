@@ -28,16 +28,7 @@ extension Date {
         components.day = -1
         return calendar.date(byAdding: components, to: self.startOfMonth())!
     }
-    
-//    func getAllDatesInMonth() -> [Date] {
-//        let calendar = Calendar.current
-//        let range = calendar.range(of: .day, in: .month, for: self)!
-//        let days = range.map { (day) -> Date in
-//            return calendar.date(byAdding: .day, value: day - 1, to: self.startOfMonth())!
-//        }
-//        return days
-//    }
-//    
+      
     func getAllDatesInMonthAsString() -> [String] {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy.MM.dd"

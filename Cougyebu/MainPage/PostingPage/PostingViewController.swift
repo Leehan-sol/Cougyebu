@@ -79,20 +79,10 @@ class PostingViewController: UIViewController {
         }
         
         postingView.contentTextField.text = post.content
-        postingView.costTextField.text = removeComma(from: post.cost)
+        postingView.costTextField.text = post.cost.removeComma(from: post.cost)
         postingView.addButton.setTitle("수정하기", for: .normal)
     }
 
-    func makeComma(num: Int) -> String {
-        let numberFormatter: NumberFormatter = NumberFormatter()
-        numberFormatter.numberStyle = .decimal
-        let costResult: String = numberFormatter.string(for: num) ?? ""
-        return costResult
-    }
-    
-    func removeComma(from string: String) -> String {
-        return string.replacingOccurrences(of: ",", with: "")
-    }
     
     @objc func addButtonTapped() {
         if viewModel.post == nil {
@@ -127,7 +117,7 @@ class PostingViewController: UIViewController {
                 AlertManager.showAlertOneButton(from: self, title: "가격 입력", message: "가격을 입력하세요", buttonTitle: "확인")
                 return
             }
-            let resultCost = makeComma(num: intCost)
+            let resultCost = intCost.makeComma(num: intCost)
             
             let post = Posts(date: dateString, group: group, category: category, content: content, cost: resultCost, uuid: uuid)
             viewModel.addPost(date: dateString, posts: [post])
@@ -162,7 +152,7 @@ class PostingViewController: UIViewController {
                 AlertManager.showAlertOneButton(from: self, title: "가격 입력", message: "가격을 입력하세요", buttonTitle: "확인")
                 return
             }
-            let resultCost = makeComma(num: intCost)
+            let resultCost = intCost.makeComma(num: intCost)
             
             let updatedPost = Posts(date: dateString, group: group, category: category, content: content, cost: resultCost, uuid: post.uuid)
             

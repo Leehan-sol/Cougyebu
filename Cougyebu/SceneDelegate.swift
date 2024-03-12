@@ -23,7 +23,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             let mainVC = MainViewController(viewModel: mainVM)
             let mainNavi = UINavigationController(rootViewController: mainVC)
             
-            let chartVC = ChartViewController()
+            let chartVM = ChartViewModel(userEmail: currentUserEmail)
+            let chartVC = ChartViewController(viewModel: chartVM)
             
             let myPageVM = MyPageViewModel(userEmail: currentUserEmail)
             let myPageVC = MyPageViewController(viewModel: myPageVM)

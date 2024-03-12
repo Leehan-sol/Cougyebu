@@ -16,7 +16,7 @@ class MainViewController: UIViewController {
     private let dateFormatter = DateFormatter()
     private var firstDate: Date?
     private var lastDate: Date?
-    private var datesRange: [String] = []
+    private lazy var datesRange: [String] = currentDate.getAllDatesInMonthAsString()
     private let currentDate = Date()
     private lazy var startOfMonth = currentDate.startOfMonth().toString(format: "yyyy.MM.dd")
     private lazy var endOfMonth = currentDate.endOfMonth().toString(format: "yyyy.MM.dd")
@@ -114,9 +114,9 @@ class MainViewController: UIViewController {
     
     func loadPrice() {
         let (totalIncome, totalExpenditure, totalPrice) = self.viewModel.calculatePrice()
-        mainView.incomePriceLabel.text = "\(makeComma(num: totalIncome))원"
-        mainView.expenditurePriceLabel.text = "\(makeComma(num: totalExpenditure))원"
-        mainView.sumPriceLabel.text = "\(makeComma(num: totalPrice))원"
+        mainView.incomePriceLabel.text = "\(totalIncome.makeComma(num: totalIncome))원"
+        mainView.expenditurePriceLabel.text = "\(totalExpenditure.makeComma(num: totalExpenditure))원"
+        mainView.sumPriceLabel.text = "\(totalPrice.makeComma(num: totalPrice))원"
     }
     
     func setLabelColor() {
@@ -142,13 +142,6 @@ class MainViewController: UIViewController {
         }
     }
     
-    func makeComma(num: Int) -> String {
-        let numberFormatter: NumberFormatter = NumberFormatter()
-        numberFormatter.numberStyle = .decimal
-        let costResult: String = numberFormatter.string(for: num) ?? ""
-        return costResult
-    }
-    
     
     // MARK: - @objc
     @objc func showCalendar() {
@@ -163,7 +156,7 @@ class MainViewController: UIViewController {
     
     @objc func floatingButtonTapped() {
         let postingVM = PostingViewModel(observablePost: viewModel.observablePost, userEmail: viewModel.userEmail, coupleEmail: viewModel.coupleEmail ?? "", userIncomeCategory: viewModel.userIncomeCategory, userExpenditureCategory: viewModel.userExpenditureCategory)
-        postingVM.datesRange = viewModel.allDatesInMonth
+        postingVM.datesRange = datesRange
         let postingVC = PostingViewController(viewModel: postingVM)
         present(postingVC, animated: true)
     }
@@ -180,6 +173,7 @@ extension MainViewController: UITableViewDelegate {
         let post = viewModel.observablePost.value[indexPath.row]
         let postingVM = PostingViewModel(observablePost: viewModel.observablePost, userEmail: viewModel.userEmail, coupleEmail: viewModel.coupleEmail ?? "", userIncomeCategory: viewModel.userIncomeCategory, userExpenditureCategory: viewModel.userExpenditureCategory)
         postingVM.post = post
+        postingVM.datesRange = datesRange
         let postingVC = PostingViewController(viewModel: postingVM)
         
         postingVC.updatePostHandler = { [weak self] updatedPost in
@@ -279,8 +273,9 @@ extension MainViewController: FSCalendarDelegate {
                 for dateString in rangeString {
                     datesRange.append(dateString)
                 }
-
+                firstDate = range.first
                 lastDate = range.last
+                datesRange = range.map { dateFormatter.string(from: $0) }
                 mainView.calendar.reloadData()
                 updateButtons()
                 loadPost(dates: datesRange)

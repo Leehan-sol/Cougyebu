@@ -35,5 +35,11 @@ extension String {
         return passwordValidation.evaluate(with: self)
     }
     
+    func removeComma(from string: String) -> String {
+        return string.replacingOccurrences(of: ",", with: "")
+    }
+    
+    
+    
 }
 

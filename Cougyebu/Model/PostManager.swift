@@ -11,7 +11,7 @@ import FirebaseAuth
 
 class PostManager {
     private let db = Firestore.firestore()
-    
+
     // 게시글 로드
     func loadPosts(email: String, date: String, completion: @escaping ([Posts]?) -> Void) {
         let userDB = db.collection(email)
