@@ -28,7 +28,7 @@ class TermsViewController: UIViewController, WKNavigationDelegate {
 
         webView.navigationDelegate = self
    
-        if let url = URL(string: "https://naver.com") {
+        if let url = URL(string: "https://www.notion.so/81fd9cf266414011b7fd64eaa3cad979") {
             let request = URLRequest(url: url)
             webView.load(request)
         }

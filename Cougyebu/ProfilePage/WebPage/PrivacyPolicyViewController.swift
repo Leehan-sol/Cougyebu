@@ -28,7 +28,7 @@ class PrivacyPolicyViewController: UIViewController, WKNavigationDelegate {
 
         webView.navigationDelegate = self
    
-        if let url = URL(string: "https://naver.com") {
+        if let url = URL(string: "https://www.notion.so/818c8697ce954b44bbe3a0de4a666a07") {
             let request = URLRequest(url: url)
             webView.load(request)
         }

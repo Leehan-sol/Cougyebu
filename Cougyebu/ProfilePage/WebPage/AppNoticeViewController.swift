@@ -28,7 +28,7 @@ class AppNoticeViewController: UIViewController, WKNavigationDelegate {
 
         webView.navigationDelegate = self
    
-        if let url = URL(string: "https://chalk-fir-f36.notion.site/4693d7b6de8743fb9000e1e3be246c4e?pvs=4") {
+        if let url = URL(string: "https://www.notion.so/e8e55980e8364a75a04c98126622925a") {
             let request = URLRequest(url: url)
             webView.load(request)
         }

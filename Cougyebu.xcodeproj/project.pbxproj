@@ -18,7 +18,6 @@
 		CC4955AF2B998D50003B3341 /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = CC4955AE2B998D50003B3341 /* FirebaseAppCheck */; };
 		CC4955B22B998DAB003B3341 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = CC4955B12B998DAB003B3341 /* SnapKit */; };
 		CC4955B52B998DB8003B3341 /* SwiftSMTP in Frameworks */ = {isa = PBXBuildFile; productRef = CC4955B42B998DB8003B3341 /* SwiftSMTP */; };
-		CC4955B82B998DC9003B3341 /* NVActivityIndicatorView in Frameworks */ = {isa = PBXBuildFile; productRef = CC4955B72B998DC9003B3341 /* NVActivityIndicatorView */; };
 		CC4955BA2B998E04003B3341 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CC4955B92B998E04003B3341 /* GoogleService-Info.plist */; };
 		CC4955BC2B998E79003B3341 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = CC4955BB2B998E79003B3341 /* FirebaseAnalytics */; };
 		CC4955BE2B998E79003B3341 /* FirebaseAnalyticsOnDeviceConversion in Frameworks */ = {isa = PBXBuildFile; productRef = CC4955BD2B998E79003B3341 /* FirebaseAnalyticsOnDeviceConversion */; };
@@ -85,6 +84,7 @@
 		CC570FFE2B9EAE1D00DF000D /* ChartViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC570FFD2B9EAE1D00DF000D /* ChartViewModel.swift */; };
 		CC580F172BA071700047E614 /* Int +.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC580F162BA071700047E614 /* Int +.swift */; };
 		CC580F192BA07D000047E614 /* CurrencyValueFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC580F182BA07D000047E614 /* CurrencyValueFormatter.swift */; };
+		CC580F1C2BA08CCE0047E614 /* NVActivityIndicatorView in Frameworks */ = {isa = PBXBuildFile; productRef = CC580F1B2BA08CCE0047E614 /* NVActivityIndicatorView */; };
 		CC5A55FF2B9B223F0012F661 /* PostManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5A55FE2B9B223F0012F661 /* PostManager.swift */; };
 		CC5A56022B9B3CAC0012F661 /* UIButton +.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5A56012B9B3CAC0012F661 /* UIButton +.swift */; };
 		CC5A56052B9B42AC0012F661 /* PostingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5A56042B9B42AC0012F661 /* PostingView.swift */; };
@@ -160,7 +160,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CC4955B82B998DC9003B3341 /* NVActivityIndicatorView in Frameworks */,
 				CC4955C82B998E79003B3341 /* FirebaseAuth in Frameworks */,
 				CC4955C42B998E79003B3341 /* FirebaseAppCheck in Frameworks */,
 				CC4955DA2B998E79003B3341 /* FirebaseFunctions in Frameworks */,
@@ -180,6 +179,7 @@
 				CC4955AF2B998D50003B3341 /* FirebaseAppCheck in Frameworks */,
 				CC4955DE2B998E79003B3341 /* FirebaseInAppMessaging-Beta in Frameworks */,
 				CC4955DC2B998E79003B3341 /* FirebaseFunctionsCombine-Community in Frameworks */,
+				CC580F1C2BA08CCE0047E614 /* NVActivityIndicatorView in Frameworks */,
 				CC4955E22B998E79003B3341 /* FirebaseInstallations in Frameworks */,
 				CC4955C22B998E79003B3341 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
 				CC4955B52B998DB8003B3341 /* SwiftSMTP in Frameworks */,
@@ -423,7 +423,6 @@
 				CC4955AE2B998D50003B3341 /* FirebaseAppCheck */,
 				CC4955B12B998DAB003B3341 /* SnapKit */,
 				CC4955B42B998DB8003B3341 /* SwiftSMTP */,
-				CC4955B72B998DC9003B3341 /* NVActivityIndicatorView */,
 				CC4955BB2B998E79003B3341 /* FirebaseAnalytics */,
 				CC4955BD2B998E79003B3341 /* FirebaseAnalyticsOnDeviceConversion */,
 				CC4955BF2B998E79003B3341 /* FirebaseAnalyticsSwift */,
@@ -453,6 +452,7 @@
 				CC4955EF2B998E79003B3341 /* FirebaseStorageCombine-Community */,
 				CC62E3322B9CA25600E0438F /* FSCalendar */,
 				CC570FF72B9EADFE00DF000D /* DGCharts */,
+				CC580F1B2BA08CCE0047E614 /* NVActivityIndicatorView */,
 			);
 			productName = Cougyebu;
 			productReference = CC49558E2B998CE4003B3341 /* Cougyebu.app */;
@@ -486,9 +486,9 @@
 				CC4955A52B998D50003B3341 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				CC4955B02B998DAA003B3341 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				CC4955B32B998DB8003B3341 /* XCRemoteSwiftPackageReference "Swift-SMTP" */,
-				CC4955B62B998DC9003B3341 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */,
 				CC62E3312B9CA25600E0438F /* XCRemoteSwiftPackageReference "FSCalendar" */,
 				CC570FF62B9EADFE00DF000D /* XCRemoteSwiftPackageReference "Charts" */,
+				CC580F1A2BA08CCE0047E614 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */,
 			);
 			productRefGroup = CC49558F2B998CE4003B3341 /* Products */;
 			projectDirPath = "";
@@ -804,20 +804,20 @@
 				minimumVersion = 6.0.0;
 			};
 		};
-		CC4955B62B998DC9003B3341 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/ninjaprox/NVActivityIndicatorView.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.1.1;
-			};
-		};
 		CC570FF62B9EADFE00DF000D /* XCRemoteSwiftPackageReference "Charts" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/danielgindi/Charts.git";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 5.1.0;
+			};
+		};
+		CC580F1A2BA08CCE0047E614 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ninjaprox/NVActivityIndicatorView.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.1.1;
 			};
 		};
 		CC62E3312B9CA25600E0438F /* XCRemoteSwiftPackageReference "FSCalendar" */ = {
@@ -865,11 +865,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CC4955B32B998DB8003B3341 /* XCRemoteSwiftPackageReference "Swift-SMTP" */;
 			productName = SwiftSMTP;
-		};
-		CC4955B72B998DC9003B3341 /* NVActivityIndicatorView */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CC4955B62B998DC9003B3341 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */;
-			productName = NVActivityIndicatorView;
 		};
 		CC4955BB2B998E79003B3341 /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -1010,6 +1005,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CC570FF62B9EADFE00DF000D /* XCRemoteSwiftPackageReference "Charts" */;
 			productName = DGCharts;
+		};
+		CC580F1B2BA08CCE0047E614 /* NVActivityIndicatorView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CC580F1A2BA08CCE0047E614 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */;
+			productName = NVActivityIndicatorView;
 		};
 		CC62E3322B9CA25600E0438F /* FSCalendar */ = {
 			isa = XCSwiftPackageProductDependency;
