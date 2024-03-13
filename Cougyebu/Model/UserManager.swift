@@ -178,8 +178,7 @@ class UserManager {
     
     
     // 유저 삭제
-    func deleteUser(user: FirebaseAuth.User){
-        if let email = user.email {
+    func deleteUser(email: String) {
             db.collection("User").whereField("email", isEqualTo: email).getDocuments { (querySnapshot, error) in
                 if let error = error {
                     print("Error getting documents: \(error.localizedDescription)")
@@ -187,10 +186,11 @@ class UserManager {
                 }
                 for document in querySnapshot!.documents {
                     document.reference.delete()
+                    print("유저 문서 삭제 성공")
                 }
             }
         }
-    }
+
     
     
     // 유저 연결 (inputEmail: 상대이메일)
@@ -252,6 +252,7 @@ class UserManager {
             updatedFields["requestUser"] = FieldValue.delete()
             updatedFields["isConnect"] = false
             updateUser(email: inputEmail, updatedFields: updatedFields) { _ in }
+            
             
             // 상대 데이터
             updatedFields["coupleEmail"] = FieldValue.delete()

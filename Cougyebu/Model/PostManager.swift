@@ -194,7 +194,7 @@ class PostManager {
     
     
     
-    func deleteAllPost(email: String, completion: ((Bool) -> Void)?) {
+    func deleteAllPost(email: String, completion: ((Bool?) -> Void)?) {
         let userCollectionRef = db.collection(email)
         
         userCollectionRef.getDocuments { (snapshot, error) in
@@ -212,10 +212,10 @@ class PostManager {
             
             for document in snapshot.documents {
                 document.reference.delete()
+                completion?(true)
+                print("문서 삭제 성공")
             }
-            
-            print("All documents successfully deleted")
-            completion?(true)
+           
         }
     }
     

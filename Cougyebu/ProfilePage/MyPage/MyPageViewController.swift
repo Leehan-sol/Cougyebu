@@ -49,6 +49,8 @@ class MyPageViewController: UIViewController {
             self?.myPageView.nicknameLabel.text = user.nickname
             if user.isConnect {
                 self?.myPageView.coupleNicknameLabel.text = user.coupleNickname
+            } else {
+                self?.myPageView.coupleNicknameLabel.text = "내 짝꿍"
             }
         }
     }

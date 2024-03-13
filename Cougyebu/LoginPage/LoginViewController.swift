@@ -83,7 +83,7 @@ class LoginViewController: UIViewController {
             
             let chartVM = ChartViewModel(userEmail: currentUserEmail)
             let chartVC = ChartViewController(viewModel: chartVM)
-    
+            
             let myPageVM = MyPageViewModel(userEmail: currentUserEmail)
             let myPageVC = MyPageViewController(viewModel: myPageVM)
             let myPageNavi = UINavigationController(rootViewController: myPageVC)
@@ -159,10 +159,10 @@ class LoginViewController: UIViewController {
         return maskedEmail
     }
     
-    // ✨ 비밀번호 찾는 페이지, 로직 추가
+    
     @objc func findPwButtonTapped() {
-        //        let passwordFindVC = PasswordFindViewController()
-        //        self.navigationController?.pushViewController(passwordFindVC, animated: true)
+        let passwordChangeVC = PasswordChangeViewController()
+        self.navigationController?.pushViewController(passwordChangeVC, animated: true)
     }
     
     @objc func registerButtonTapped() {

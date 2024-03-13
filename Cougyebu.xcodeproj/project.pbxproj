@@ -93,6 +93,8 @@
 		CC5A560B2B9B55630012F661 /* Date +.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5A560A2B9B55630012F661 /* Date +.swift */; };
 		CC5A560E2B9B5A870012F661 /* CategoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5A560D2B9B5A870012F661 /* CategoryView.swift */; };
 		CC5A56102B9B5A930012F661 /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5A560F2B9B5A930012F661 /* CategoryViewController.swift */; };
+		CC5E35DE2BA133DD0082FDC1 /* PasswordChangeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5E35DD2BA133DD0082FDC1 /* PasswordChangeViewController.swift */; };
+		CC5E35E02BA134320082FDC1 /* PasswordChangeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5E35DF2BA134320082FDC1 /* PasswordChangeView.swift */; };
 		CC62E3082B9BECFE00E0438F /* MainTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC62E3072B9BECFE00E0438F /* MainTableViewCell.swift */; };
 		CC62E3332B9CA25600E0438F /* FSCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = CC62E3322B9CA25600E0438F /* FSCalendar */; };
 		CCCCCCED2B9A946C00355EAA /* ConnectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCCCCCEC2B9A946C00355EAA /* ConnectViewModel.swift */; };
@@ -151,6 +153,8 @@
 		CC5A560A2B9B55630012F661 /* Date +.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date +.swift"; sourceTree = "<group>"; };
 		CC5A560D2B9B5A870012F661 /* CategoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryView.swift; sourceTree = "<group>"; };
 		CC5A560F2B9B5A930012F661 /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
+		CC5E35DD2BA133DD0082FDC1 /* PasswordChangeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordChangeViewController.swift; sourceTree = "<group>"; };
+		CC5E35DF2BA134320082FDC1 /* PasswordChangeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordChangeView.swift; sourceTree = "<group>"; };
 		CC62E3072B9BECFE00E0438F /* MainTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTableViewCell.swift; sourceTree = "<group>"; };
 		CCCCCCEC2B9A946C00355EAA /* ConnectViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -282,6 +286,7 @@
 				CC4956092B999205003B3341 /* LoginView.swift */,
 				CC49560B2B999214003B3341 /* LoginViewController.swift */,
 				CC4956032B9991B8003B3341 /* RegisterPage */,
+				CC5E35E12BA134350082FDC1 /* PasswordChagePage */,
 			);
 			path = LoginPage;
 			sourceTree = "<group>";
@@ -397,6 +402,15 @@
 				CC5A560F2B9B5A930012F661 /* CategoryViewController.swift */,
 			);
 			path = CategoryPage;
+			sourceTree = "<group>";
+		};
+		CC5E35E12BA134350082FDC1 /* PasswordChagePage */ = {
+			isa = PBXGroup;
+			children = (
+				CC5E35DF2BA134320082FDC1 /* PasswordChangeView.swift */,
+				CC5E35DD2BA133DD0082FDC1 /* PasswordChangeViewController.swift */,
+			);
+			path = PasswordChagePage;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -559,12 +573,14 @@
 				CC4956022B998FB3003B3341 /* SMTPManager.swift in Sources */,
 				CC4956222B99932E003B3341 /* PrivacyPolicyViewController.swift in Sources */,
 				CC5A56052B9B42AC0012F661 /* PostingView.swift in Sources */,
+				CC5E35E02BA134320082FDC1 /* PasswordChangeView.swift in Sources */,
 				CC4955FC2B998F9E003B3341 /* UserManager.swift in Sources */,
 				CC4956292B999373003B3341 /* ConnectViewController.swift in Sources */,
 				CC5A56022B9B3CAC0012F661 /* UIButton +.swift in Sources */,
 				CC5A55FF2B9B223F0012F661 /* PostManager.swift in Sources */,
 				CC4956242B99933E003B3341 /* TermsViewController.swift in Sources */,
 				CC4956132B99925A003B3341 /* MainViewModel.swift in Sources */,
+				CC5E35DE2BA133DD0082FDC1 /* PasswordChangeViewController.swift in Sources */,
 				CC5A560E2B9B5A870012F661 /* CategoryView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -714,8 +730,8 @@
 				INFOPLIST_FILE = Cougyebu/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -723,6 +739,9 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = hansol.Cougyebu;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -741,8 +760,8 @@
 				INFOPLIST_FILE = Cougyebu/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -750,6 +769,9 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = hansol.Cougyebu;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

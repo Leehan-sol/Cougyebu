@@ -29,7 +29,6 @@ class ConnectViewModel {
         }
     }
     
-    // ✨ bool 값 return하도록 수정
     func connectUser(email: String, code: String, request: Bool) {
         userManager.connectUser(inputEmail: email, inputCode: code)
         observableUser?.value.coupleEmail = email
@@ -37,9 +36,7 @@ class ConnectViewModel {
         observableUser?.value.requestUser = request
     }
     
-    // ✨ bool 값 return하도록 수정
     func disconnectUser(email: String) {
-        // ✨ 코드랑 requestUser 변경안됨 (옵셔널값)
         userManager.disconnectUser(inputEmail: email){ _ in
             self.observableUser?.value.coupleEmail = nil
             self.observableUser?.value.coupleNickname = nil

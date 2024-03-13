@@ -42,7 +42,6 @@ class ChartViewController: UIViewController {
         setAddtarget()
         setButton()
         setCalendar()
-        setViewModelUser()
         setBinding()
         setIncomeOutcome() // 초기값: 지출, 현재날짜기준 한달
     }
