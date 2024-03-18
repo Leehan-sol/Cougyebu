@@ -11,7 +11,7 @@ import FirebaseAuth
 
 class PostManager {
     private let db = Firestore.firestore()
-
+    
     // 게시글 로드
     func loadPosts(email: String, date: String, completion: @escaping ([Posts]?) -> Void) {
         let userDB = db.collection(email)
@@ -53,7 +53,7 @@ class PostManager {
         }
     }
     
-
+    
     func addPost(email: String, date: String, post: Posts) {
         let postData: [String: Any] = [
             "date": post.date,
@@ -108,14 +108,14 @@ class PostManager {
             let data = snapshot.data()
             
             if originalDate != post.date {
-                postDocRef.delete { error in
-                    if let error = error {
-                        print("Error deleting document: \(error)")
-                        completion?(false)
-                    } else {
+                self.deletePost(email: email, date: originalDate, uuid: uuid) { success in
+                    if success! {
                         print("Original document deleted successfully")
                         self.addPost(email: email, date: post.date, post: post)
                         completion?(true)
+                    } else {
+                        print("Error deleting original document")
+                        completion?(false)
                     }
                 }
             } else {
@@ -147,7 +147,7 @@ class PostManager {
             }
         }
     }
-    
+
     
     
     func deletePost(email: String, date: String, uuid: String, completion: ((Bool?) -> Void)?) {
@@ -222,7 +222,7 @@ class PostManager {
                 completion?(true)
                 print("문서 삭제 성공")
             }
-           
+            
         }
     }
     

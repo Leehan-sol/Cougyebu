@@ -174,13 +174,8 @@ extension MainViewController: UITableViewDelegate {
         let postingVM = PostingViewModel(observablePost: viewModel.observablePost, userEmail: viewModel.userEmail, coupleEmail: viewModel.coupleEmail ?? "", userIncomeCategory: viewModel.userIncomeCategory, userExpenditureCategory: viewModel.userExpenditureCategory)
         postingVM.post = post
         postingVM.datesRange = datesRange
+        postingVM.indexPath = indexPath.row
         let postingVC = PostingViewController(viewModel: postingVM)
-        
-        postingVC.updatePostHandler = { [weak self] updatedPost in
-            guard let self = self else { return }
-            guard let index = self.viewModel.observablePost.value.firstIndex(where: { $0.uuid == updatedPost.uuid }) else { return }
-            self.viewModel.observablePost.value[index] = updatedPost
-        }
         
         present(postingVC, animated: true)
     }

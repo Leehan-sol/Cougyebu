@@ -16,7 +16,6 @@ class PostingViewController: UIViewController {
         cs.insert(charactersIn: "0123456789")
         return cs.inverted
     }()
-    var updatePostHandler: ((Posts) -> Void)?
     
     init(viewModel: PostingViewModel) {
         self.viewModel = viewModel
@@ -159,8 +158,9 @@ class PostingViewController: UIViewController {
             
             viewModel.updatePost(originalDate: originalDate, uuid: post.uuid, post: updatedPost) { bool in
                 if bool == true {
-                    self.updatePostHandler?(updatedPost)
-                    self.dismiss(animated: true)
+                    AlertManager.showAlertOneButton(from: self, title: "수정", message: "수정되었습니다.", buttonTitle: "확인") {
+                        self.dismiss(animated: true)
+                    }
                 } else {
                     AlertManager.showAlertOneButton(from: self, title: "수정 실패", message: "수정 실패했습니다.", buttonTitle: "확인")
                 }

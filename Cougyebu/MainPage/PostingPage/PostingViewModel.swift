@@ -18,6 +18,7 @@ class PostingViewModel {
     var userExpenditureCategory: [String]
     var datesRange: [String]?
     var post: Posts?
+    var indexPath: Int?
     
     init(observablePost: Observable<[Posts]>, userEmail: String, coupleEmail: String, userIncomeCategory: [String], userExpenditureCategory: [String]) {
         self.observablePost = observablePost
@@ -43,11 +44,21 @@ class PostingViewModel {
     func updatePost(originalDate: String, uuid: String, post: Posts, completion: ((Bool?) -> Void)?) {
         postManager.updatePost(email: userEmail, originalDate: originalDate, uuid: uuid, post: post) { [weak self] bool in
             if bool == true {
+                // 옵저버블 변경
+                guard let self = self else { return }
+                if let index = self.indexPath {
+                    self.observablePost.value[index] = post
+                    self.observablePost.value = (self.observablePost.value.sorted(by: { $0.date < $1.date }))
+                }
                 completion?(true)
             } else {
-                guard let self = self else { return }
-                self.postManager.updatePost(email: coupleEmail, originalDate: originalDate, uuid: uuid, post: post) { bool in
+                self?.postManager.updatePost(email: self!.coupleEmail, originalDate: originalDate, uuid: uuid, post: post) { [weak self] bool in
                     if bool == true {
+                        guard let self = self else { return }
+                        if let index = self.indexPath {
+                            self.observablePost.value[index] = post
+                            self.observablePost.value = (self.observablePost.value.sorted(by: { $0.date < $1.date }))
+                        }
                         completion?(true)
                     } else {
                         completion?(false)

@@ -101,7 +101,6 @@ class MainViewModel {
     }
     
     
-    
     func loadCategory() {
         userManager.findCategory(email: userEmail) { incomeCategory, expenditureCategory in
             if let incomeCategory = incomeCategory {
