@@ -120,10 +120,11 @@ class PostingViewController: UIViewController {
             let resultCost = intCost.makeComma(num: intCost)
             
             let post = Posts(date: dateString, group: group, category: category, content: content, cost: resultCost, uuid: uuid)
-            viewModel.addPost(date: dateString, posts: [post])
+            viewModel.addPost(date: dateString, posts: post)
             dismiss(animated: true)
         } else {
             guard let post = viewModel.post else { return }
+            let originalDate = post.date
             let dateString = postingView.datePicker.date.toString(format: "yyyy.MM.dd")
             
             let selectedGroupIndex = postingView.groupPicker.selectedRow(inComponent: 0)
@@ -156,7 +157,7 @@ class PostingViewController: UIViewController {
             
             let updatedPost = Posts(date: dateString, group: group, category: category, content: content, cost: resultCost, uuid: post.uuid)
             
-            viewModel.updatePost(date: post.date, uuid: post.uuid, post: updatedPost) { bool in
+            viewModel.updatePost(originalDate: originalDate, uuid: post.uuid, post: updatedPost) { bool in
                 if bool == true {
                     self.updatePostHandler?(updatedPost)
                     self.dismiss(animated: true)

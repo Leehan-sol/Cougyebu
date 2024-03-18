@@ -28,7 +28,7 @@ class AppNoticeViewController: UIViewController, WKNavigationDelegate {
 
         webView.navigationDelegate = self
    
-        if let url = URL(string: "https://www.notion.so/e8e55980e8364a75a04c98126622925a") {
+        if let url = URL(string: "https://blog.naver.com/ho20128/223382180373") {
             let request = URLRequest(url: url)
             webView.load(request)
         }
@@ -42,7 +42,7 @@ class AppNoticeViewController: UIViewController, WKNavigationDelegate {
         view.addSubview(indicator)
         
         webView.snp.makeConstraints {
-            $0.top.left.right.bottom.equalToSuperview()
+            $0.top.left.right.bottom.equalTo(view.safeAreaLayoutGuide)
         }
         
         indicator.snp.makeConstraints {

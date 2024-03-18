@@ -53,29 +53,22 @@ class PostManager {
         }
     }
     
-    
-    
-    // 게시글 등록
-    func addPost(email: String, date: String, posts: [Posts]) {
-        var postsData: [[String: Any]] = []
-        for post in posts {
-            let postData: [String: Any] = [
-                "date": post.date,
-                "group": post.group,
-                "category": post.category,
-                "content": post.content,
-                "cost": post.cost,
-                "uuid": post.uuid
-            ]
-            postsData.append(postData)
-        }
+
+    func addPost(email: String, date: String, post: Posts) {
+        let postData: [String: Any] = [
+            "date": post.date,
+            "group": post.group,
+            "category": post.category,
+            "content": post.content,
+            "cost": post.cost,
+            "uuid": post.uuid
+        ]
         
         let postDocRef = db.collection(email).document(date)
         postDocRef.getDocument { (document, error) in
             if let document = document, document.exists {
-                // 기존 데이터가 있는 경우
                 var existingPosts = document.data()?["posts"] as? [[String: Any]] ?? []
-                existingPosts.append(contentsOf: postsData)
+                existingPosts.append(postData)
                 postDocRef.updateData(["posts": existingPosts]) { error in
                     if let error = error {
                         print("Error: \(error)")
@@ -84,8 +77,7 @@ class PostManager {
                     }
                 }
             } else {
-                // 새로운 문서를 생성하여 데이터 추가
-                postDocRef.setData(["posts": postsData]) { error in
+                postDocRef.setData(["posts": [postData]]) { error in
                     if let error = error {
                         print("Error: \(error)")
                     } else {
@@ -95,10 +87,10 @@ class PostManager {
             }
         }
     }
+
     
-    
-    func updatePost(email: String, date: String, uuid: String, post: Posts, completion: ((Bool?) -> Void)?) {
-        let postDocRef = db.collection(email).document(date)
+    func updatePost(email: String, originalDate: String, uuid: String, post: Posts, completion: ((Bool?) -> Void)?) {
+        let postDocRef = db.collection(email).document(originalDate)
         
         postDocRef.getDocument { snapshot, error in
             if let error = error {
@@ -113,33 +105,49 @@ class PostManager {
                 return
             }
             
-            var posts = snapshot.data()?["posts"] as? [[String: Any]] ?? []
-            if let index = posts.firstIndex(where: { $0["uuid"] as? String == uuid }) {
-                posts[index] = [
-                    "date": post.date,
-                    "group": post.group,
-                    "category": post.category,
-                    "content": post.content,
-                    "cost": post.cost,
-                    "uuid": post.uuid
-                ]
-            } else {
-                print("Post with UUID \(uuid) not found")
-                completion?(false)
-                return
-            }
+            let data = snapshot.data()
             
-            postDocRef.updateData(["posts": posts]) { error in
-                if let error = error {
-                    print("Error updating document: \(error)")
-                    completion?(false)
+            if originalDate != post.date {
+                postDocRef.delete { error in
+                    if let error = error {
+                        print("Error deleting document: \(error)")
+                        completion?(false)
+                    } else {
+                        print("Original document deleted successfully")
+                        self.addPost(email: email, date: post.date, post: post)
+                        completion?(true)
+                    }
+                }
+            } else {
+                var posts = data?["posts"] as? [[String: Any]] ?? []
+                if let index = posts.firstIndex(where: { $0["uuid"] as? String == uuid }) {
+                    posts[index] = [
+                        "date": post.date,
+                        "group": post.group,
+                        "category": post.category,
+                        "content": post.content,
+                        "cost": post.cost,
+                        "uuid": post.uuid
+                    ]
                 } else {
-                    print("Post successfully updated")
-                    completion?(true)
+                    print("Post with UUID \(uuid) not found")
+                    completion?(false)
+                    return
+                }
+                
+                postDocRef.updateData(["posts": posts]) { error in
+                    if let error = error {
+                        print("Error updating document: \(error)")
+                        completion?(false)
+                    } else {
+                        print("Post successfully updated")
+                        completion?(true)
+                    }
                 }
             }
         }
     }
+    
     
     
     func deletePost(email: String, date: String, uuid: String, completion: ((Bool?) -> Void)?) {
@@ -167,7 +175,6 @@ class PostManager {
                 return
             }
             
-            // 삭제 후 문서가 비어있는지 확인하고, 비어있으면 문서를 삭제합니다.
             if posts.isEmpty {
                 postDocRef.delete { error in
                     if let error = error {

@@ -28,7 +28,7 @@ class TermsViewController: UIViewController, WKNavigationDelegate {
 
         webView.navigationDelegate = self
    
-        if let url = URL(string: "https://www.notion.so/81fd9cf266414011b7fd64eaa3cad979") {
+        if let url = URL(string: "https://blog.naver.com/ho20128/223382181234") {
             let request = URLRequest(url: url)
             webView.load(request)
         }
@@ -42,7 +42,7 @@ class TermsViewController: UIViewController, WKNavigationDelegate {
         view.addSubview(indicator)
         
         webView.snp.makeConstraints {
-            $0.top.left.right.bottom.equalToSuperview()
+            $0.top.left.right.bottom.equalTo(view.safeAreaLayoutGuide)
         }
         
         indicator.snp.makeConstraints {

@@ -151,7 +151,6 @@ class ConnectViewController: UIViewController {
     }
     
     
-    
 }
 
 // MARK: - UITextFieldDelegate

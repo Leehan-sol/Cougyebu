@@ -28,7 +28,7 @@ class PrivacyPolicyViewController: UIViewController, WKNavigationDelegate {
 
         webView.navigationDelegate = self
    
-        if let url = URL(string: "https://www.notion.so/818c8697ce954b44bbe3a0de4a666a07") {
+        if let url = URL(string: "https://blog.naver.com/ho20128/223382182199") {
             let request = URLRequest(url: url)
             webView.load(request)
         }
@@ -42,7 +42,7 @@ class PrivacyPolicyViewController: UIViewController, WKNavigationDelegate {
         view.addSubview(indicator)
         
         webView.snp.makeConstraints {
-            $0.top.left.right.bottom.equalToSuperview()
+            $0.top.left.right.bottom.equalTo(view.safeAreaLayoutGuide)
         }
         
         indicator.snp.makeConstraints {
