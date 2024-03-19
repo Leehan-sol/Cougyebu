@@ -28,6 +28,12 @@
 <br/><br/><br/>
 
 # 개발환경
-**개발언어** : <img src="https://img.shields.io/badge/Swift-F05138?style=for-the-badge&logo=Swift&logoColor=white">
-**사용 기술** : 
-**외부 라이브러리** : <img src="https://img.shields.io/badge/Snapkit-CCFFE5?style=for-the-badge&logo=Youtube&logoColor=white">
+**개발언어** : <img src="https://img.shields.io/badge/Swift-F05138?style=for-the-badge&logo=Swift&logoColor=white"> <br/>
+**사용 기술 및 외부 라이브러리** : <img src="https://img.shields.io/badge/Snapkit-CCFFE5?style=for-the-badge&logo=Snapkit&logoColor=white"> 
+<img src="https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=Firebase&logoColor=white"> 
+<img src="https://img.shields.io/badge/SwiftSMTP-8C4FFF?style=for-the-badge&logo=SwiftSMTP&logoColor=white"><br/> 
+<img src="https://img.shields.io/badge/NVActivityIndicatorView-E40046?style=for-the-badge&logo=NVActivityIndicatorView&logoColor=white">
+<img src="https://img.shields.io/badge/FSCalander-4285F4?style=for-the-badge&logo=Google Calander&logoColor=white"> 
+<img src="https://img.shields.io/badge/DGCharts-FF6384?style=for-the-badge&logo=Chart.js&logoColor=white">
+<img src="https://img.shields.io/badge/Webkit-7DA0D0?style=for-the-badge&logo=webmin&logoColor=white">
+
