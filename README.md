@@ -12,10 +12,10 @@
 <br/><br/>
 
 # 프로젝트 화면
-<img width="200" height ="450" alt="image" src="https://github.com/Leehan-sol/Cougyebu/assets/139109343/dfa162ff-f612-455f-b39a-90947233ec03">
-<img width="200" height ="450" alt="image" src="https://github.com/Leehan-sol/Cougyebu/assets/139109343/fcf53b57-7cfc-4038-83df-26d832ad2551">
-<img width="200" height ="450" alt="image" src="https://github.com/Leehan-sol/Cougyebu/assets/139109343/1589b42d-3b75-433e-a51e-6de03f1c2b5d">
-<img width="200" height ="450" alt="image" src="https://github.com/Leehan-sol/Cougyebu/assets/139109343/823a706f-d70c-4c09-9ea7-e63df859509c">
+<img width="200" height ="400" alt="image" src="https://github.com/Leehan-sol/Cougyebu/assets/139109343/dfa162ff-f612-455f-b39a-90947233ec03">
+<img width="200" height ="400" alt="image" src="https://github.com/Leehan-sol/Cougyebu/assets/139109343/fcf53b57-7cfc-4038-83df-26d832ad2551">
+<img width="200" height ="400" alt="image" src="https://github.com/Leehan-sol/Cougyebu/assets/139109343/1589b42d-3b75-433e-a51e-6de03f1c2b5d">
+<img width="200" height ="400" alt="image" src="https://github.com/Leehan-sol/Cougyebu/assets/139109343/823a706f-d70c-4c09-9ea7-e63df859509c">
 <br/><br/><br/>
 
 **회원가입 및 로그인 페이지**: Firebase Auth로 로그인, 로그아웃, 회원탈퇴 가능, Firebase FireStore로 아이디 찾기, 닉네임 변경 가능 <br/>
