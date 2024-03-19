@@ -18,7 +18,7 @@
 <img width="200" height ="400" alt="image" src="https://github.com/Leehan-sol/Cougyebu/assets/139109343/823a706f-d70c-4c09-9ea7-e63df859509c">
 <br/><br/><br/>
 
-**회원가입 및 로그인 페이지**: Firebase Auth로 로그인, 로그아웃, 회원탈퇴 가능, Firebase FireStore로 아이디 찾기, 닉네임 변경 가능 <br/>
+**회원가입 및 로그인 페이지**: Firebase Auth로 로그인, 로그아웃, 회원탈퇴 가능, 아이디, 비밀번호 찾기<br/>
 
 **메인 페이지**: Firebase FireStore 데이터 로드 및 저장, FSCalander로 날짜 선택 <br/>
 
