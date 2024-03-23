@@ -204,6 +204,7 @@ extension MainViewController: UITableViewDelegate {
 
 // MARK: - UITableViewDataSource
 extension MainViewController: UITableViewDataSource {
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.observablePost.value.count
     }
@@ -220,7 +221,7 @@ extension MainViewController: UITableViewDataSource {
         cell.categoryLabel.text = post.category
         cell.contentLabel.text = post.content
         cell.priceLabel.text = "\(post.cost)원"
-        
+        cell.priceLabel.textColor = post.group == "수입" ? .systemBlue : .systemRed
         return cell
     }
     
