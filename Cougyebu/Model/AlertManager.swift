@@ -34,7 +34,7 @@ struct AlertManager {
         viewController.present(alertController, animated: true, completion: nil)
     }
     
-    static func showAlertWithOneTF(from viewController: UIViewController, title: String, message: String?, placeholder: String, button1Title: String, button2Title: String, completion: ((_ text: String?) -> Void)? = nil) {
+    static func showAlertWithOneTF(from viewController: UIViewController, title: String, message: String?, placeholder: String, button1Title: String, button2Title: String, completion: @escaping (_ text: String?) -> Void) {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
         
         alertController.addTextField { textField in
@@ -43,7 +43,7 @@ struct AlertManager {
         
         let action = UIAlertAction(title: button1Title, style: .default) { _ in
             let text = alertController.textFields?.first?.text
-            completion?(text)
+            completion(text)
         }
         let action2 = UIAlertAction(title: button2Title, style: .cancel)
         

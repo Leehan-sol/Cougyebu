@@ -12,9 +12,17 @@ import FirebaseAuth
 class LoginViewController: UIViewController {
     
     private let loginView = LoginView()
-    // 👉🏻 의존성주입으로 변경하기
-    private let viewModel = LoginViewModel()
+    private let viewModel: LoginViewProtocol
     private var cancelBags = Set<AnyCancellable>()
+    
+    init(viewModel: LoginViewProtocol) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func loadView() {
         view = loginView
@@ -24,7 +32,7 @@ class LoginViewController: UIViewController {
         super.viewDidLoad()
         setNavigation()
         setTextField()
-        setupAddTarget()
+        setAddTarget()
         bindViewToViewModel()
         bindViewModelToView()
     }
@@ -39,7 +47,7 @@ class LoginViewController: UIViewController {
         loginView.pwTextField.delegate = self
     }
     
-    func setupAddTarget() {
+    func setAddTarget() {
         loginView.showPwButton.addTarget(self, action: #selector(showPwButtonTapped), for: .touchUpInside)
         loginView.loginButton.addTarget(self, action: #selector(loginButtonTapped), for: .touchUpInside)
         loginView.findIdButton.addTarget(self, action: #selector(findIdButtonTapped), for: .touchUpInside)
@@ -47,7 +55,6 @@ class LoginViewController: UIViewController {
         loginView.registerButton.addTarget(self, action: #selector(registerButtonTapped), for: .touchUpInside)
     }
     
-    // 👉🏻 1. 뷰모델의 id, password 프로퍼티에 assign
     private func bindViewToViewModel() {
         loginView.idTextField.textPublisher
             .receive(on: DispatchQueue.main)
@@ -60,7 +67,6 @@ class LoginViewController: UIViewController {
             .store(in: &cancelBags)
     }
     
-    // 👉🏻 2. 뷰모델의 퍼블리셔 뷰에 바인딩
     private func bindViewModelToView() {
         viewModel.checkResult
             .sink { value in
@@ -92,7 +98,7 @@ class LoginViewController: UIViewController {
         viewModel.loginButtonTapped()
     }
     
-    
+    // 👉🏻 로직 수정하기
     func loginSuccess(email: String) {
         if let currentUserEmail = Auth.auth().currentUser?.email {
             let mainVM = MainViewModel(userEmail: currentUserEmail)
@@ -125,60 +131,34 @@ class LoginViewController: UIViewController {
         }
     }
     
-    
     @objc func findIdButtonTapped() {
-        //        let alertController = UIAlertController(title: "아이디 찾기", message: "등록한 닉네임을 입력해주세요.", preferredStyle: .alert)
-        //
-        //        alertController.addTextField { textField in
-        //            textField.placeholder = "닉네임"
-        //        }
-        //
-        //        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
-        //        let findAction = UIAlertAction(title: "찾기", style: .default) { [weak self] _ in
-        //            if let nickname = alertController.textFields?.first?.text?.trimmingCharacters(in: .whitespaces) {
-        //                if !nickname.isEmpty {
-        //                    self?.findIdByNickname(nickname)
-        //                }
-        //            }
-        //        }
-        //
-        //        alertController.addAction(cancelAction)
-        //        alertController.addAction(findAction)
-        //        present(alertController, animated: true, completion: nil)
-    }
-    
-    // 👉🏻 뷰모델로 로직 옮기기
-    func findIdByNickname(_ nickname: String) {
-        //        userManager.findNickname(nickname: nickname) { user in
-        //            let alertTitle: String
-        //            let alertMessage: String
-        //
-        //            if let user = user {
-        //                alertTitle = "아이디 찾기 성공"
-        //                alertMessage = self.maskEmail(user.email)
-        //            } else {
-        //                alertTitle = "아이디 찾기 실패"
-        //                alertMessage = "해당 닉네임을 가진 사용자를 찾을 수 없습니다."
-        //            }
-        //            AlertManager.showAlertOneButton(from: self, title: alertTitle, message: alertMessage, buttonTitle: "확인")
-        //        }
-    }
-    
-    // ✨ 이메일 가리는 로직 수정
-    func maskEmail(_ email: String) -> String {
-        let emailArray = Array(email)
-        var maskedEmail = ""
-        for (index, char) in emailArray.enumerated() {
-            if index > 1 && index < 6 && char != "@" {
-                maskedEmail.append("*")
-            } else {
-                maskedEmail.append(char)
+        AlertManager.showAlertWithOneTF(from: self,
+                                        title: "아이디 찾기",
+                                        message: "등록한 닉네임을 입력해주세요.",
+                                        placeholder: "닉네임",
+                                        button1Title: "찾기",
+                                        button2Title: "취소") { [weak self] text in
+            guard let nickname = text?.trimmingCharacters(in: .whitespaces), !nickname.isEmpty else {
+                AlertManager.showAlertOneButton(from: self!, title: "닉네임 입력", message: "닉네임을 입력해주세요.", buttonTitle: "확인")
+                return
+            }
+            guard let self = self else { return }
+            self.viewModel.findIdByNickname(nickname) { user in
+                var alertTitle: String
+                var alertMessage: String
+                
+                if let user = user {
+                    alertTitle = "아이디 찾기 성공"
+                    alertMessage = self.viewModel.maskEmail(email: user.email) 
+                } else {
+                    alertTitle = "아이디 찾기 실패"
+                    alertMessage = "해당 닉네임을 가진 사용자를 찾을 수 없습니다."
+                }
+                AlertManager.showAlertOneButton(from: self, title: alertTitle, message: alertMessage, buttonTitle: "확인")
             }
         }
-        return maskedEmail
     }
-    
-    
+
     @objc func findPwButtonTapped() {
         let passwordChangeVC = PasswordChangeViewController()
         self.navigationController?.pushViewController(passwordChangeVC, animated: true)

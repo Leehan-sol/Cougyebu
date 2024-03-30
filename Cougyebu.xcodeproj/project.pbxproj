@@ -46,7 +46,7 @@
 		CC4955EC2B998E79003B3341 /* FirebaseRemoteConfigSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CC4955EB2B998E79003B3341 /* FirebaseRemoteConfigSwift */; };
 		CC4955EE2B998E79003B3341 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = CC4955ED2B998E79003B3341 /* FirebaseStorage */; };
 		CC4955F02B998E79003B3341 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = CC4955EF2B998E79003B3341 /* FirebaseStorageCombine-Community */; };
-		CC4955F32B998EAF003B3341 /* UITextField +.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4955F22B998EAF003B3341 /* UITextField +.swift */; };
+		CC4955F32B998EAF003B3341 /* UITextField + Publisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4955F22B998EAF003B3341 /* UITextField + Publisher.swift */; };
 		CC4955F52B998EB9003B3341 /* String +.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4955F42B998EB9003B3341 /* String +.swift */; };
 		CC4955F72B998EC2003B3341 /* UIDevice +.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4955F62B998EC2003B3341 /* UIDevice +.swift */; };
 		CC4955FA2B998F94003B3341 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4955F92B998F94003B3341 /* User.swift */; };
@@ -109,7 +109,7 @@
 		CC49559D2B998CE5003B3341 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		CC49559F2B998CE5003B3341 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CC4955B92B998E04003B3341 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
-		CC4955F22B998EAF003B3341 /* UITextField +.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextField +.swift"; sourceTree = "<group>"; };
+		CC4955F22B998EAF003B3341 /* UITextField + Publisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextField + Publisher.swift"; sourceTree = "<group>"; };
 		CC4955F42B998EB9003B3341 /* String +.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String +.swift"; sourceTree = "<group>"; };
 		CC4955F62B998EC2003B3341 /* UIDevice +.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIDevice +.swift"; sourceTree = "<group>"; };
 		CC4955F92B998F94003B3341 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
@@ -251,7 +251,7 @@
 			isa = PBXGroup;
 			children = (
 				CC4955F42B998EB9003B3341 /* String +.swift */,
-				CC4955F22B998EAF003B3341 /* UITextField +.swift */,
+				CC4955F22B998EAF003B3341 /* UITextField + Publisher.swift */,
 				CC4955F62B998EC2003B3341 /* UIDevice +.swift */,
 				CC5A56012B9B3CAC0012F661 /* UIButton +.swift */,
 				CC5A560A2B9B55630012F661 /* Date +.swift */,
@@ -545,7 +545,7 @@
 				CC49563A2B9995BF003B3341 /* Secret.swift in Sources */,
 				CC570FFA2B9EAE0C00DF000D /* ChartView.swift in Sources */,
 				CC4956272B999365003B3341 /* ConnectView.swift in Sources */,
-				CC4955F32B998EAF003B3341 /* UITextField +.swift in Sources */,
+				CC4955F32B998EAF003B3341 /* UITextField + Publisher.swift in Sources */,
 				CC4956002B998FAB003B3341 /* AlertManager.swift in Sources */,
 				CC4956362B999473003B3341 /* WithdrawalView.swift in Sources */,
 				CC49560C2B999215003B3341 /* LoginViewController.swift in Sources */,
