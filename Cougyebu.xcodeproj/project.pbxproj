@@ -82,6 +82,7 @@
 		CC570FFA2B9EAE0C00DF000D /* ChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC570FF92B9EAE0C00DF000D /* ChartView.swift */; };
 		CC570FFC2B9EAE1600DF000D /* ChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC570FFB2B9EAE1600DF000D /* ChartViewController.swift */; };
 		CC570FFE2B9EAE1D00DF000D /* ChartViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC570FFD2B9EAE1D00DF000D /* ChartViewModel.swift */; };
+		CC576A9A2BB70D0F0015FE5E /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC576A992BB70D0F0015FE5E /* LoginViewModel.swift */; };
 		CC580F172BA071700047E614 /* Int +.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC580F162BA071700047E614 /* Int +.swift */; };
 		CC580F192BA07D000047E614 /* CurrencyValueFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC580F182BA07D000047E614 /* CurrencyValueFormatter.swift */; };
 		CC580F1C2BA08CCE0047E614 /* NVActivityIndicatorView in Frameworks */ = {isa = PBXBuildFile; productRef = CC580F1B2BA08CCE0047E614 /* NVActivityIndicatorView */; };
@@ -143,6 +144,7 @@
 		CC570FF92B9EAE0C00DF000D /* ChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartView.swift; sourceTree = "<group>"; };
 		CC570FFB2B9EAE1600DF000D /* ChartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartViewController.swift; sourceTree = "<group>"; };
 		CC570FFD2B9EAE1D00DF000D /* ChartViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartViewModel.swift; sourceTree = "<group>"; };
+		CC576A992BB70D0F0015FE5E /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		CC580F162BA071700047E614 /* Int +.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Int +.swift"; sourceTree = "<group>"; };
 		CC580F182BA07D000047E614 /* CurrencyValueFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyValueFormatter.swift; sourceTree = "<group>"; };
 		CC5A55FE2B9B223F0012F661 /* PostManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostManager.swift; sourceTree = "<group>"; };
@@ -285,6 +287,7 @@
 			children = (
 				CC4956092B999205003B3341 /* LoginView.swift */,
 				CC49560B2B999214003B3341 /* LoginViewController.swift */,
+				CC576A992BB70D0F0015FE5E /* LoginViewModel.swift */,
 				CC4956032B9991B8003B3341 /* RegisterPage */,
 				CC5E35E12BA134350082FDC1 /* PasswordChagePage */,
 			);
@@ -576,6 +579,7 @@
 				CC5E35E02BA134320082FDC1 /* PasswordChangeView.swift in Sources */,
 				CC4955FC2B998F9E003B3341 /* UserManager.swift in Sources */,
 				CC4956292B999373003B3341 /* ConnectViewController.swift in Sources */,
+				CC576A9A2BB70D0F0015FE5E /* LoginViewModel.swift in Sources */,
 				CC5A56022B9B3CAC0012F661 /* UIButton +.swift in Sources */,
 				CC5A55FF2B9B223F0012F661 /* PostManager.swift in Sources */,
 				CC4956242B99933E003B3341 /* TermsViewController.swift in Sources */,

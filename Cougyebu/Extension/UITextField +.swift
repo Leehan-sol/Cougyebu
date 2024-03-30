@@ -5,6 +5,7 @@
 //  Created by hansol on 2024/03/07.
 //
 
+import Combine
 import UIKit
 
 extension UITextField {
@@ -14,7 +15,15 @@ extension UITextField {
         ]
         self.attributedPlaceholder = NSAttributedString(string: text, attributes: attributes)
     }
-    
-    
 }
 
+
+extension UITextField {
+    var textPublisher: AnyPublisher<String, Never> {
+        NotificationCenter.default
+            .publisher(for: UITextField.textDidChangeNotification, object: self)
+            .compactMap { $0.object as? UITextField }
+            .compactMap(\.text)
+            .eraseToAnyPublisher()
+    }
+}

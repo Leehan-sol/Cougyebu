@@ -5,13 +5,16 @@
 //  Created by hansol on 2024/03/07.
 //
 
+import Combine
 import UIKit
 import FirebaseAuth
 
 class LoginViewController: UIViewController {
     
     private let loginView = LoginView()
-    private let userManager = UserManager()
+    // 👉🏻 의존성주입으로 변경하기
+    private let viewModel = LoginViewModel()
+    private var cancelBags = Set<AnyCancellable>()
     
     override func loadView() {
         view = loginView
@@ -19,12 +22,18 @@ class LoginViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setNavigation()
         setTextField()
         setupAddTarget()
-        navigationItem.leftBarButtonItem = nil
+        bindViewToViewModel()
+        bindViewModelToView()
     }
     
     // MARK: - Methods
+    func setNavigation(){
+        navigationItem.leftBarButtonItem = nil
+    }
+    
     func setTextField(){
         loginView.idTextField.delegate = self
         loginView.pwTextField.delegate = self
@@ -36,6 +45,32 @@ class LoginViewController: UIViewController {
         loginView.findIdButton.addTarget(self, action: #selector(findIdButtonTapped), for: .touchUpInside)
         loginView.findPwButton.addTarget(self, action: #selector(findPwButtonTapped), for: .touchUpInside)
         loginView.registerButton.addTarget(self, action: #selector(registerButtonTapped), for: .touchUpInside)
+    }
+    
+    // 👉🏻 1. 뷰모델의 id, password 프로퍼티에 assign
+    private func bindViewToViewModel() {
+        loginView.idTextField.textPublisher
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.id, on: viewModel)
+            .store(in: &cancelBags)
+        
+        loginView.pwTextField.textPublisher
+            .receive(on: RunLoop.main)
+            .assign(to: \.password, on: viewModel)
+            .store(in: &cancelBags)
+    }
+    
+    // 👉🏻 2. 뷰모델의 퍼블리셔 뷰에 바인딩
+    private func bindViewModelToView() {
+        viewModel.checkResult
+            .sink { value in
+                if let id = value {
+                    self.loginSuccess(email: id)
+                } else {
+                    AlertManager.showAlertOneButton(from: self, title: "로그인 실패", message: "아이디 또는 비밀번호가 틀렸습니다.", buttonTitle: "확인")
+                }
+            }
+            .store(in: &cancelBags)
     }
     
     
@@ -53,27 +88,10 @@ class LoginViewController: UIViewController {
         
     }
     
-    // 로그인
     @objc func loginButtonTapped() {
-        if let email = loginView.idTextField.text, let pw = loginView.pwTextField.text {
-            Auth.auth().signIn(withEmail: email, password: pw) { authResult, error in
-                if let error = error {
-                    AlertManager.showAlertOneButton(from: self, title: "로그인 실패", message: "아이디 또는 비밀번호가 틀렸습니다.", buttonTitle: "확인")
-                    print("로그인 실패 : \(error.localizedDescription)")
-                } else {
-                    self.userManager.findUser(email: email) { user in
-                        if user != nil {
-                            print("로그인 성공")
-                            self.loginSuccess(email: email)
-                        } else {
-                            print(error?.localizedDescription as Any)
-                        }
-                        
-                    }
-                }
-            }
-        }
+        viewModel.loginButtonTapped()
     }
+    
     
     func loginSuccess(email: String) {
         if let currentUserEmail = Auth.auth().currentUser?.email {
@@ -109,40 +127,41 @@ class LoginViewController: UIViewController {
     
     
     @objc func findIdButtonTapped() {
-        let alertController = UIAlertController(title: "아이디 찾기", message: "등록한 닉네임을 입력해주세요.", preferredStyle: .alert)
-        
-        alertController.addTextField { textField in
-            textField.placeholder = "닉네임"
-        }
-        
-        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
-        let findAction = UIAlertAction(title: "찾기", style: .default) { [weak self] _ in
-            if let nickname = alertController.textFields?.first?.text?.trimmingCharacters(in: .whitespaces) {
-                if !nickname.isEmpty {
-                    self?.findIdByNickname(nickname)
-                }
-            }
-        }
-        
-        alertController.addAction(cancelAction)
-        alertController.addAction(findAction)
-        present(alertController, animated: true, completion: nil)
+        //        let alertController = UIAlertController(title: "아이디 찾기", message: "등록한 닉네임을 입력해주세요.", preferredStyle: .alert)
+        //
+        //        alertController.addTextField { textField in
+        //            textField.placeholder = "닉네임"
+        //        }
+        //
+        //        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        //        let findAction = UIAlertAction(title: "찾기", style: .default) { [weak self] _ in
+        //            if let nickname = alertController.textFields?.first?.text?.trimmingCharacters(in: .whitespaces) {
+        //                if !nickname.isEmpty {
+        //                    self?.findIdByNickname(nickname)
+        //                }
+        //            }
+        //        }
+        //
+        //        alertController.addAction(cancelAction)
+        //        alertController.addAction(findAction)
+        //        present(alertController, animated: true, completion: nil)
     }
     
+    // 👉🏻 뷰모델로 로직 옮기기
     func findIdByNickname(_ nickname: String) {
-        userManager.findNickname(nickname: nickname) { user in
-            let alertTitle: String
-            let alertMessage: String
-            
-            if let user = user {
-                alertTitle = "아이디 찾기 성공"
-                alertMessage = self.maskEmail(user.email)
-            } else {
-                alertTitle = "아이디 찾기 실패"
-                alertMessage = "해당 닉네임을 가진 사용자를 찾을 수 없습니다."
-            }
-            AlertManager.showAlertOneButton(from: self, title: alertTitle, message: alertMessage, buttonTitle: "확인")
-        }
+        //        userManager.findNickname(nickname: nickname) { user in
+        //            let alertTitle: String
+        //            let alertMessage: String
+        //
+        //            if let user = user {
+        //                alertTitle = "아이디 찾기 성공"
+        //                alertMessage = self.maskEmail(user.email)
+        //            } else {
+        //                alertTitle = "아이디 찾기 실패"
+        //                alertMessage = "해당 닉네임을 가진 사용자를 찾을 수 없습니다."
+        //            }
+        //            AlertManager.showAlertOneButton(from: self, title: alertTitle, message: alertMessage, buttonTitle: "확인")
+        //        }
     }
     
     // ✨ 이메일 가리는 로직 수정
