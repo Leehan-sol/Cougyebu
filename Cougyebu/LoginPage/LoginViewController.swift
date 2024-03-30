@@ -144,7 +144,8 @@ class LoginViewController: UIViewController {
 
 
     @objc func findPwButtonTapped() {
-        let passwordChangeVC = PasswordChangeViewController()
+        let passwordChangeVM = PasswordChangeViewModel()
+        let passwordChangeVC = PasswordChangeViewController(viewModel: passwordChangeVM)
         self.navigationController?.pushViewController(passwordChangeVC, animated: true)
     }
     

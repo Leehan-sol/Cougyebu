@@ -80,6 +80,7 @@
 		CC49563E2B9997F2003B3341 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = CC49563D2B9997F2003B3341 /* .gitignore */; };
 		CC5348282BB8541900037DC1 /* Notification + Publisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5348272BB8541900037DC1 /* Notification + Publisher.swift */; };
 		CC53482A2BB85E0600037DC1 /* AppController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5348292BB85E0600037DC1 /* AppController.swift */; };
+		CC53482C2BB869FD00037DC1 /* PasswordChangeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC53482B2BB869FD00037DC1 /* PasswordChangeViewModel.swift */; };
 		CC570FF82B9EADFE00DF000D /* DGCharts in Frameworks */ = {isa = PBXBuildFile; productRef = CC570FF72B9EADFE00DF000D /* DGCharts */; };
 		CC570FFA2B9EAE0C00DF000D /* ChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC570FF92B9EAE0C00DF000D /* ChartView.swift */; };
 		CC570FFC2B9EAE1600DF000D /* ChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC570FFB2B9EAE1600DF000D /* ChartViewController.swift */; };
@@ -145,6 +146,7 @@
 		CC49563D2B9997F2003B3341 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		CC5348272BB8541900037DC1 /* Notification + Publisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification + Publisher.swift"; sourceTree = "<group>"; };
 		CC5348292BB85E0600037DC1 /* AppController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppController.swift; sourceTree = "<group>"; };
+		CC53482B2BB869FD00037DC1 /* PasswordChangeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordChangeViewModel.swift; sourceTree = "<group>"; };
 		CC570FF92B9EAE0C00DF000D /* ChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartView.swift; sourceTree = "<group>"; };
 		CC570FFB2B9EAE1600DF000D /* ChartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartViewController.swift; sourceTree = "<group>"; };
 		CC570FFD2B9EAE1D00DF000D /* ChartViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartViewModel.swift; sourceTree = "<group>"; };
@@ -426,6 +428,7 @@
 			children = (
 				CC5E35DF2BA134320082FDC1 /* PasswordChangeView.swift */,
 				CC5E35DD2BA133DD0082FDC1 /* PasswordChangeViewController.swift */,
+				CC53482B2BB869FD00037DC1 /* PasswordChangeViewModel.swift */,
 			);
 			path = PasswordChagePage;
 			sourceTree = "<group>";
@@ -568,6 +571,7 @@
 				CC4956162B9992B6003B3341 /* MyPageView.swift in Sources */,
 				CC62E3082B9BECFE00E0438F /* MainTableViewCell.swift in Sources */,
 				CC4956332B999440003B3341 /* PasswordEditViewController.swift in Sources */,
+				CC53482C2BB869FD00037DC1 /* PasswordChangeViewModel.swift in Sources */,
 				CC49561A2B9992CC003B3341 /* MyPageViewModel.swift in Sources */,
 				CC5A56102B9B5A930012F661 /* CategoryViewController.swift in Sources */,
 				CC4955922B998CE4003B3341 /* AppDelegate.swift in Sources */,
