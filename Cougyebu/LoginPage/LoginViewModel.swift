@@ -9,17 +9,20 @@ import Combine
 import Foundation
 import FirebaseAuth
 
+// MARK: - LoginViewProtocol
 protocol LoginViewProtocol: AnyObject {
     var checkResult: PassthroughSubject<String?, Never> { get }
     var id: String { get set }
     var password: String { get set }
     
     func loginButtonTapped()
-    func findIdByNickname(_ nickname: String, completion: @escaping (User?) -> Void)
+    func findNickname(_ nickname: String) -> AnyPublisher<User?, Error>
     func maskEmail(email: String) -> String
 }
 
-class LoginViewModel {
+
+// MARK: - LoginViewModel
+class LoginViewModel: LoginViewProtocol {
     private let userManager = UserManager()
     let checkResult = PassthroughSubject<String?, Never>()
     @Published var id = ""
@@ -42,22 +45,16 @@ class LoginViewModel {
         }
     }
     
-    func findIdByNickname(_ nickname: String, completion: @escaping ((User?) -> Void)) {
-        userManager.findNickname(nickname: nickname) { findUser in
-            if let user = findUser {
-                completion(user)
-            } else {
-                completion(nil)
-            }
-        }
+    func findNickname(_ nickname: String) -> AnyPublisher<User?, Error> {
+        return userManager.findIdByNickname(nickname: nickname)
+            .eraseToAnyPublisher()
     }
+    
     
     func maskEmail(email: String) -> String {
         let components = email.components(separatedBy: "@")
         let firstPart = components[0] // @ 이전
-        print(firstPart)
         let secondPart = components[1] // @ 이후
-        print(secondPart)
         let maskLength = max(firstPart.count - 2, 0)
         let maskedFirstPart = String(firstPart.prefix(2) + String(repeating: "*", count: maskLength))
 

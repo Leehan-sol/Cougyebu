@@ -96,7 +96,8 @@ class WithdrawalViewController: UIViewController {
                         print("회원탈퇴 성공")
                         AlertManager.showAlertOneButton(from: self, title: "탈퇴 성공", message: "탈퇴되었습니다.", buttonTitle: "확인") {
                             // 로그인 화면으로 이동
-                            let loginVC = LoginViewController()
+                            let loginVM = LoginViewModel()
+                            let loginVC = LoginViewController(viewModel: loginVM)
                             let loginNavi = UINavigationController(rootViewController: loginVC)
                             UIApplication.shared.windows.first?.rootViewController = loginNavi
                             UIApplication.shared.windows.first?.makeKeyAndVisible()
@@ -115,7 +116,8 @@ class WithdrawalViewController: UIViewController {
                     } else {
                         print("회원탈퇴 성공")
                         AlertManager.showAlertOneButton(from: self, title: "탈퇴 성공", message: "탈퇴되었습니다.", buttonTitle: "확인") {
-                            let loginVC = LoginViewController()
+                            let loginVM = LoginViewModel()
+                            let loginVC = LoginViewController(viewModel: loginVM)
                             let loginNavi = UINavigationController(rootViewController: loginVC)
                             UIApplication.shared.windows.first?.rootViewController = loginNavi
                             UIApplication.shared.windows.first?.makeKeyAndVisible()

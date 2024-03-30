@@ -8,6 +8,7 @@
 import UIKit
 
 extension Int {
+    
     func makeComma(num: Int) -> String {
         let numberFormatter: NumberFormatter = NumberFormatter()
         numberFormatter.numberStyle = .decimal

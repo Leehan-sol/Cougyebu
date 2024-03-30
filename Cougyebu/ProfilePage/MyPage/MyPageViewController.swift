@@ -113,7 +113,8 @@ extension MyPageViewController: UITableViewDelegate {
             AlertManager.showAlertTwoButton(from: self, title: "로그아웃", message: "정말 로그아웃하시겠습니까?", button1Title: "확인", button2Title: "취소") {
                 do {
                     try Auth.auth().signOut()
-                    let loginVC = LoginViewController()
+                    let loginVM = LoginViewModel()
+                    let loginVC = LoginViewController(viewModel: loginVM)
                     let loginNavi = UINavigationController(rootViewController: loginVC)
                     UIApplication.shared.windows.first?.rootViewController = loginNavi
                     UIApplication.shared.windows.first?.makeKeyAndVisible()

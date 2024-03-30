@@ -97,39 +97,10 @@ class LoginViewController: UIViewController {
     @objc func loginButtonTapped() {
         viewModel.loginButtonTapped()
     }
-    
-    // 👉🏻 로직 수정하기
+
     func loginSuccess(email: String) {
-        if let currentUserEmail = Auth.auth().currentUser?.email {
-            let mainVM = MainViewModel(userEmail: currentUserEmail)
-            let mainVC = MainViewController(viewModel: mainVM)
-            let mainNavi = UINavigationController(rootViewController: mainVC)
-            
-            let chartVM = ChartViewModel(userEmail: currentUserEmail)
-            let chartVC = ChartViewController(viewModel: chartVM)
-            
-            let myPageVM = MyPageViewModel(userEmail: currentUserEmail)
-            let myPageVC = MyPageViewController(viewModel: myPageVM)
-            let myPageNavi = UINavigationController(rootViewController: myPageVC)
-            
-            let tabBarVC = UITabBarController()
-            tabBarVC.setViewControllers([mainNavi, chartVC, myPageNavi], animated: false)
-            tabBarVC.modalPresentationStyle = .fullScreen
-            tabBarVC.tabBar.backgroundColor = .white
-            tabBarVC.tabBar.tintColor = .black
-            
-            if let items = tabBarVC.tabBar.items {
-                items[0].title = "Main"
-                items[0].image = UIImage(systemName: "folder")
-                items[1].title = "Chart"
-                items[1].image = UIImage(systemName: "chart.line.uptrend.xyaxis.circle.fill")
-                items[2].title = "My Page"
-                items[2].image = UIImage(systemName: "person")
-            }
-            UIApplication.shared.windows.first?.rootViewController = tabBarVC
-            UIApplication.shared.windows.first?.makeKeyAndVisible()
-        }
-    }
+           NotificationCenter.default.post(name: .authStateDidChange, object: nil)
+       }
     
     @objc func findIdButtonTapped() {
         AlertManager.showAlertWithOneTF(from: self,
@@ -143,21 +114,34 @@ class LoginViewController: UIViewController {
                 return
             }
             guard let self = self else { return }
-            self.viewModel.findIdByNickname(nickname) { user in
-                var alertTitle: String
-                var alertMessage: String
-                
-                if let user = user {
-                    alertTitle = "아이디 찾기 성공"
-                    alertMessage = self.viewModel.maskEmail(email: user.email) 
-                } else {
-                    alertTitle = "아이디 찾기 실패"
-                    alertMessage = "해당 닉네임을 가진 사용자를 찾을 수 없습니다."
-                }
-                AlertManager.showAlertOneButton(from: self, title: alertTitle, message: alertMessage, buttonTitle: "확인")
-            }
+            
+            self.viewModel.findNickname(nickname)
+                .sink(receiveCompletion: { completion in
+                    switch completion {
+                    case .finished:
+                        break
+                    case .failure(let error):
+                        print("Error: \(error.localizedDescription)")
+                        AlertManager.showAlertOneButton(from: self, title: "에러", message: "아이디를 찾는 도중 오류가 발생했습니다.", buttonTitle: "확인")
+                    }
+                }, receiveValue: { user in
+                    var alertTitle: String
+                    var alertMessage: String
+                    
+                    if let user = user {
+                        alertTitle = "아이디 찾기 성공"
+                        alertMessage = self.viewModel.maskEmail(email: user.email) 
+                    } else {
+                        alertTitle = "아이디 찾기 실패"
+                        alertMessage = "해당 닉네임을 가진 사용자를 찾을 수 없습니다."
+                    }
+                    
+                    AlertManager.showAlertOneButton(from: self, title: alertTitle, message: alertMessage, buttonTitle: "확인")
+                })
+                .store(in: &self.cancelBags)
         }
     }
+
 
     @objc func findPwButtonTapped() {
         let passwordChangeVC = PasswordChangeViewController()
@@ -187,40 +171,31 @@ extension LoginViewController: UITextFieldDelegate {
         return true
     }
     
-    
     func textFieldDidBeginEditing(_ textField: UITextField) {
         if textField == loginView.idTextField {
-            loginView.idLabel.font = UIFont.systemFont(ofSize: 9)
-            loginView.idLabelCenterY.constant = -18
+            animateLabel(label: loginView.idLabel, centerYConstraint: loginView.idLabelCenterY, fontSize: 9)
         }
         if textField == loginView.pwTextField {
-            loginView.pwLabel.font = UIFont.systemFont(ofSize: 9)
-            loginView.pwLabelCenterY.constant = -18
-        }
-        UIView.animate(withDuration: 0.3) {
-            self.loginView.layoutIfNeeded()
+            animateLabel(label: loginView.pwLabel, centerYConstraint: loginView.pwLabelCenterY, fontSize: 9)
         }
     }
-    
+
     func textFieldDidEndEditing(_ textField: UITextField) {
-        if textField == loginView.idTextField {
-            if loginView.idTextField.text == "" {
-                loginView.idLabel.font = UIFont.systemFont(ofSize: 16)
-                loginView.idLabelCenterY.constant = 0
-            }
+        if textField == loginView.idTextField && textField.text == "" {
+            animateLabel(label: loginView.idLabel, centerYConstraint: loginView.idLabelCenterY, fontSize: 16)
         }
-        if textField == loginView.pwTextField {
-            if loginView.pwTextField.text == ""{
-                loginView.pwLabel.font = UIFont.systemFont(ofSize: 16)
-                loginView.pwLabelCenterY.constant = 0
-            }
+        if textField == loginView.pwTextField && textField.text == "" {
+            animateLabel(label: loginView.pwLabel, centerYConstraint: loginView.pwLabelCenterY, fontSize: 16)
         }
+    }
+    
+    private func animateLabel(label: UILabel, centerYConstraint: NSLayoutConstraint, fontSize: CGFloat) {
+        label.font = UIFont.systemFont(ofSize: fontSize)
+        centerYConstraint.constant = fontSize == 9 ? -18 : 0
         UIView.animate(withDuration: 0.3) {
             self.loginView.layoutIfNeeded()
         }
     }
-    
-    
     
     
 }

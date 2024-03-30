@@ -5,6 +5,7 @@
 //  Created by hansol on 2024/03/07.
 //
 
+import Combine
 import Foundation
 import FirebaseFirestore
 import FirebaseAuth
@@ -88,7 +89,7 @@ class UserManager {
     }
     
     
-    // 닉네임 찾기
+    // 닉네임 찾기 // findIdByNickname 사용으로 차차 변경하기 
     func findNickname(nickname: String, completion: @escaping (User?) -> Void) {
         let userDB = db.collection("User")
         let query = userDB.whereField("nickname", isEqualTo: nickname)
@@ -112,6 +113,31 @@ class UserManager {
         }
     }
     
+    func findIdByNickname(nickname: String) -> AnyPublisher<User?, Error> {
+        let userDB = db.collection("User")
+        let query = userDB.whereField("nickname", isEqualTo: nickname)
+        
+        return Future { promise in
+            query.getDocuments { (snapshot, error) in
+                if let error = error {
+                    promise(.failure(error))
+                } else if let qs = snapshot, !qs.documents.isEmpty {
+                    if let data = qs.documents.first?.data() {
+                        let email = data["email"] as? String ?? ""
+                        let nickname = data["nickname"] as? String ?? ""
+                        let isConnect = data["isConnect"] as? Bool ?? false
+                        let user = User(email: email, nickname: nickname, isConnect: isConnect)
+                        promise(.success(user))
+                    } else {
+                        promise(.success(nil))
+                    }
+                } else {
+                    promise(.success(nil))
+                }
+            }
+        }
+        .eraseToAnyPublisher()
+    }
     
     // 카테고리 찾기
     func findCategory(email: String, completion: @escaping (([String]?, [String]?) -> Void)) {
