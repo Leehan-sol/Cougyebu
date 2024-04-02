@@ -5,8 +5,8 @@
 //  Created by hansol on 2024/03/07.
 //
 
-import Combine
 import UIKit
+import Combine
 import FirebaseAuth
 
 class LoginViewController: UIViewController {
@@ -107,7 +107,7 @@ class LoginViewController: UIViewController {
                 AlertManager.showAlertOneButton(from: self!, title: "닉네임 입력", message: "닉네임을 입력해주세요.", buttonTitle: "확인")
                 return
             }
-            self?.viewModel.findNickname(nickname)
+            self?.viewModel.findId(nickname)
         }
     }
 
@@ -118,8 +118,8 @@ class LoginViewController: UIViewController {
     }
     
     @objc func registerButtonTapped() {
-        // ✨ 뷰모델 의존성 주입
-        let registerVC = RegisterViewController()
+        let registerVM = RegisterViewModel()
+        let registerVC = RegisterViewController(viewModel: registerVM)
         self.navigationController?.pushViewController(registerVC, animated: true)
     }
     

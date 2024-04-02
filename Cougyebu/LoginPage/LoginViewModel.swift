@@ -5,8 +5,8 @@
 //  Created by hansol on 2024/03/29.
 //
 
-import Combine
 import Foundation
+import Combine
 import FirebaseAuth
 
 // MARK: - LoginViewProtocol
@@ -15,7 +15,7 @@ protocol LoginViewProtocol: AnyObject {
     var showAlert: PassthroughSubject<(String, String), Never> { get }
     
     func loginButtonTapped(id: String, password: String)
-    func findNickname(_ nickname: String)
+    func findId(_ nickname: String)
     func maskEmail(email: String) -> String
 }
 
@@ -53,8 +53,8 @@ class LoginViewModel: LoginViewProtocol {
         }
     }
     
-    func findNickname(_ nickname: String) {
-        // 기존작업 취소, 삭제 // dataRace 방지 
+    func findId(_ nickname: String) {
+        // 기존작업 취소, 삭제 // dataRace 방지
         cancelBags.forEach { $0.cancel() }
         cancelBags.removeAll()
         

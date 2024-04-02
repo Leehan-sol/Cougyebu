@@ -5,8 +5,8 @@
 //  Created by hansol on 2024/03/31.
 //
 
-import Combine
 import Foundation
+import Combine
 import FirebaseAuth
 
 // MARK: - PasswordViewProtocol
@@ -43,7 +43,7 @@ class PasswordChangeViewModel: PasswordChangeViewProtocol {
     let checkAuthCode = PassthroughSubject<Bool, Never>()
     
     
-    func setTimer() {
+    private func setTimer() {
         timer?.invalidate()
         userAuthCode = Int.random(in: 1...10000)
         self.timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] timer in
@@ -63,7 +63,6 @@ class PasswordChangeViewModel: PasswordChangeViewProtocol {
             guard let self = self else { return }
             if user != nil {
                 if let timer = self.timer, timer.isValid {
-                    timer.invalidate()
                     self.seconds = 181
                 }
                 self.setTimer()
@@ -88,14 +87,13 @@ class PasswordChangeViewModel: PasswordChangeViewProtocol {
         if isValidAuthCode(enteredCode) {
             showAlert.send(("인증 성공", "인증 성공했습니다."))
             checkEmail = true
-            self.timer?.invalidate()
             self.checkAuthCode.send(true)
         } else {
             showAlert.send(("인증 실패", "인증 실패했습니다. 다시 시도해주세요."))
         }
     }
     
-    func isValidAuthCode(_ enteredCode: String) -> Bool {
+    private func isValidAuthCode(_ enteredCode: String) -> Bool {
         return enteredCode == String(userAuthCode)
     }
     
