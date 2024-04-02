@@ -81,7 +81,6 @@ class WithdrawalViewController: UIViewController {
         }
     }
     
-    // 탈퇴 프로세스 진행
     func confirmWithdrawal(user: User) {
         if let coupleEmail = user.coupleEmail {
             self.userManager.disconnectUser(inputEmail: coupleEmail) { _ in
@@ -104,7 +103,7 @@ class WithdrawalViewController: UIViewController {
                         }
                     }
                 })
-            }
+            } 
         } else {
             // 커플 연결 x
             let email = user.email

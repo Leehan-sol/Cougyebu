@@ -97,6 +97,7 @@
 		CC5A560B2B9B55630012F661 /* Date +.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5A560A2B9B55630012F661 /* Date +.swift */; };
 		CC5A560E2B9B5A870012F661 /* CategoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5A560D2B9B5A870012F661 /* CategoryView.swift */; };
 		CC5A56102B9B5A930012F661 /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5A560F2B9B5A930012F661 /* CategoryViewController.swift */; };
+		CC5B5A322BBBD24A0024BD84 /* RegisterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5B5A312BBBD24A0024BD84 /* RegisterViewModel.swift */; };
 		CC5E35DE2BA133DD0082FDC1 /* PasswordChangeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5E35DD2BA133DD0082FDC1 /* PasswordChangeViewController.swift */; };
 		CC5E35E02BA134320082FDC1 /* PasswordChangeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5E35DF2BA134320082FDC1 /* PasswordChangeView.swift */; };
 		CC62E3082B9BECFE00E0438F /* MainTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC62E3072B9BECFE00E0438F /* MainTableViewCell.swift */; };
@@ -161,6 +162,7 @@
 		CC5A560A2B9B55630012F661 /* Date +.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date +.swift"; sourceTree = "<group>"; };
 		CC5A560D2B9B5A870012F661 /* CategoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryView.swift; sourceTree = "<group>"; };
 		CC5A560F2B9B5A930012F661 /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
+		CC5B5A312BBBD24A0024BD84 /* RegisterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewModel.swift; sourceTree = "<group>"; };
 		CC5E35DD2BA133DD0082FDC1 /* PasswordChangeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordChangeViewController.swift; sourceTree = "<group>"; };
 		CC5E35DF2BA134320082FDC1 /* PasswordChangeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordChangeView.swift; sourceTree = "<group>"; };
 		CC62E3072B9BECFE00E0438F /* MainTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTableViewCell.swift; sourceTree = "<group>"; };
@@ -257,11 +259,11 @@
 		CC4955F12B998E98003B3341 /* Extension */ = {
 			isa = PBXGroup;
 			children = (
+				CC580F162BA071700047E614 /* Int +.swift */,
 				CC4955F42B998EB9003B3341 /* String +.swift */,
 				CC5A560A2B9B55630012F661 /* Date +.swift */,
-				CC580F162BA071700047E614 /* Int +.swift */,
-				CC4955F62B998EC2003B3341 /* UIDevice +.swift */,
 				CC5A56012B9B3CAC0012F661 /* UIButton +.swift */,
+				CC4955F62B998EC2003B3341 /* UIDevice +.swift */,
 				CC5348262BB853F200037DC1 /* Combine */,
 			);
 			path = Extension;
@@ -285,6 +287,7 @@
 			children = (
 				CC4956042B9991CC003B3341 /* RegisterView.swift */,
 				CC4956062B9991D6003B3341 /* RegisterViewController.swift */,
+				CC5B5A312BBBD24A0024BD84 /* RegisterViewModel.swift */,
 			);
 			path = RegisterPage;
 			sourceTree = "<group>";
@@ -578,6 +581,7 @@
 				CCCCCCED2B9A946C00355EAA /* ConnectViewModel.swift in Sources */,
 				CC49562E2B999409003B3341 /* NicknameViewController.swift in Sources */,
 				CC4956382B999485003B3341 /* WithdrawalViewController.swift in Sources */,
+				CC5B5A322BBBD24A0024BD84 /* RegisterViewModel.swift in Sources */,
 				CC5A56092B9B42BF0012F661 /* PostingViewModel.swift in Sources */,
 				CC53482A2BB85E0600037DC1 /* AppController.swift in Sources */,
 				CC4956112B999250003B3341 /* MainViewController.swift in Sources */,

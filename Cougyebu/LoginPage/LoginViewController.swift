@@ -38,16 +38,16 @@ class LoginViewController: UIViewController {
     }
     
     // MARK: - Methods
-    func setNavigation(){
+    private func setNavigation(){
         navigationItem.leftBarButtonItem = nil
     }
     
-    func setTextField(){
+    private func setTextField(){
         loginView.idTextField.delegate = self
         loginView.pwTextField.delegate = self
     }
     
-    func setAddTarget() {
+    private func setAddTarget() {
         loginView.showPwButton.addTarget(self, action: #selector(showPwButtonTapped), for: .touchUpInside)
         loginView.loginButton.addTarget(self, action: #selector(loginButtonTapped), for: .touchUpInside)
         loginView.findIdButton.addTarget(self, action: #selector(findIdButtonTapped), for: .touchUpInside)
@@ -68,15 +68,23 @@ class LoginViewController: UIViewController {
     }
     
     private func bindViewModelToView() {
+        viewModel.showAlert
+            .sink { [weak self] (title, message) in
+                AlertManager.showAlertOneButton(from: self!, title: title, message: message, buttonTitle: "확인")
+            }
+            .store(in: &cancelBags)
+        
         viewModel.checkResult
             .sink { value in
                 if let id = value {
                     self.loginSuccess(email: id)
-                } else {
-                    AlertManager.showAlertOneButton(from: self, title: "로그인 실패", message: "아이디 또는 비밀번호가 틀렸습니다.", buttonTitle: "확인")
                 }
             }
             .store(in: &cancelBags)
+    }
+   
+    private func loginSuccess(email: String) {
+        NotificationCenter.default.post(name: .authStateDidChange, object: nil)
     }
     
     
@@ -97,10 +105,6 @@ class LoginViewController: UIViewController {
     @objc func loginButtonTapped() {
         viewModel.loginButtonTapped()
     }
-
-    func loginSuccess(email: String) {
-           NotificationCenter.default.post(name: .authStateDidChange, object: nil)
-       }
     
     @objc func findIdButtonTapped() {
         AlertManager.showAlertWithOneTF(from: self,
@@ -113,35 +117,9 @@ class LoginViewController: UIViewController {
                 AlertManager.showAlertOneButton(from: self!, title: "닉네임 입력", message: "닉네임을 입력해주세요.", buttonTitle: "확인")
                 return
             }
-            guard let self = self else { return }
-            
-            self.viewModel.findNickname(nickname)
-                .sink(receiveCompletion: { completion in
-                    switch completion {
-                    case .finished:
-                        break
-                    case .failure(let error):
-                        print("Error: \(error.localizedDescription)")
-                        AlertManager.showAlertOneButton(from: self, title: "에러", message: "아이디를 찾는 도중 오류가 발생했습니다.", buttonTitle: "확인")
-                    }
-                }, receiveValue: { user in
-                    var alertTitle: String
-                    var alertMessage: String
-                    
-                    if let user = user {
-                        alertTitle = "아이디 찾기 성공"
-                        alertMessage = self.viewModel.maskEmail(email: user.email) 
-                    } else {
-                        alertTitle = "아이디 찾기 실패"
-                        alertMessage = "해당 닉네임을 가진 사용자를 찾을 수 없습니다."
-                    }
-                    
-                    AlertManager.showAlertOneButton(from: self, title: alertTitle, message: alertMessage, buttonTitle: "확인")
-                })
-                .store(in: &self.cancelBags)
+            self?.viewModel.findNickname(nickname)
         }
     }
-
 
     @objc func findPwButtonTapped() {
         let passwordChangeVM = PasswordChangeViewModel()

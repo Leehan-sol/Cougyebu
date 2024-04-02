@@ -17,7 +17,7 @@ protocol PasswordChangeViewProtocol {
     var timer: Timer? { get set }
     var checkEmail: Bool { get set }
     
-    var showAlert: PassthroughSubject<(String, String), Never> { get } // 👉🏻 로그인페이지도 변경하기
+    var showAlert: PassthroughSubject<(String, String), Never> { get }
     var showTimer: PassthroughSubject<Int, Never> { get }
     var invalidTimer: PassthroughSubject<Void, Never> { get }
     var sendEmailForCheckId: PassthroughSubject<Bool, Never> { get }
@@ -36,11 +36,11 @@ class PasswordChangeViewModel: PasswordChangeViewProtocol {
     var timer: Timer?
     var checkEmail = false
     
-    var showAlert = PassthroughSubject<(String, String), Never>()
-    var showTimer = PassthroughSubject<Int, Never>()
-    var invalidTimer = PassthroughSubject<Void, Never>()
-    var sendEmailForCheckId = PassthroughSubject<Bool, Never>()
-    var checkAuthCode = PassthroughSubject<Bool, Never>()
+    let showAlert = PassthroughSubject<(String, String), Never>()
+    let showTimer = PassthroughSubject<Int, Never>()
+    let invalidTimer = PassthroughSubject<Void, Never>()
+    let sendEmailForCheckId = PassthroughSubject<Bool, Never>()
+    let checkAuthCode = PassthroughSubject<Bool, Never>()
     
     
     func setTimer() {
@@ -110,7 +110,7 @@ class PasswordChangeViewModel: PasswordChangeViewProtocol {
                 }
             }
         } else {
-            print("이메일 확인 실패")
+            self.showAlert.send(("메일 전송 실패", "비밀번호 재설정 이메일 발송에 실패했습니다. 다시 확인해주세요."))
         }
     }
 }

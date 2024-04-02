@@ -76,7 +76,6 @@ class AppController {
         }
     }
     
-    
     func addAnimation() {
         let transition: CATransition = CATransition()
         transition.duration = 0.3
