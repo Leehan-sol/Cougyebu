@@ -72,7 +72,6 @@ class RegisterViewController: UIViewController {
         registerView.nicknameCheckButton.addTarget(self, action: #selector(writingComplete), for: .touchUpInside)
         registerView.pwTextField.addTarget(self, action: #selector(writingComplete), for: .editingChanged)
         registerView.pwCheckTextField.addTarget(self, action: #selector(writingComplete), for: .editingChanged)
-        
     }
     
     private func bindViewModel() {
@@ -102,41 +101,24 @@ class RegisterViewController: UIViewController {
         
         viewModel.checkEmailResult
             .sink { [weak self] bool in
-                if bool == true {
-                    self?.registerView.timerLabel.isHidden = false
-                    self?.registerView.sendEmailButton.backgroundColor = .black
-                    self?.registerView.sendEmailButton.setTitleColor(UIColor.white, for: .normal)
-                } else {
-                    self?.registerView.timerLabel.isHidden = true
-                    self?.registerView.sendEmailButton.backgroundColor = .systemGray6
-                    self?.registerView.sendEmailButton.setTitleColor(UIColor.black, for: .normal)
-                }
+                self?.registerView.timerLabel.isHidden = bool ? false : true
+                self?.registerView.sendEmailButton.backgroundColor = bool ? .black : .systemGray6
+                self?.registerView.sendEmailButton.setTitleColor(bool ? .white : .black, for: .normal)
             }
             .store(in: &cancelBags)
         
         viewModel.checkAuthResult
             .sink { [weak self] bool in
-                if bool == true {
-                    self?.registerView.timerLabel.isHidden = true
-                    self?.registerView.authButton.backgroundColor = .black
-                    self?.registerView.authButton.setTitleColor(UIColor.white, for: .normal)
-                } else {
-                    self?.registerView.timerLabel.isHidden = false
-                    self?.registerView.authButton.backgroundColor = .systemGray6
-                    self?.registerView.authButton.setTitleColor(UIColor.black, for: .normal)
-                }
+                self?.registerView.timerLabel.isHidden = bool ? true : false
+                self?.registerView.authButton.backgroundColor = bool ? .black : .systemGray6
+                self?.registerView.authButton.setTitleColor(bool ? .white : .black, for: .normal)
             }
             .store(in: &cancelBags)
-        
+
         viewModel.checkNicknameResult
             .sink { [weak self] bool in
-                if bool == true {
-                    self?.registerView.nicknameCheckButton.backgroundColor = .black
-                    self?.registerView.nicknameCheckButton.setTitleColor(UIColor.white, for: .normal)
-                } else {
-                    self?.registerView.nicknameCheckButton.backgroundColor = .systemGray6
-                    self?.registerView.nicknameCheckButton.setTitleColor(UIColor.black, for: .normal)
-                }
+                self?.registerView.nicknameCheckButton.backgroundColor = bool ? .black : .systemGray6
+                self?.registerView.nicknameCheckButton.setTitleColor(bool ? .white : .black, for: .normal)
             }
             .store(in: &cancelBags)
         
