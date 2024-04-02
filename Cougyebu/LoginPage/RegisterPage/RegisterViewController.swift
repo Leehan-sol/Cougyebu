@@ -127,7 +127,6 @@ class RegisterViewController: UIViewController {
                 self?.navigationController?.popViewController(animated: true)
             }
             .store(in: &cancelBags)
-        
     }
     
     
@@ -247,7 +246,8 @@ extension RegisterViewController: UITextFieldDelegate {
     
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString input: String) -> Bool {
-        if textField == registerView.authTextField {
+        switch textField {
+        case registerView.authTextField:
             let numbersSet = CharacterSet(charactersIn: "0123456789")
             let replaceStringSet = CharacterSet(charactersIn: input)
             
@@ -255,46 +255,34 @@ extension RegisterViewController: UITextFieldDelegate {
                 AlertManager.showAlertOneButton(from: self, title: "입력 오류", message: "숫자를 입력해주세요.", buttonTitle: "확인")
                 return false
             }
-        } else if textField == registerView.nicknameTextField {
+        case registerView.nicknameTextField:
             let maxLength = 8
             let oldText = textField.text ?? ""
-            let addedText = input
-            let newText = oldText + addedText
-            let newTextLength = newText.count
+            let newText = (oldText as NSString).replacingCharacters(in: range, with: input)
             
-            if newTextLength <= maxLength {
-                return true
+            if newText.count > maxLength {
+                AlertManager.showAlertOneButton(from: self, title: "입력 오류", message: "닉네임은 8자 이하여야 합니다.", buttonTitle: "확인")
+                return false
             }
-            
-            let lastWordOfOldText = String(oldText[oldText.index(before: oldText.endIndex)])
-            let separatedCharacters = lastWordOfOldText.decomposedStringWithCanonicalMapping.unicodeScalars.map{ String($0) }
-            let separatedCharactersCount = separatedCharacters.count
-            
-            if separatedCharactersCount == 1 && !addedText.isConsonant {
-                return true
-            }
-            if separatedCharactersCount == 2 && addedText.isConsonant {
-                return true
-            }
-            if separatedCharactersCount == 3 && addedText.isConsonant {
-                return true
-            }
-            return false
+        default:
+            break
         }
+        
         return true
     }
-    
+
     func textFieldDidChangeSelection(_ textField: UITextField) {
-        if textField == registerView.nicknameTextField {
-            let text = textField.text ?? ""
+        switch textField {
+        case registerView.nicknameTextField:
             let maxLength = 8
-            if text.count > maxLength {
-                let startIndex = text.startIndex
-                let endIndex = text.index(startIndex, offsetBy: maxLength - 1)
-                let fixedText = String(text[startIndex...endIndex])
-                textField.text = fixedText
-            }
+            guard let text = textField.text, text.count > maxLength else { return }
+            
+            let endIndex = text.index(text.startIndex, offsetBy: maxLength)
+            textField.text = String(text.prefix(upTo: endIndex))
+        default:
+            break
         }
     }
+
 }
 
