@@ -16,6 +16,7 @@ class RegisterViewController: UIViewController {
     private let registerView = RegisterView()
     // ✨ 의존성 주입으로 변경하기 
     private let viewModel = RegisterViewModel()
+    // ✨ 지우기
     private let userManager = UserManager()
     private var userAuthCode = 0
     private var seconds = 181

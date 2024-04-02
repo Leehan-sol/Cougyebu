@@ -35,51 +35,25 @@ class PasswordChangeViewController: UIViewController {
         bindViewModel()
     }
     
-    func setNavigationBar() {
+    private func setNavigationBar() {
         self.title = "비밀번호 찾기"
         navigationController?.navigationBar.tintColor = .black
         navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 18)]
     }
     
-    func setAddTarget(){
+    private func setAddTarget(){
         passwordChangeView.authIdButton.addTarget(self, action: #selector(authIdButtonTapped), for: .touchUpInside)
         passwordChangeView.authCodeButton.addTarget(self, action: #selector(authCodeButtonTapped), for: .touchUpInside)
         passwordChangeView.changePasswordButton.addTarget(self, action: #selector(changePasswordButtonTapped), for: .touchUpInside)
         passwordChangeView.registerIdTextField.addTarget(self, action: #selector(idTextFieldDidChange(_:)), for: .editingChanged)
     }
     
-    func setTextField(){
+    private func setTextField(){
         passwordChangeView.registerIdTextField.delegate = self
         passwordChangeView.authCodeTextField.delegate = self
     }
     
-    @objc func authIdButtonTapped() {
-        guard let email = passwordChangeView.registerIdTextField.text else { return }
-        viewModel.sendAuthCode(email: email)
-    }
-    
-    @objc func authCodeButtonTapped(){
-        guard let enteredCode = passwordChangeView.authCodeTextField.text else { return }
-        viewModel.verifyAuthCode(enteredCode: enteredCode)
-    }
-    
-    @objc func changePasswordButtonTapped() {
-        guard let userEmail = passwordChangeView.registerIdTextField.text else { return }
-        viewModel.sendPasswordResetEmail(email: userEmail)
-    }
-    
-    @objc func idTextFieldDidChange(_ textField: UITextField) {
-        passwordChangeView.authIdButton.backgroundColor = .systemGray6
-        passwordChangeView.authIdButton.setTitleColor(.darkGray, for: .normal)
-        passwordChangeView.authCodeButton.backgroundColor = .systemGray6
-        passwordChangeView.authCodeButton.setTitleColor(.darkGray, for: .normal)
-        passwordChangeView.changePasswordButton.backgroundColor = .systemGray6
-        passwordChangeView.changePasswordButton.setTitleColor(.darkGray, for: .normal)
-        viewModel.userAuthCode = Int.random(in: 1...10000)
-        viewModel.checkEmail = false
-    }
-    
-    func bindViewModel() {
+    private func bindViewModel() {
         viewModel.showAlert
             .sink { [weak self] (title, message) in
                 AlertManager.showAlertOneButton(from: self!, title: title, message: message, buttonTitle: "확인")
@@ -124,6 +98,33 @@ class PasswordChangeViewController: UIViewController {
                 self?.passwordChangeView.timerLabel.isHidden = true
             }
             .store(in: &cancelBags)
+    }
+    
+    // MARK: - @objc
+    @objc func authIdButtonTapped() {
+        guard let email = passwordChangeView.registerIdTextField.text else { return }
+        viewModel.sendAuthCode(email: email)
+    }
+    
+    @objc func authCodeButtonTapped(){
+        guard let enteredCode = passwordChangeView.authCodeTextField.text else { return }
+        viewModel.verifyAuthCode(enteredCode: enteredCode)
+    }
+    
+    @objc func changePasswordButtonTapped() {
+        guard let userEmail = passwordChangeView.registerIdTextField.text else { return }
+        viewModel.sendPasswordResetEmail(email: userEmail)
+    }
+    
+    @objc func idTextFieldDidChange(_ textField: UITextField) {
+        passwordChangeView.authIdButton.backgroundColor = .systemGray6
+        passwordChangeView.authIdButton.setTitleColor(.darkGray, for: .normal)
+        passwordChangeView.authCodeButton.backgroundColor = .systemGray6
+        passwordChangeView.authCodeButton.setTitleColor(.darkGray, for: .normal)
+        passwordChangeView.changePasswordButton.backgroundColor = .systemGray6
+        passwordChangeView.changePasswordButton.setTitleColor(.darkGray, for: .normal)
+        viewModel.userAuthCode = Int.random(in: 1...10000)
+        viewModel.checkEmail = false
     }
     
 }

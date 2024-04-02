@@ -11,7 +11,6 @@ import FirebaseAuth
 
 // MARK: - PasswordViewProtocol
 protocol PasswordChangeViewProtocol {
-    var userManager: UserManager { get }
     var seconds: Int { get set }
     var userAuthCode: Int { get set }
     var timer: Timer? { get set }
@@ -30,7 +29,7 @@ protocol PasswordChangeViewProtocol {
 
 // MARK: - PasswordChangeViewModel
 class PasswordChangeViewModel: PasswordChangeViewProtocol {
-    let userManager = UserManager()
+    private let userManager = UserManager()
     var seconds = 181
     var userAuthCode = 0
     var timer: Timer?
