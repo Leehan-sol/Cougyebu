@@ -33,8 +33,7 @@ class LoginViewController: UIViewController {
         setNavigation()
         setTextField()
         setAddTarget()
-        bindViewToViewModel()
-        bindViewModelToView()
+        bindViewModel()
     }
     
     // MARK: - Methods
@@ -55,19 +54,7 @@ class LoginViewController: UIViewController {
         loginView.registerButton.addTarget(self, action: #selector(registerButtonTapped), for: .touchUpInside)
     }
     
-    private func bindViewToViewModel() {
-        loginView.idTextField.textPublisher
-            .receive(on: DispatchQueue.main)
-            .assign(to: \.id, on: viewModel)
-            .store(in: &cancelBags)
-        
-        loginView.pwTextField.textPublisher
-            .receive(on: RunLoop.main)
-            .assign(to: \.password, on: viewModel)
-            .store(in: &cancelBags)
-    }
-    
-    private func bindViewModelToView() {
+    private func bindViewModel() {
         viewModel.showAlert
             .sink { [weak self] (title, message) in
                 AlertManager.showAlertOneButton(from: self!, title: title, message: message, buttonTitle: "확인")
@@ -103,7 +90,10 @@ class LoginViewController: UIViewController {
     }
     
     @objc func loginButtonTapped() {
-        viewModel.loginButtonTapped()
+        guard let id = loginView.idTextField.text else { return }
+        guard let pw = loginView.pwTextField.text else { return }
+        
+        viewModel.loginButtonTapped(id: id, password: pw)
     }
     
     @objc func findIdButtonTapped() {
@@ -128,6 +118,7 @@ class LoginViewController: UIViewController {
     }
     
     @objc func registerButtonTapped() {
+        // ✨ 뷰모델 의존성 주입
         let registerVC = RegisterViewController()
         self.navigationController?.pushViewController(registerVC, animated: true)
     }

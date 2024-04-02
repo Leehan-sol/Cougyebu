@@ -13,11 +13,8 @@ import FirebaseAuth
 protocol LoginViewProtocol: AnyObject {
     var checkResult: PassthroughSubject<String?, Never> { get }
     var showAlert: PassthroughSubject<(String, String), Never> { get }
-    var id: String { get set }
-    var password: String { get set }
     
-    
-    func loginButtonTapped()
+    func loginButtonTapped(id: String, password: String)
     func findNickname(_ nickname: String)
     func maskEmail(email: String) -> String
 }
@@ -30,12 +27,10 @@ class LoginViewModel: LoginViewProtocol {
     
     let showAlert = PassthroughSubject<(String, String), Never>()
     let checkResult = PassthroughSubject<String?, Never>()
-    @Published var id = ""
-    @Published var password = ""
     private var cancelBags = Set<AnyCancellable>()
     
     
-    func loginButtonTapped() {
+    func loginButtonTapped(id: String, password: String) {
         guard !id.isEmpty, !password.isEmpty else {
             showAlert.send(("입력 필요", "아이디와 비밀번호를 입력하세요."))
             return
@@ -48,7 +43,7 @@ class LoginViewModel: LoginViewProtocol {
             } else {
                 self.userManager.findId(email: id) { bool in
                     if bool {
-                        self.checkResult.send(self.id)
+                        self.checkResult.send(id)
                     } else {
                         self.checkResult.send(nil)
                         self.showAlert.send(("로그인 실패", "아이디 또는 비밀번호가 틀렸습니다."))
@@ -59,7 +54,7 @@ class LoginViewModel: LoginViewProtocol {
     }
     
     func findNickname(_ nickname: String) {
-        // 기존작업 취소랑 삭제하기 
+        // 기존작업 취소, 삭제 // dataRace 방지 
         cancelBags.forEach { $0.cancel() }
         cancelBags.removeAll()
         
