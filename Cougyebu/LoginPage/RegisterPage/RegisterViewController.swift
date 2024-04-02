@@ -28,7 +28,6 @@ class RegisterViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-
     override func loadView() {
         view = registerView
     }
@@ -114,7 +113,7 @@ class RegisterViewController: UIViewController {
                 self?.registerView.authButton.setTitleColor(bool ? .white : .black, for: .normal)
             }
             .store(in: &cancelBags)
-
+        
         viewModel.checkNicknameResult
             .sink { [weak self] bool in
                 self?.registerView.nicknameCheckButton.backgroundColor = bool ? .black : .systemGray6
@@ -252,7 +251,9 @@ extension RegisterViewController: UITextFieldDelegate {
             let replaceStringSet = CharacterSet(charactersIn: input)
             
             if !numbersSet.isSuperset(of: replaceStringSet) {
-                AlertManager.showAlertOneButton(from: self, title: "입력 오류", message: "숫자를 입력해주세요.", buttonTitle: "확인")
+                DispatchQueue.main.async {
+                    AlertManager.showAlertOneButton(from: self, title: "입력 오류", message: "숫자를 입력해주세요.", buttonTitle: "확인")
+                }
                 return false
             }
         case registerView.nicknameTextField:
@@ -261,16 +262,17 @@ extension RegisterViewController: UITextFieldDelegate {
             let newText = (oldText as NSString).replacingCharacters(in: range, with: input)
             
             if newText.count > maxLength {
-                AlertManager.showAlertOneButton(from: self, title: "입력 오류", message: "닉네임은 8자 이하여야 합니다.", buttonTitle: "확인")
+                DispatchQueue.main.async {
+                    AlertManager.showAlertOneButton(from: self, title: "입력 오류", message: "닉네임은 8자 이하여야 합니다.", buttonTitle: "확인")
+                }
                 return false
             }
         default:
             break
         }
-        
         return true
     }
-
+    
     func textFieldDidChangeSelection(_ textField: UITextField) {
         switch textField {
         case registerView.nicknameTextField:
@@ -278,11 +280,13 @@ extension RegisterViewController: UITextFieldDelegate {
             guard let text = textField.text, text.count > maxLength else { return }
             
             let endIndex = text.index(text.startIndex, offsetBy: maxLength)
-            textField.text = String(text.prefix(upTo: endIndex))
+            DispatchQueue.main.async {
+                textField.text = String(text.prefix(upTo: endIndex))
+            }
         default:
             break
         }
     }
-
+    
 }
 
