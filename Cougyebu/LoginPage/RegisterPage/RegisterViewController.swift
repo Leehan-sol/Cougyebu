@@ -95,7 +95,6 @@ class RegisterViewController: UIViewController {
             .receive(on: DispatchQueue.main)
             .sink {
                 self.registerView.timerLabel.text = "시간만료"
-                self.viewModel.userAuthCode = Int.random(in: 1...10000)
                 self.registerView.authButton.backgroundColor = .systemGray6
                 self.registerView.authButton.setTitleColor(UIColor.black, for: .normal)
             }
@@ -226,8 +225,7 @@ class RegisterViewController: UIViewController {
            let nickname = registerView.nicknameTextField.text?.trimmingCharacters(in: .whitespaces),
            let password = registerView.pwTextField.text?.trimmingCharacters(in: .whitespaces),
            let checkPassword = registerView.pwCheckTextField.text?.trimmingCharacters(in: .whitespaces) {
-            let validEmail = email.isValidEmail()
-            let isFormValid = !email.isEmpty && !nickname.isEmpty && !password.isEmpty && !checkPassword.isEmpty && viewModel.checkEmail && viewModel.checkNickname && validEmail
+            let isFormValid = !email.isEmpty && !nickname.isEmpty && !password.isEmpty && !checkPassword.isEmpty && viewModel.checkEmail && viewModel.checkNickname
             
             UIView.animate(withDuration: 0.3) {
                 if isFormValid {

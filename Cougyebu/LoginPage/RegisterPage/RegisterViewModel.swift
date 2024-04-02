@@ -60,6 +60,7 @@ class RegisterViewModel: RegisterViewProtocol {
                 self.showTimer.send(self.seconds)
             } else {
                 self.invalidTimer.send()
+                self.userAuthCode = Int.random(in: 1...10000)
             }
         }
     }

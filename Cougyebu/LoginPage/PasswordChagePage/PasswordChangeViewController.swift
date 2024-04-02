@@ -77,7 +77,6 @@ class PasswordChangeViewController: UIViewController {
                 self.passwordChangeView.authIdButton.setTitleColor(UIColor.black, for: .normal)
                 self.passwordChangeView.authCodeButton.backgroundColor = .systemGray6
                 self.passwordChangeView.authCodeButton.setTitleColor(UIColor.black, for: .normal)
-                self.viewModel.userAuthCode = Int.random(in: 1...10000)
             }
             .store(in: &cancelBags)
         

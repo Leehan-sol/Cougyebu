@@ -11,9 +11,7 @@ import FirebaseAuth
 
 // MARK: - PasswordViewProtocol
 protocol PasswordChangeViewProtocol {
-    var seconds: Int { get set }
     var userAuthCode: Int { get set }
-    var timer: Timer? { get set }
     var checkEmail: Bool { get set }
     
     var showAlert: PassthroughSubject<(String, String), Never> { get }
@@ -30,10 +28,10 @@ protocol PasswordChangeViewProtocol {
 // MARK: - PasswordChangeViewModel
 class PasswordChangeViewModel: PasswordChangeViewProtocol {
     private let userManager = UserManager()
+    private var seconds = 181
+    private var timer: Timer?
     
-    var seconds = 181
     var userAuthCode = 0
-    var timer: Timer?
     var checkEmail = false
     
     let showAlert = PassthroughSubject<(String, String), Never>()
@@ -54,6 +52,7 @@ class PasswordChangeViewModel: PasswordChangeViewProtocol {
                 self.showTimer.send(self.seconds)
             } else {
                 self.invalidTimer.send()
+                self.userAuthCode = Int.random(in: 1...10000)
             }
         }
     }
