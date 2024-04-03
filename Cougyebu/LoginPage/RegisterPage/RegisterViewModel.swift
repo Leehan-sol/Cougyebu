@@ -37,6 +37,7 @@ class RegisterViewModel: RegisterViewProtocol {
     var checkEmail = false
     var checkNickname = false
     
+    
     let showAlert = PassthroughSubject<(String, String), Never>()
     let showTimer = PassthroughSubject<Int, Never>()
     let invalidTimer = PassthroughSubject<Void, Never>()
@@ -44,6 +45,7 @@ class RegisterViewModel: RegisterViewProtocol {
     let checkAuthResult = PassthroughSubject<Bool, Never>()
     let checkNicknameResult = PassthroughSubject<Bool, Never>()
     let doneRegister = PassthroughSubject<Void, Never>()
+    private var cancelBags = Set<AnyCancellable>()
     
     private func isValidAuthCode(_ enteredCode: String) -> Bool {
         return enteredCode == String(userAuthCode)
@@ -109,17 +111,29 @@ class RegisterViewModel: RegisterViewProtocol {
     }
     
     func checkNickname(nickname: String) {
-        userManager.findNickname(nickname: nickname) { isUsed in
-            if isUsed != nil {
-                self.showAlert.send(("사용 불가능", "이미 사용중인 닉네임입니다."))
-                self.checkNicknameResult.send(false)
-            } else {
-                self.showAlert.send(("사용 가능", "사용 가능한 닉네임입니다. \n 입력하신 닉네임은 아이디 찾기시 이용됩니다."))
-                self.checkNicknameResult.send(true)
-                self.checkNickname = true
-            }
-        }
+        userManager.findNickname(nickname: nickname)
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .failure(let error):
+                    self.showAlert.send(("오류", error.localizedDescription))
+                    self.checkNicknameResult.send(false)
+                case .finished:
+                    break
+                }
+            }, receiveValue: { user in
+                if user != nil {
+                    self.showAlert.send(("사용 불가능", "이미 사용중인 닉네임입니다."))
+                    self.checkNicknameResult.send(false)
+                } else {
+                    self.showAlert.send(("사용 가능", "사용 가능한 닉네임입니다. \n 입력하신 닉네임은 아이디 찾기시 이용됩니다."))
+                    self.checkNicknameResult.send(true)
+                    self.checkNickname = true
+                }
+            })
+            .store(in: &cancelBags
+            )
     }
+
     
     
     func registerUser(email: String, nickname: String, password: String, checkPassword: String) {
@@ -154,14 +168,11 @@ class RegisterViewModel: RegisterViewProtocol {
         }
         
         guard password.isValidPassword() else {
-            showAlert.send(("유효하지 않은 비밀번호", "비밀번호는 대소문자, 특수문자, 숫자 8자 이상이여야합니다."))
+            showAlert.send(("유효하지 않은 비밀번호", "비밀번호는 특수문자, 숫자 포함, 8자 이상이여야합니다."))
             return nil
         }
-        
         return password
     }
 
-    
-    
     
 }

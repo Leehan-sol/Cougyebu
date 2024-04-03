@@ -54,18 +54,31 @@ class LoginViewModel: LoginViewProtocol {
     }
     
     func findId(_ nickname: String) {
-        userManager.findNickname(nickname: nickname) { [weak self] user in
-            if let user = user {
-                let alertTitle = "아이디 찾기 성공"
-                let alertMessage = self?.maskEmail(email: user.email) ?? ""
-                self?.showAlert.send((alertTitle, alertMessage))
-            } else {
-                let alertTitle = "아이디 찾기 실패"
-                let alertMessage = "해당 닉네임을 가진 사용자를 찾을 수 없습니다."
-                self?.showAlert.send((alertTitle, alertMessage))
-            }
-        }
+        userManager.findNickname(nickname: nickname)
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .failure(let error):
+                    print("Error: \(error.localizedDescription)")
+                    let alertTitle = "아이디 찾기 실패"
+                    let alertMessage = "오류가 발생했습니다."
+                    self.showAlert.send((alertTitle, alertMessage))
+                case .finished:
+                    break
+                }
+            }, receiveValue: { [weak self] user in
+                if let user = user {
+                    let alertTitle = "아이디 찾기 성공"
+                    let alertMessage = self?.maskEmail(email: user.email) ?? ""
+                    self?.showAlert.send((alertTitle, alertMessage))
+                } else {
+                    let alertTitle = "아이디 찾기 실패"
+                    let alertMessage = "해당 닉네임을 가진 사용자를 찾을 수 없습니다."
+                    self?.showAlert.send((alertTitle, alertMessage))
+                }
+            })
+            .store(in: &cancelBags)
     }
+
     
     func maskEmail(email: String) -> String {
         let components = email.components(separatedBy: "@")

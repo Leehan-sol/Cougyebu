@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Combine
 import FirebaseAuth
 
 class NicknameEditViewController: UIViewController {
@@ -13,6 +14,7 @@ class NicknameEditViewController: UIViewController {
     private let userManager = UserManager()
     private let user: Observable<User>?
     private var checkNickname = false
+    private var cancelBags = Set<AnyCancellable>()
     
     init(user: Observable<User>?) {
         self.user = user
@@ -53,9 +55,17 @@ class NicknameEditViewController: UIViewController {
     }
     
     @objc func nicknameCheckButtonTapped() {
-        if let nickname = nicknameEditView.nicknameTextField.text?.trimmingCharacters(in: .whitespaces) {
-            if !nickname.isEmpty {
-                userManager.findNickname(nickname: nickname) { isUsed in
+        if let nickname = nicknameEditView.nicknameTextField.text?.trimmingCharacters(in: .whitespaces), !nickname.isEmpty {
+            userManager.findNickname(nickname: nickname)
+                .sink(receiveCompletion: { completion in
+                    switch completion {
+                    case .failure(let error):
+                        print("Error: \(error.localizedDescription)")
+                        AlertManager.showAlertOneButton(from: self, title: "오류", message: error.localizedDescription, buttonTitle: "확인")
+                    case .finished:
+                        break
+                    }
+                }, receiveValue: { isUsed in
                     if isUsed != nil {
                         AlertManager.showAlertOneButton(from: self, title: "사용 불가능", message: "이미 사용중인 닉네임입니다.", buttonTitle: "확인")
                         self.nicknameEditView.nicknameCheckButton.backgroundColor = .systemGray6
@@ -67,45 +77,50 @@ class NicknameEditViewController: UIViewController {
                         self.nicknameEditView.nicknameCheckButton.setTitleColor(UIColor.white, for: .normal)
                         self.checkNickname = true
                     }
-                }
-            }
-        }
-    }
-    
-    @objc func nicknameEditButtonTapped() {
-        if let newNickname = nicknameEditView.nicknameTextField.text?.trimmingCharacters(in: .whitespaces),
-           let userEmail = Auth.auth().currentUser?.email {
-            
-            guard !newNickname.isEmpty else {
-                AlertManager.showAlertOneButton(from: self, title: "입력 확인", message: "닉네임을 입력해주세요.", buttonTitle: "확인")
-                return
-            }
-            guard checkNickname == true else {
-                AlertManager.showAlertOneButton(from: self, title: "중복 확인", message: "닉네임 중복 확인을 해주세요.", buttonTitle: "확인")
-                return
-            }
-            
-            userManager.findNickname(nickname: newNickname) { exists in
-                if (exists != nil) {
-                    AlertManager.showAlertOneButton(from: self, title: "중복 확인", message: "이미 사용 중인 닉네임입니다.", buttonTitle: "확인")
-                } else {
-                    self.userManager.updateUser(email: userEmail, updatedFields: ["nickname": newNickname]) { success in
-                        if success != nil && success! {
-                            self.user?.value.nickname = newNickname
-                            AlertManager.showAlertOneButton(from: self, title: "닉네임 변경", message: "닉네임이 변경되었습니다.", buttonTitle: "확인"){
-                                self.navigationController?.popViewController(animated: true)
-                            }
-                        } else {
-                            AlertManager.showAlertOneButton(from: self, title: "닉네임 변경 실패", message: "닉네임 변경에 실패했습니다.", buttonTitle: "확인")
-                        }
-                    }
-                }
-            }
-        } else {
-            AlertManager.showAlertOneButton(from: self, title: "에러", message: "로그인된 사용자가 없습니다.", buttonTitle: "확인")
+                })
+                .store(in: &cancelBags)
         }
     }
 
+    
+    @objc func nicknameEditButtonTapped() {
+        guard let newNickname = nicknameEditView.nicknameTextField.text?.trimmingCharacters(in: .whitespaces),
+              let userEmail = Auth.auth().currentUser?.email else {
+            AlertManager.showAlertOneButton(from: self, title: "에러", message: "로그인된 사용자가 없습니다.", buttonTitle: "확인")
+            return
+        }
+        
+        guard !newNickname.isEmpty else {
+            AlertManager.showAlertOneButton(from: self, title: "입력 확인", message: "닉네임을 입력해주세요.", buttonTitle: "확인")
+            return
+        }
+        
+        guard checkNickname == true else {
+            AlertManager.showAlertOneButton(from: self, title: "중복 확인", message: "닉네임 중복 확인을 해주세요.", buttonTitle: "확인")
+            return
+        }
+        
+        userManager.updateUserNickname(email: userEmail, updatedFields: ["nickname": newNickname])
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .failure(let error):
+                    print("Error: \(error.localizedDescription)")
+                    AlertManager.showAlertOneButton(from: self, title: "닉네임 변경 실패", message: "닉네임 변경에 실패했습니다.", buttonTitle: "확인")
+                case .finished:
+                    break
+                }
+            }, receiveValue: { success in
+                if success {
+                    self.user?.value.nickname = newNickname
+                    AlertManager.showAlertOneButton(from: self, title: "닉네임 변경", message: "닉네임이 변경되었습니다.", buttonTitle: "확인"){
+                        self.navigationController?.popViewController(animated: true)
+                    }
+                } else {
+                    AlertManager.showAlertOneButton(from: self, title: "닉네임 변경 실패", message: "닉네임 변경에 실패했습니다.", buttonTitle: "확인")
+                }
+            })
+            .store(in: &cancelBags)
+    }
     
     @objc func textFieldDidChange(_ textField: UITextField) {
         nicknameEditView.nicknameCheckButton.backgroundColor = .systemGray6

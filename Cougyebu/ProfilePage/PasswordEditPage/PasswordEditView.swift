@@ -59,7 +59,7 @@ class PasswordEditView: UIView {
         tf.clearsOnBeginEditing = false
         tf.layer.cornerRadius = 8
         tf.font = UIFont.systemFont(ofSize: 14)
-        tf.setPlaceholderFontSize(size: 14, text: "대소문자, 특수문자, 숫자 포함 8자 이상")
+        tf.setPlaceholderFontSize(size: 14, text: "특수문자, 숫자 포함 8자 이상")
         return tf
     }()
     

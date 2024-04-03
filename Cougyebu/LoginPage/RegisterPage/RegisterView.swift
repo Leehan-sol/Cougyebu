@@ -121,7 +121,7 @@ class RegisterView: UIView {
     }()
     let pwTextField: UITextField = {
         let tf = UITextField()
-        tf.setPlaceholderFontSize(size: 14, text: "대소문자, 특수문자, 숫자 포함 8자 이상")
+        tf.setPlaceholderFontSize(size: 14, text: "특수문자, 숫자 포함 8자 이상")
         tf.autocapitalizationType = .none
         tf.autocorrectionType = .no
         tf.spellCheckingType = .no
@@ -149,7 +149,7 @@ class RegisterView: UIView {
     }()
     let pwCheckTextField: UITextField = {
         let tf = UITextField()
-        tf.setPlaceholderFontSize(size: 14, text: "대소문자, 특수문자, 숫자 포함 8자 이상")
+        tf.setPlaceholderFontSize(size: 14, text: "특수문자, 숫자 포함 8자 이상")
         tf.autocapitalizationType = .none
         tf.autocorrectionType = .no
         tf.spellCheckingType = .no
