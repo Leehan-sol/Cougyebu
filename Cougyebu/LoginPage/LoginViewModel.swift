@@ -11,8 +11,8 @@ import FirebaseAuth
 
 // MARK: - LoginViewProtocol
 protocol LoginViewProtocol: AnyObject {
-    var checkResult: PassthroughSubject<String?, Never> { get }
     var showAlert: PassthroughSubject<(String, String), Never> { get }
+    var checkResult: PassthroughSubject<Bool?, Never> { get }
     
     func loginButtonTapped(id: String, password: String)
     func findId(_ nickname: String)
@@ -26,7 +26,7 @@ class LoginViewModel: LoginViewProtocol {
     private let userManager = UserManager()
     
     let showAlert = PassthroughSubject<(String, String), Never>()
-    let checkResult = PassthroughSubject<String?, Never>()
+    let checkResult = PassthroughSubject<Bool?, Never>()
     private var cancelBags = Set<AnyCancellable>()
     
     
@@ -38,14 +38,14 @@ class LoginViewModel: LoginViewProtocol {
         
         Auth.auth().signIn(withEmail: id, password: password) { [self] authResult, error in
             if error != nil {
-                self.checkResult.send(nil)
+                self.checkResult.send(false)
                 self.showAlert.send(("로그인 실패", "아이디 또는 비밀번호가 틀렸습니다."))
             } else {
                 self.userManager.findId(email: id) { bool in
                     if bool {
-                        self.checkResult.send(id)
+                        self.checkResult.send(true)
                     } else {
-                        self.checkResult.send(nil)
+                        self.checkResult.send(false)
                         self.showAlert.send(("로그인 실패", "아이디 또는 비밀번호가 틀렸습니다."))
                     }
                 }

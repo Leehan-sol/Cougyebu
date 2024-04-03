@@ -62,16 +62,12 @@ class LoginViewController: UIViewController {
             .store(in: &cancelBags)
         
         viewModel.checkResult
-            .sink { value in
-                if let id = value {
-                    self.loginSuccess(email: id)
+            .sink { bool in
+                if bool == true {
+                    NotificationCenter.default.post(name: .authStateDidChange, object: nil)
                 }
             }
             .store(in: &cancelBags)
-    }
-   
-    private func loginSuccess(email: String) {
-        NotificationCenter.default.post(name: .authStateDidChange, object: nil)
     }
     
     
@@ -110,7 +106,7 @@ class LoginViewController: UIViewController {
             self?.viewModel.findId(nickname)
         }
     }
-
+    
     @objc func findPwButtonTapped() {
         let passwordChangeVM = PasswordChangeViewModel()
         let passwordChangeVC = PasswordChangeViewController(viewModel: passwordChangeVM)
@@ -149,7 +145,7 @@ extension LoginViewController: UITextFieldDelegate {
             animateLabel(label: loginView.pwLabel, centerYConstraint: loginView.pwLabelCenterY, fontSize: 9)
         }
     }
-
+    
     func textFieldDidEndEditing(_ textField: UITextField) {
         if textField == loginView.idTextField && textField.text == "" {
             animateLabel(label: loginView.idLabel, centerYConstraint: loginView.idLabelCenterY, fontSize: 16)
