@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CC43867E2BC596F000BE16DC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CC43867D2BC596F000BE16DC /* GoogleService-Info.plist */; };
 		CC4955922B998CE4003B3341 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4955912B998CE4003B3341 /* AppDelegate.swift */; };
 		CC4955942B998CE4003B3341 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4955932B998CE4003B3341 /* SceneDelegate.swift */; };
 		CC49559B2B998CE5003B3341 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CC49559A2B998CE5003B3341 /* Assets.xcassets */; };
@@ -18,7 +19,6 @@
 		CC4955AF2B998D50003B3341 /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = CC4955AE2B998D50003B3341 /* FirebaseAppCheck */; };
 		CC4955B22B998DAB003B3341 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = CC4955B12B998DAB003B3341 /* SnapKit */; };
 		CC4955B52B998DB8003B3341 /* SwiftSMTP in Frameworks */ = {isa = PBXBuildFile; productRef = CC4955B42B998DB8003B3341 /* SwiftSMTP */; };
-		CC4955BA2B998E04003B3341 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CC4955B92B998E04003B3341 /* GoogleService-Info.plist */; };
 		CC4955BC2B998E79003B3341 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = CC4955BB2B998E79003B3341 /* FirebaseAnalytics */; };
 		CC4955BE2B998E79003B3341 /* FirebaseAnalyticsOnDeviceConversion in Frameworks */ = {isa = PBXBuildFile; productRef = CC4955BD2B998E79003B3341 /* FirebaseAnalyticsOnDeviceConversion */; };
 		CC4955C02B998E79003B3341 /* FirebaseAnalyticsSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CC4955BF2B998E79003B3341 /* FirebaseAnalyticsSwift */; };
@@ -106,13 +106,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		CC43867D2BC596F000BE16DC /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		CC49558E2B998CE4003B3341 /* Cougyebu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cougyebu.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC4955912B998CE4003B3341 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CC4955932B998CE4003B3341 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		CC49559A2B998CE5003B3341 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CC49559D2B998CE5003B3341 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		CC49559F2B998CE5003B3341 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		CC4955B92B998E04003B3341 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		CC4955F22B998EAF003B3341 /* UITextField + Publisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextField + Publisher.swift"; sourceTree = "<group>"; };
 		CC4955F42B998EB9003B3341 /* String +.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String +.swift"; sourceTree = "<group>"; };
 		CC4955F62B998EC2003B3341 /* UIDevice +.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIDevice +.swift"; sourceTree = "<group>"; };
@@ -251,7 +251,7 @@
 				CC49559A2B998CE5003B3341 /* Assets.xcassets */,
 				CC49559C2B998CE5003B3341 /* LaunchScreen.storyboard */,
 				CC49559F2B998CE5003B3341 /* Info.plist */,
-				CC4955B92B998E04003B3341 /* GoogleService-Info.plist */,
+				CC43867D2BC596F000BE16DC /* GoogleService-Info.plist */,
 			);
 			path = Cougyebu;
 			sourceTree = "<group>";
@@ -543,7 +543,7 @@
 			files = (
 				CC49563E2B9997F2003B3341 /* .gitignore in Resources */,
 				CC49559E2B998CE5003B3341 /* LaunchScreen.storyboard in Resources */,
-				CC4955BA2B998E04003B3341 /* GoogleService-Info.plist in Resources */,
+				CC43867E2BC596F000BE16DC /* GoogleService-Info.plist in Resources */,
 				CC49559B2B998CE5003B3341 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -767,7 +767,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = hansol.Cougyebu;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -800,7 +800,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = hansol.Cougyebu;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

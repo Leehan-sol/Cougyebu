@@ -14,44 +14,55 @@ class PostManager {
     
     // 게시글 로드
     func loadPosts(email: String, date: String, completion: @escaping ([Posts]?) -> Void) {
-        let userDB = db.collection(email)
-        let databaseRef = userDB.document(date)
-        
-        databaseRef.getDocument { snapshot, error in
-            if let error = error {
-                print("Error getting document: \(error)")
-                completion(nil)
-                return
-            }
+        DispatchQueue.global().async { 
+            let userDB = self.db.collection(email)
+            let databaseRef = userDB.document(date)
             
-            guard let snapshot = snapshot, snapshot.exists else {
-                completion(nil)
-                return
-            }
-            
-            guard let data = snapshot.data(), let postsData = data["posts"] as? [[String: Any]] else {
-                completion(nil)
-                return
-            }
-            
-            var posts: [Posts] = []
-            for postData in postsData {
-                if let date = postData["date"] as? String,
-                   let group = postData["group"] as? String,
-                   let category = postData["category"] as? String,
-                   let content = postData["content"] as? String,
-                   let cost = postData["cost"] as? String,
-                   let uuid = postData["uuid"] as? String {
-                    let post = Posts(date: date, group: group, category: category, content: content, cost: cost, uuid: uuid)
-                    posts.append(post)
-                } else {
-                    print("Error parsing post data")
+            databaseRef.getDocument { snapshot, error in
+                if let error = error {
+                    print("Error getting document: \(error)")
+                    DispatchQueue.main.async {
+                        completion(nil)
+                    }
+                    return
+                }
+                
+                guard let snapshot = snapshot, snapshot.exists else {
+                    DispatchQueue.main.async {
+                        completion(nil)
+                    }
+                    return
+                }
+                
+                guard let data = snapshot.data(), let postsData = data["posts"] as? [[String: Any]] else {
+                    DispatchQueue.main.async {
+                        completion(nil)
+                    }
+                    return
+                }
+                
+                var posts: [Posts] = []
+                for postData in postsData {
+                    if let date = postData["date"] as? String,
+                       let group = postData["group"] as? String,
+                       let category = postData["category"] as? String,
+                       let content = postData["content"] as? String,
+                       let cost = postData["cost"] as? String,
+                       let uuid = postData["uuid"] as? String {
+                        let post = Posts(date: date, group: group, category: category, content: content, cost: cost, uuid: uuid)
+                        posts.append(post)
+                    } else {
+                        print("Error parsing post data")
+                    }
+                }
+                
+                DispatchQueue.main.async { // UI 업데이트는 메인 큐에서 수행되어야 함
+                    completion(posts)
                 }
             }
-            
-            completion(posts)
         }
     }
+
     
     
     func addPost(email: String, date: String, post: Posts) {
