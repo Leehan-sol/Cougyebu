@@ -14,7 +14,7 @@ class PostManager {
     
     // 게시글 로드
     func loadPosts(email: String, date: String, completion: @escaping ([Posts]?) -> Void) {
-        DispatchQueue.global().async { 
+        DispatchQueue.global().async {
             let userDB = self.db.collection(email)
             let databaseRef = userDB.document(date)
             
@@ -56,7 +56,7 @@ class PostManager {
                     }
                 }
                 
-                DispatchQueue.main.async { // UI 업데이트는 메인 큐에서 수행되어야 함
+                DispatchQueue.main.async { 
                     completion(posts)
                 }
             }
