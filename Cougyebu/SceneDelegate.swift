@@ -19,6 +19,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
           self.window = window
           
         AppController.shared.start()
+       
       }
 
     

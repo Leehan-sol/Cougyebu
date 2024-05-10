@@ -29,10 +29,15 @@ class ConnectViewController: UIViewController {
         setNavigationBar()
         setTextField()
         setAddTarget()
+        setBinding()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        setUI()
+    func setBinding() {
+        viewModel.observableUser?.bind { [weak self] _ in
+            DispatchQueue.main.async {
+                self?.setUI()
+            }
+        }
     }
     
     func setNavigationBar() {

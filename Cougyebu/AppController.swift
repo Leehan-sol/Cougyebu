@@ -14,7 +14,7 @@ class AppController {
     private var cancellables = Set<AnyCancellable>()
     
     func start() {
-        NotificationCenter.default.publisher(for: .authStateDidChange)
+        NotificationCenter.authStateDidChangePublisher
             .sink { _ in
                 self.updateRootVC(animated: true)
             }

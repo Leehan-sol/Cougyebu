@@ -117,11 +117,6 @@ class MainViewController: UIViewController {
     func loadPost(dates: [String]) {
         viewModel.loadPost(dates: dates)
     }
-
-    func setGesture() {
-        tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(toggleCalender(_:)))
-        mainView.tableView.addGestureRecognizer(tapGestureRecognizer)
-    }
     
     func updateButtons() {
         if let startDate = firstDate, let endDate = lastDate {
@@ -136,7 +131,8 @@ class MainViewController: UIViewController {
     // MARK: - @objc
     @objc func showCalendar() {
         mainView.calendar.isHidden = false
-        setGesture()
+        tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(toggleCalender(_:)))
+        mainView.tableView.addGestureRecognizer(tapGestureRecognizer)
     }
     
     @objc func toggleCalender(_ sender: UITapGestureRecognizer) {
