@@ -107,7 +107,7 @@ class PasswordEditViewController: UIViewController {
             } else if newPassword != checkPassword {
                 AlertManager.showAlertOneButton(from: self, title: "비밀번호 불일치", message: "변경할 비밀번호가 일치하지않습니다.", buttonTitle: "확인")
             } else if !newPassword.isValidPassword() {
-                AlertManager.showAlertOneButton(from: self, title: "유효하지 않은 비밀번호", message: "비밀번호는 대소문자, 특수문자, 숫자 8자 이상이여야합니다.", buttonTitle: "확인")
+                AlertManager.showAlertOneButton(from: self, title: "유효하지 않은 비밀번호", message: "비밀번호는 특수문자, 숫자 포함 8자 이상이여야합니다.", buttonTitle: "확인")
             } else {
                 let user = Auth.auth().currentUser
                 user?.updatePassword(to: newPassword) { error in

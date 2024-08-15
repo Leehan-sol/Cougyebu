@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CC43867E2BC596F000BE16DC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CC43867D2BC596F000BE16DC /* GoogleService-Info.plist */; };
 		CC4955922B998CE4003B3341 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4955912B998CE4003B3341 /* AppDelegate.swift */; };
 		CC4955942B998CE4003B3341 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4955932B998CE4003B3341 /* SceneDelegate.swift */; };
 		CC49559B2B998CE5003B3341 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CC49559A2B998CE5003B3341 /* Assets.xcassets */; };
@@ -18,7 +19,6 @@
 		CC4955AF2B998D50003B3341 /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = CC4955AE2B998D50003B3341 /* FirebaseAppCheck */; };
 		CC4955B22B998DAB003B3341 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = CC4955B12B998DAB003B3341 /* SnapKit */; };
 		CC4955B52B998DB8003B3341 /* SwiftSMTP in Frameworks */ = {isa = PBXBuildFile; productRef = CC4955B42B998DB8003B3341 /* SwiftSMTP */; };
-		CC4955BA2B998E04003B3341 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CC4955B92B998E04003B3341 /* GoogleService-Info.plist */; };
 		CC4955BC2B998E79003B3341 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = CC4955BB2B998E79003B3341 /* FirebaseAnalytics */; };
 		CC4955BE2B998E79003B3341 /* FirebaseAnalyticsOnDeviceConversion in Frameworks */ = {isa = PBXBuildFile; productRef = CC4955BD2B998E79003B3341 /* FirebaseAnalyticsOnDeviceConversion */; };
 		CC4955C02B998E79003B3341 /* FirebaseAnalyticsSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CC4955BF2B998E79003B3341 /* FirebaseAnalyticsSwift */; };
@@ -46,7 +46,7 @@
 		CC4955EC2B998E79003B3341 /* FirebaseRemoteConfigSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CC4955EB2B998E79003B3341 /* FirebaseRemoteConfigSwift */; };
 		CC4955EE2B998E79003B3341 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = CC4955ED2B998E79003B3341 /* FirebaseStorage */; };
 		CC4955F02B998E79003B3341 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = CC4955EF2B998E79003B3341 /* FirebaseStorageCombine-Community */; };
-		CC4955F32B998EAF003B3341 /* UITextField +.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4955F22B998EAF003B3341 /* UITextField +.swift */; };
+		CC4955F32B998EAF003B3341 /* UITextField + Publisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4955F22B998EAF003B3341 /* UITextField + Publisher.swift */; };
 		CC4955F52B998EB9003B3341 /* String +.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4955F42B998EB9003B3341 /* String +.swift */; };
 		CC4955F72B998EC2003B3341 /* UIDevice +.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4955F62B998EC2003B3341 /* UIDevice +.swift */; };
 		CC4955FA2B998F94003B3341 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4955F92B998F94003B3341 /* User.swift */; };
@@ -78,10 +78,13 @@
 		CC4956382B999485003B3341 /* WithdrawalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4956372B999485003B3341 /* WithdrawalViewController.swift */; };
 		CC49563A2B9995BF003B3341 /* Secret.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4956392B9995BF003B3341 /* Secret.swift */; };
 		CC49563E2B9997F2003B3341 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = CC49563D2B9997F2003B3341 /* .gitignore */; };
+		CC53482A2BB85E0600037DC1 /* AppController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5348292BB85E0600037DC1 /* AppController.swift */; };
+		CC53482C2BB869FD00037DC1 /* PasswordChangeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC53482B2BB869FD00037DC1 /* PasswordChangeViewModel.swift */; };
 		CC570FF82B9EADFE00DF000D /* DGCharts in Frameworks */ = {isa = PBXBuildFile; productRef = CC570FF72B9EADFE00DF000D /* DGCharts */; };
 		CC570FFA2B9EAE0C00DF000D /* ChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC570FF92B9EAE0C00DF000D /* ChartView.swift */; };
 		CC570FFC2B9EAE1600DF000D /* ChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC570FFB2B9EAE1600DF000D /* ChartViewController.swift */; };
 		CC570FFE2B9EAE1D00DF000D /* ChartViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC570FFD2B9EAE1D00DF000D /* ChartViewModel.swift */; };
+		CC576A9A2BB70D0F0015FE5E /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC576A992BB70D0F0015FE5E /* LoginViewModel.swift */; };
 		CC580F172BA071700047E614 /* Int +.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC580F162BA071700047E614 /* Int +.swift */; };
 		CC580F192BA07D000047E614 /* CurrencyValueFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC580F182BA07D000047E614 /* CurrencyValueFormatter.swift */; };
 		CC580F1C2BA08CCE0047E614 /* NVActivityIndicatorView in Frameworks */ = {isa = PBXBuildFile; productRef = CC580F1B2BA08CCE0047E614 /* NVActivityIndicatorView */; };
@@ -93,22 +96,29 @@
 		CC5A560B2B9B55630012F661 /* Date +.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5A560A2B9B55630012F661 /* Date +.swift */; };
 		CC5A560E2B9B5A870012F661 /* CategoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5A560D2B9B5A870012F661 /* CategoryView.swift */; };
 		CC5A56102B9B5A930012F661 /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5A560F2B9B5A930012F661 /* CategoryViewController.swift */; };
+		CC5B5A322BBBD24A0024BD84 /* RegisterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5B5A312BBBD24A0024BD84 /* RegisterViewModel.swift */; };
 		CC5E35DE2BA133DD0082FDC1 /* PasswordChangeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5E35DD2BA133DD0082FDC1 /* PasswordChangeViewController.swift */; };
 		CC5E35E02BA134320082FDC1 /* PasswordChangeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5E35DF2BA134320082FDC1 /* PasswordChangeView.swift */; };
 		CC62E3082B9BECFE00E0438F /* MainTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC62E3072B9BECFE00E0438F /* MainTableViewCell.swift */; };
 		CC62E3332B9CA25600E0438F /* FSCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = CC62E3322B9CA25600E0438F /* FSCalendar */; };
 		CCCCCCED2B9A946C00355EAA /* ConnectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCCCCCEC2B9A946C00355EAA /* ConnectViewModel.swift */; };
+		CCF8A7B52C6DD76D00553143 /* RxBlocking in Frameworks */ = {isa = PBXBuildFile; productRef = CCF8A7B42C6DD76D00553143 /* RxBlocking */; };
+		CCF8A7B72C6DD76D00553143 /* RxBlocking-Dynamic in Frameworks */ = {isa = PBXBuildFile; productRef = CCF8A7B62C6DD76D00553143 /* RxBlocking-Dynamic */; };
+		CCF8A7B92C6DD76D00553143 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = CCF8A7B82C6DD76D00553143 /* RxCocoa */; };
+		CCF8A7BB2C6DD76D00553143 /* RxCocoa-Dynamic in Frameworks */ = {isa = PBXBuildFile; productRef = CCF8A7BA2C6DD76D00553143 /* RxCocoa-Dynamic */; };
+		CCF8A7BD2C6DD76D00553143 /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = CCF8A7BC2C6DD76D00553143 /* RxRelay */; };
+		CCF8A7BF2C6DD95E00553143 /* Notification +.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCF8A7BE2C6DD95E00553143 /* Notification +.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		CC43867D2BC596F000BE16DC /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		CC49558E2B998CE4003B3341 /* Cougyebu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cougyebu.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC4955912B998CE4003B3341 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CC4955932B998CE4003B3341 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		CC49559A2B998CE5003B3341 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CC49559D2B998CE5003B3341 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		CC49559F2B998CE5003B3341 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		CC4955B92B998E04003B3341 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
-		CC4955F22B998EAF003B3341 /* UITextField +.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextField +.swift"; sourceTree = "<group>"; };
+		CC4955F22B998EAF003B3341 /* UITextField + Publisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextField + Publisher.swift"; sourceTree = "<group>"; };
 		CC4955F42B998EB9003B3341 /* String +.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String +.swift"; sourceTree = "<group>"; };
 		CC4955F62B998EC2003B3341 /* UIDevice +.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIDevice +.swift"; sourceTree = "<group>"; };
 		CC4955F92B998F94003B3341 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
@@ -140,9 +150,12 @@
 		CC4956372B999485003B3341 /* WithdrawalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WithdrawalViewController.swift; sourceTree = "<group>"; };
 		CC4956392B9995BF003B3341 /* Secret.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Secret.swift; sourceTree = "<group>"; };
 		CC49563D2B9997F2003B3341 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		CC5348292BB85E0600037DC1 /* AppController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppController.swift; sourceTree = "<group>"; };
+		CC53482B2BB869FD00037DC1 /* PasswordChangeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordChangeViewModel.swift; sourceTree = "<group>"; };
 		CC570FF92B9EAE0C00DF000D /* ChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartView.swift; sourceTree = "<group>"; };
 		CC570FFB2B9EAE1600DF000D /* ChartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartViewController.swift; sourceTree = "<group>"; };
 		CC570FFD2B9EAE1D00DF000D /* ChartViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartViewModel.swift; sourceTree = "<group>"; };
+		CC576A992BB70D0F0015FE5E /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		CC580F162BA071700047E614 /* Int +.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Int +.swift"; sourceTree = "<group>"; };
 		CC580F182BA07D000047E614 /* CurrencyValueFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyValueFormatter.swift; sourceTree = "<group>"; };
 		CC5A55FE2B9B223F0012F661 /* PostManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostManager.swift; sourceTree = "<group>"; };
@@ -153,10 +166,12 @@
 		CC5A560A2B9B55630012F661 /* Date +.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date +.swift"; sourceTree = "<group>"; };
 		CC5A560D2B9B5A870012F661 /* CategoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryView.swift; sourceTree = "<group>"; };
 		CC5A560F2B9B5A930012F661 /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
+		CC5B5A312BBBD24A0024BD84 /* RegisterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewModel.swift; sourceTree = "<group>"; };
 		CC5E35DD2BA133DD0082FDC1 /* PasswordChangeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordChangeViewController.swift; sourceTree = "<group>"; };
 		CC5E35DF2BA134320082FDC1 /* PasswordChangeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordChangeView.swift; sourceTree = "<group>"; };
 		CC62E3072B9BECFE00E0438F /* MainTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTableViewCell.swift; sourceTree = "<group>"; };
 		CCCCCCEC2B9A946C00355EAA /* ConnectViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectViewModel.swift; sourceTree = "<group>"; };
+		CCF8A7BE2C6DD95E00553143 /* Notification +.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification +.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -186,20 +201,25 @@
 				CC580F1C2BA08CCE0047E614 /* NVActivityIndicatorView in Frameworks */,
 				CC4955E22B998E79003B3341 /* FirebaseInstallations in Frameworks */,
 				CC4955C22B998E79003B3341 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
+				CCF8A7B92C6DD76D00553143 /* RxCocoa in Frameworks */,
 				CC4955B52B998DB8003B3341 /* SwiftSMTP in Frameworks */,
+				CCF8A7B52C6DD76D00553143 /* RxBlocking in Frameworks */,
 				CC4955D82B998E79003B3341 /* FirebaseFirestoreSwift in Frameworks */,
 				CC4955F02B998E79003B3341 /* FirebaseStorageCombine-Community in Frameworks */,
 				CC4955D02B998E79003B3341 /* FirebaseDatabaseSwift in Frameworks */,
 				CC4955EA2B998E79003B3341 /* FirebaseRemoteConfig in Frameworks */,
 				CC4955BE2B998E79003B3341 /* FirebaseAnalyticsOnDeviceConversion in Frameworks */,
+				CCF8A7BD2C6DD76D00553143 /* RxRelay in Frameworks */,
 				CC4955CC2B998E79003B3341 /* FirebaseCrashlytics in Frameworks */,
 				CC4955AD2B998D50003B3341 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
 				CC4955EC2B998E79003B3341 /* FirebaseRemoteConfigSwift in Frameworks */,
 				CC4955BC2B998E79003B3341 /* FirebaseAnalytics in Frameworks */,
+				CCF8A7B72C6DD76D00553143 /* RxBlocking-Dynamic in Frameworks */,
 				CC4955EE2B998E79003B3341 /* FirebaseStorage in Frameworks */,
 				CC4955CA2B998E79003B3341 /* FirebaseAuthCombine-Community in Frameworks */,
 				CC4955D22B998E79003B3341 /* FirebaseDynamicLinks in Frameworks */,
 				CC4955E02B998E79003B3341 /* FirebaseInAppMessagingSwift-Beta in Frameworks */,
+				CCF8A7BB2C6DD76D00553143 /* RxCocoa-Dynamic in Frameworks */,
 				CC4955D42B998E79003B3341 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -230,6 +250,7 @@
 			children = (
 				CC4955912B998CE4003B3341 /* AppDelegate.swift */,
 				CC4955932B998CE4003B3341 /* SceneDelegate.swift */,
+				CC5348292BB85E0600037DC1 /* AppController.swift */,
 				CC49561B2B9992F3003B3341 /* Observable.swift */,
 				CC4955F12B998E98003B3341 /* Extension */,
 				CC4955F82B998F84003B3341 /* Model */,
@@ -240,7 +261,7 @@
 				CC49559A2B998CE5003B3341 /* Assets.xcassets */,
 				CC49559C2B998CE5003B3341 /* LaunchScreen.storyboard */,
 				CC49559F2B998CE5003B3341 /* Info.plist */,
-				CC4955B92B998E04003B3341 /* GoogleService-Info.plist */,
+				CC43867D2BC596F000BE16DC /* GoogleService-Info.plist */,
 			);
 			path = Cougyebu;
 			sourceTree = "<group>";
@@ -248,12 +269,13 @@
 		CC4955F12B998E98003B3341 /* Extension */ = {
 			isa = PBXGroup;
 			children = (
-				CC4955F42B998EB9003B3341 /* String +.swift */,
-				CC4955F22B998EAF003B3341 /* UITextField +.swift */,
-				CC4955F62B998EC2003B3341 /* UIDevice +.swift */,
-				CC5A56012B9B3CAC0012F661 /* UIButton +.swift */,
-				CC5A560A2B9B55630012F661 /* Date +.swift */,
 				CC580F162BA071700047E614 /* Int +.swift */,
+				CC4955F42B998EB9003B3341 /* String +.swift */,
+				CC5A560A2B9B55630012F661 /* Date +.swift */,
+				CC5A56012B9B3CAC0012F661 /* UIButton +.swift */,
+				CC4955F62B998EC2003B3341 /* UIDevice +.swift */,
+				CCF8A7BE2C6DD95E00553143 /* Notification +.swift */,
+				CC5348262BB853F200037DC1 /* Combine */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -276,6 +298,7 @@
 			children = (
 				CC4956042B9991CC003B3341 /* RegisterView.swift */,
 				CC4956062B9991D6003B3341 /* RegisterViewController.swift */,
+				CC5B5A312BBBD24A0024BD84 /* RegisterViewModel.swift */,
 			);
 			path = RegisterPage;
 			sourceTree = "<group>";
@@ -285,6 +308,7 @@
 			children = (
 				CC4956092B999205003B3341 /* LoginView.swift */,
 				CC49560B2B999214003B3341 /* LoginViewController.swift */,
+				CC576A992BB70D0F0015FE5E /* LoginViewModel.swift */,
 				CC4956032B9991B8003B3341 /* RegisterPage */,
 				CC5E35E12BA134350082FDC1 /* PasswordChagePage */,
 			);
@@ -364,6 +388,14 @@
 			path = WithdrawalPage;
 			sourceTree = "<group>";
 		};
+		CC5348262BB853F200037DC1 /* Combine */ = {
+			isa = PBXGroup;
+			children = (
+				CC4955F22B998EAF003B3341 /* UITextField + Publisher.swift */,
+			);
+			path = Combine;
+			sourceTree = "<group>";
+		};
 		CC570FF52B9EAD4900DF000D /* ChartPage */ = {
 			isa = PBXGroup;
 			children = (
@@ -409,6 +441,7 @@
 			children = (
 				CC5E35DF2BA134320082FDC1 /* PasswordChangeView.swift */,
 				CC5E35DD2BA133DD0082FDC1 /* PasswordChangeViewController.swift */,
+				CC53482B2BB869FD00037DC1 /* PasswordChangeViewModel.swift */,
 			);
 			path = PasswordChagePage;
 			sourceTree = "<group>";
@@ -467,6 +500,11 @@
 				CC62E3322B9CA25600E0438F /* FSCalendar */,
 				CC570FF72B9EADFE00DF000D /* DGCharts */,
 				CC580F1B2BA08CCE0047E614 /* NVActivityIndicatorView */,
+				CCF8A7B42C6DD76D00553143 /* RxBlocking */,
+				CCF8A7B62C6DD76D00553143 /* RxBlocking-Dynamic */,
+				CCF8A7B82C6DD76D00553143 /* RxCocoa */,
+				CCF8A7BA2C6DD76D00553143 /* RxCocoa-Dynamic */,
+				CCF8A7BC2C6DD76D00553143 /* RxRelay */,
 			);
 			productName = Cougyebu;
 			productReference = CC49558E2B998CE4003B3341 /* Cougyebu.app */;
@@ -503,6 +541,7 @@
 				CC62E3312B9CA25600E0438F /* XCRemoteSwiftPackageReference "FSCalendar" */,
 				CC570FF62B9EADFE00DF000D /* XCRemoteSwiftPackageReference "Charts" */,
 				CC580F1A2BA08CCE0047E614 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */,
+				CCF8A7B32C6DD76D00553143 /* XCRemoteSwiftPackageReference "RxSwift" */,
 			);
 			productRefGroup = CC49558F2B998CE4003B3341 /* Products */;
 			projectDirPath = "";
@@ -520,7 +559,7 @@
 			files = (
 				CC49563E2B9997F2003B3341 /* .gitignore in Resources */,
 				CC49559E2B998CE5003B3341 /* LaunchScreen.storyboard in Resources */,
-				CC4955BA2B998E04003B3341 /* GoogleService-Info.plist in Resources */,
+				CC43867E2BC596F000BE16DC /* GoogleService-Info.plist in Resources */,
 				CC49559B2B998CE5003B3341 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -542,22 +581,26 @@
 				CC49563A2B9995BF003B3341 /* Secret.swift in Sources */,
 				CC570FFA2B9EAE0C00DF000D /* ChartView.swift in Sources */,
 				CC4956272B999365003B3341 /* ConnectView.swift in Sources */,
-				CC4955F32B998EAF003B3341 /* UITextField +.swift in Sources */,
+				CC4955F32B998EAF003B3341 /* UITextField + Publisher.swift in Sources */,
 				CC4956002B998FAB003B3341 /* AlertManager.swift in Sources */,
 				CC4956362B999473003B3341 /* WithdrawalView.swift in Sources */,
 				CC49560C2B999215003B3341 /* LoginViewController.swift in Sources */,
 				CC4955F52B998EB9003B3341 /* String +.swift in Sources */,
 				CC570FFC2B9EAE1600DF000D /* ChartViewController.swift in Sources */,
 				CC4956162B9992B6003B3341 /* MyPageView.swift in Sources */,
+				CCF8A7BF2C6DD95E00553143 /* Notification +.swift in Sources */,
 				CC62E3082B9BECFE00E0438F /* MainTableViewCell.swift in Sources */,
 				CC4956332B999440003B3341 /* PasswordEditViewController.swift in Sources */,
+				CC53482C2BB869FD00037DC1 /* PasswordChangeViewModel.swift in Sources */,
 				CC49561A2B9992CC003B3341 /* MyPageViewModel.swift in Sources */,
 				CC5A56102B9B5A930012F661 /* CategoryViewController.swift in Sources */,
 				CC4955922B998CE4003B3341 /* AppDelegate.swift in Sources */,
 				CCCCCCED2B9A946C00355EAA /* ConnectViewModel.swift in Sources */,
 				CC49562E2B999409003B3341 /* NicknameViewController.swift in Sources */,
 				CC4956382B999485003B3341 /* WithdrawalViewController.swift in Sources */,
+				CC5B5A322BBBD24A0024BD84 /* RegisterViewModel.swift in Sources */,
 				CC5A56092B9B42BF0012F661 /* PostingViewModel.swift in Sources */,
+				CC53482A2BB85E0600037DC1 /* AppController.swift in Sources */,
 				CC4956112B999250003B3341 /* MainViewController.swift in Sources */,
 				CC49561C2B9992F3003B3341 /* Observable.swift in Sources */,
 				CC4956312B999434003B3341 /* PasswordEditView.swift in Sources */,
@@ -576,6 +619,7 @@
 				CC5E35E02BA134320082FDC1 /* PasswordChangeView.swift in Sources */,
 				CC4955FC2B998F9E003B3341 /* UserManager.swift in Sources */,
 				CC4956292B999373003B3341 /* ConnectViewController.swift in Sources */,
+				CC576A9A2BB70D0F0015FE5E /* LoginViewModel.swift in Sources */,
 				CC5A56022B9B3CAC0012F661 /* UIButton +.swift in Sources */,
 				CC5A55FF2B9B223F0012F661 /* PostManager.swift in Sources */,
 				CC4956242B99933E003B3341 /* TermsViewController.swift in Sources */,
@@ -739,7 +783,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = hansol.Cougyebu;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -772,7 +816,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = hansol.Cougyebu;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -854,6 +898,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 2.8.4;
+			};
+		};
+		CCF8A7B32C6DD76D00553143 /* XCRemoteSwiftPackageReference "RxSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ReactiveX/RxSwift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.7.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -1043,6 +1095,31 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CC62E3312B9CA25600E0438F /* XCRemoteSwiftPackageReference "FSCalendar" */;
 			productName = FSCalendar;
+		};
+		CCF8A7B42C6DD76D00553143 /* RxBlocking */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CCF8A7B32C6DD76D00553143 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxBlocking;
+		};
+		CCF8A7B62C6DD76D00553143 /* RxBlocking-Dynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CCF8A7B32C6DD76D00553143 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = "RxBlocking-Dynamic";
+		};
+		CCF8A7B82C6DD76D00553143 /* RxCocoa */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CCF8A7B32C6DD76D00553143 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxCocoa;
+		};
+		CCF8A7BA2C6DD76D00553143 /* RxCocoa-Dynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CCF8A7B32C6DD76D00553143 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = "RxCocoa-Dynamic";
+		};
+		CCF8A7BC2C6DD76D00553143 /* RxRelay */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CCF8A7B32C6DD76D00553143 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxRelay;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

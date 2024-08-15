@@ -6,12 +6,23 @@
 //
 
 import UIKit
+import Combine
 import FirebaseAuth
 
 class LoginViewController: UIViewController {
     
     private let loginView = LoginView()
-    private let userManager = UserManager()
+    private let viewModel: LoginViewProtocol
+    private var cancelBags = Set<AnyCancellable>()
+    
+    init(viewModel: LoginViewProtocol) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func loadView() {
         view = loginView
@@ -19,23 +30,44 @@ class LoginViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setNavigation()
         setTextField()
-        setupAddTarget()
-        navigationItem.leftBarButtonItem = nil
+        setAddTarget()
+        bindViewModel()
     }
     
     // MARK: - Methods
-    func setTextField(){
+    private func setNavigation(){
+        navigationItem.leftBarButtonItem = nil
+    }
+    
+    private func setTextField(){
         loginView.idTextField.delegate = self
         loginView.pwTextField.delegate = self
     }
     
-    func setupAddTarget() {
+    private func setAddTarget() {
         loginView.showPwButton.addTarget(self, action: #selector(showPwButtonTapped), for: .touchUpInside)
         loginView.loginButton.addTarget(self, action: #selector(loginButtonTapped), for: .touchUpInside)
         loginView.findIdButton.addTarget(self, action: #selector(findIdButtonTapped), for: .touchUpInside)
         loginView.findPwButton.addTarget(self, action: #selector(findPwButtonTapped), for: .touchUpInside)
         loginView.registerButton.addTarget(self, action: #selector(registerButtonTapped), for: .touchUpInside)
+    }
+    
+    private func bindViewModel() {
+        viewModel.showAlert
+            .sink { [weak self] (title, message) in
+                AlertManager.showAlertOneButton(from: self!, title: title, message: message, buttonTitle: "확인")
+            }
+            .store(in: &cancelBags)
+        
+        viewModel.checkResult
+            .sink { bool in
+                if bool == true {
+                    NotificationCenter.default.post(name: .authStateDidChange, object: nil)
+                }
+            }
+            .store(in: &cancelBags)
     }
     
     
@@ -53,120 +85,37 @@ class LoginViewController: UIViewController {
         
     }
     
-    // 로그인
     @objc func loginButtonTapped() {
-        if let email = loginView.idTextField.text, let pw = loginView.pwTextField.text {
-            Auth.auth().signIn(withEmail: email, password: pw) { authResult, error in
-                if let error = error {
-                    AlertManager.showAlertOneButton(from: self, title: "로그인 실패", message: "아이디 또는 비밀번호가 틀렸습니다.", buttonTitle: "확인")
-                    print("로그인 실패 : \(error.localizedDescription)")
-                } else {
-                    self.userManager.findUser(email: email) { user in
-                        if user != nil {
-                            print("로그인 성공")
-                            self.loginSuccess(email: email)
-                        } else {
-                            print(error?.localizedDescription as Any)
-                        }
-                        
-                    }
-                }
-            }
-        }
+        guard let id = loginView.idTextField.text else { return }
+        guard let pw = loginView.pwTextField.text else { return }
+        
+        viewModel.loginButtonTapped(id: id, password: pw)
     }
-    
-    func loginSuccess(email: String) {
-        if let currentUserEmail = Auth.auth().currentUser?.email {
-            let mainVM = MainViewModel(userEmail: currentUserEmail)
-            let mainVC = MainViewController(viewModel: mainVM)
-            let mainNavi = UINavigationController(rootViewController: mainVC)
-            
-            let chartVM = ChartViewModel(userEmail: currentUserEmail)
-            let chartVC = ChartViewController(viewModel: chartVM)
-            
-            let myPageVM = MyPageViewModel(userEmail: currentUserEmail)
-            let myPageVC = MyPageViewController(viewModel: myPageVM)
-            let myPageNavi = UINavigationController(rootViewController: myPageVC)
-            
-            let tabBarVC = UITabBarController()
-            tabBarVC.setViewControllers([mainNavi, chartVC, myPageNavi], animated: false)
-            tabBarVC.modalPresentationStyle = .fullScreen
-            tabBarVC.tabBar.backgroundColor = .white
-            tabBarVC.tabBar.tintColor = .black
-            
-            if let items = tabBarVC.tabBar.items {
-                items[0].title = "Main"
-                items[0].image = UIImage(systemName: "folder")
-                items[1].title = "Chart"
-                items[1].image = UIImage(systemName: "chart.line.uptrend.xyaxis.circle.fill")
-                items[2].title = "My Page"
-                items[2].image = UIImage(systemName: "person")
-            }
-            UIApplication.shared.windows.first?.rootViewController = tabBarVC
-            UIApplication.shared.windows.first?.makeKeyAndVisible()
-        }
-    }
-    
     
     @objc func findIdButtonTapped() {
-        let alertController = UIAlertController(title: "아이디 찾기", message: "등록한 닉네임을 입력해주세요.", preferredStyle: .alert)
-        
-        alertController.addTextField { textField in
-            textField.placeholder = "닉네임"
-        }
-        
-        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
-        let findAction = UIAlertAction(title: "찾기", style: .default) { [weak self] _ in
-            if let nickname = alertController.textFields?.first?.text?.trimmingCharacters(in: .whitespaces) {
-                if !nickname.isEmpty {
-                    self?.findIdByNickname(nickname)
-                }
+        AlertManager.showAlertWithOneTF(from: self,
+                                        title: "아이디 찾기",
+                                        message: "등록한 닉네임을 입력해주세요.",
+                                        placeholder: "닉네임",
+                                        button1Title: "찾기",
+                                        button2Title: "취소") { [weak self] text in
+            guard let nickname = text?.trimmingCharacters(in: .whitespaces), !nickname.isEmpty else {
+                AlertManager.showAlertOneButton(from: self!, title: "닉네임 입력", message: "닉네임을 입력해주세요.", buttonTitle: "확인")
+                return
             }
-        }
-        
-        alertController.addAction(cancelAction)
-        alertController.addAction(findAction)
-        present(alertController, animated: true, completion: nil)
-    }
-    
-    func findIdByNickname(_ nickname: String) {
-        userManager.findNickname(nickname: nickname) { user in
-            let alertTitle: String
-            let alertMessage: String
-            
-            if let user = user {
-                alertTitle = "아이디 찾기 성공"
-                alertMessage = self.maskEmail(user.email)
-            } else {
-                alertTitle = "아이디 찾기 실패"
-                alertMessage = "해당 닉네임을 가진 사용자를 찾을 수 없습니다."
-            }
-            AlertManager.showAlertOneButton(from: self, title: alertTitle, message: alertMessage, buttonTitle: "확인")
+            self?.viewModel.findId(nickname)
         }
     }
-    
-    // ✨ 이메일 가리는 로직 수정
-    func maskEmail(_ email: String) -> String {
-        let emailArray = Array(email)
-        var maskedEmail = ""
-        for (index, char) in emailArray.enumerated() {
-            if index > 1 && index < 6 && char != "@" {
-                maskedEmail.append("*")
-            } else {
-                maskedEmail.append(char)
-            }
-        }
-        return maskedEmail
-    }
-    
     
     @objc func findPwButtonTapped() {
-        let passwordChangeVC = PasswordChangeViewController()
+        let passwordChangeVM = PasswordChangeViewModel()
+        let passwordChangeVC = PasswordChangeViewController(viewModel: passwordChangeVM)
         self.navigationController?.pushViewController(passwordChangeVC, animated: true)
     }
     
     @objc func registerButtonTapped() {
-        let registerVC = RegisterViewController()
+        let registerVM = RegisterViewModel()
+        let registerVC = RegisterViewController(viewModel: registerVM)
         self.navigationController?.pushViewController(registerVC, animated: true)
     }
     
@@ -188,40 +137,31 @@ extension LoginViewController: UITextFieldDelegate {
         return true
     }
     
-    
     func textFieldDidBeginEditing(_ textField: UITextField) {
         if textField == loginView.idTextField {
-            loginView.idLabel.font = UIFont.systemFont(ofSize: 9)
-            loginView.idLabelCenterY.constant = -18
+            animateLabel(label: loginView.idLabel, centerYConstraint: loginView.idLabelCenterY, fontSize: 9)
         }
         if textField == loginView.pwTextField {
-            loginView.pwLabel.font = UIFont.systemFont(ofSize: 9)
-            loginView.pwLabelCenterY.constant = -18
-        }
-        UIView.animate(withDuration: 0.3) {
-            self.loginView.layoutIfNeeded()
+            animateLabel(label: loginView.pwLabel, centerYConstraint: loginView.pwLabelCenterY, fontSize: 9)
         }
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
-        if textField == loginView.idTextField {
-            if loginView.idTextField.text == "" {
-                loginView.idLabel.font = UIFont.systemFont(ofSize: 16)
-                loginView.idLabelCenterY.constant = 0
-            }
+        if textField == loginView.idTextField && textField.text == "" {
+            animateLabel(label: loginView.idLabel, centerYConstraint: loginView.idLabelCenterY, fontSize: 16)
         }
-        if textField == loginView.pwTextField {
-            if loginView.pwTextField.text == ""{
-                loginView.pwLabel.font = UIFont.systemFont(ofSize: 16)
-                loginView.pwLabelCenterY.constant = 0
-            }
+        if textField == loginView.pwTextField && textField.text == "" {
+            animateLabel(label: loginView.pwLabel, centerYConstraint: loginView.pwLabelCenterY, fontSize: 16)
         }
+    }
+    
+    private func animateLabel(label: UILabel, centerYConstraint: NSLayoutConstraint, fontSize: CGFloat) {
+        label.font = UIFont.systemFont(ofSize: fontSize)
+        centerYConstraint.constant = fontSize == 9 ? -18 : 0
         UIView.animate(withDuration: 0.3) {
             self.loginView.layoutIfNeeded()
         }
     }
-    
-    
     
     
 }

@@ -5,6 +5,7 @@
 //  Created by hansol on 2024/03/07.
 //
 
+import Combine
 import Foundation
 import FirebaseFirestore
 import FirebaseAuth
@@ -14,7 +15,6 @@ class UserManager {
     private let db = Firestore.firestore()
     private let currentUser = Auth.auth().currentUser
     
-    // 유저 찾기
     func findUser(email: String, completion: @escaping (User?) -> Void) {
         let userDB = db.collection("User")
         let query = userDB.whereField("email", isEqualTo: email)
@@ -70,8 +70,6 @@ class UserManager {
         }
     }
     
-    
-    // 아이디 찾기
     func findId(email: String, completion: @escaping (Bool) -> Void) {
         let userDB = db.collection("User")
         let query = userDB.whereField("email", isEqualTo: email)
@@ -87,33 +85,32 @@ class UserManager {
         }
     }
     
-    
-    // 닉네임 찾기
-    func findNickname(nickname: String, completion: @escaping (User?) -> Void) {
+    func findNickname(nickname: String) -> AnyPublisher<User?, Error> {
         let userDB = db.collection("User")
         let query = userDB.whereField("nickname", isEqualTo: nickname)
-        query.getDocuments { (snapShot, error) in
-            if let error = error {
-                print(error.localizedDescription)
-                completion(nil)
-            } else if let qs = snapShot, !qs.documents.isEmpty {
-                if let data = qs.documents.first?.data() {
-                    let email = data["email"] as? String ?? ""
-                    let nickname = data["nickname"] as? String ?? ""
-                    let isConnect = data["isConnect"] as? Bool ?? false
-                    let user = User(email: email, nickname: nickname, isConnect: isConnect)
-                    completion(user)
+        
+        return Future<User?, Error> { promise in
+            query.getDocuments { (snapshot, error) in
+                if let error = error {
+                    promise(.failure(error))
+                } else if let snapshot = snapshot, !snapshot.documents.isEmpty {
+                    if let data = snapshot.documents.first?.data() {
+                        let email = data["email"] as? String ?? ""
+                        let nickname = data["nickname"] as? String ?? ""
+                        let isConnect = data["isConnect"] as? Bool ?? false
+                        let user = User(email: email, nickname: nickname, isConnect: isConnect)
+                        promise(.success(user))
+                    } else {
+                        promise(.success(nil))
+                    }
                 } else {
-                    completion(nil)
+                    promise(.success(nil))
                 }
-            } else {
-                completion(nil)
             }
         }
+        .eraseToAnyPublisher()
     }
     
-    
-    // 카테고리 찾기
     func findCategory(email: String, completion: @escaping (([String]?, [String]?) -> Void)) {
         let userDB = db.collection("User")
         let query = userDB.whereField("email", isEqualTo: email)
@@ -139,8 +136,6 @@ class UserManager {
             }
         }
     }
-
-    
     
     // 유저 생성
     func addUser(user: User) {
@@ -162,7 +157,6 @@ class UserManager {
         }
     }
     
-    
     // 유저 업데이트
     func updateUser(email: String, updatedFields: [String: Any], completion: ((Bool?) -> Void)?) {
         db.collection("User").document(email).updateData(updatedFields) { error in
@@ -176,22 +170,34 @@ class UserManager {
         }
     }
     
-    
-    // 유저 삭제
-    func deleteUser(email: String) {
-            db.collection("User").whereField("email", isEqualTo: email).getDocuments { (querySnapshot, error) in
+    func updateUserNickname(email: String, updatedFields: [String: Any]) -> AnyPublisher<Bool, Error> {
+        return Future<Bool, Error> { promise in
+            self.db.collection("User").document(email).updateData(updatedFields) { error in
                 if let error = error {
-                    print("Error getting documents: \(error.localizedDescription)")
-                    return
-                }
-                for document in querySnapshot!.documents {
-                    document.reference.delete()
-                    print("유저 문서 삭제 성공")
+                    print("Error: \(error)")
+                    promise(.failure(error))
+                } else {
+                    print("유저 정보 업데이트 성공")
+                    promise(.success(true))
                 }
             }
         }
-
+        .eraseToAnyPublisher()
+    }
     
+    // 유저 삭제
+    func deleteUser(email: String) {
+        db.collection("User").whereField("email", isEqualTo: email).getDocuments { (querySnapshot, error) in
+            if let error = error {
+                print("Error getting documents: \(error.localizedDescription)")
+                return
+            }
+            for document in querySnapshot!.documents {
+                document.reference.delete()
+                print("유저 문서 삭제 성공")
+            }
+        }
+    }
     
     // 유저 연결 (inputEmail: 상대이메일)
     func connectUser(inputEmail: String, inputCode: String) {
@@ -267,7 +273,6 @@ class UserManager {
         }
     }
     
-    
     // 카테고리 추가
     func addCategory(email: String?, category: String, categoryType: String) {
         guard let email = email else { return }
@@ -308,7 +313,6 @@ class UserManager {
             }
         }
     }
-
     
     // 카테고리 삭제
     func deleteCategory(email: String, category: String, categoryType: String) {
@@ -350,7 +354,7 @@ class UserManager {
             }
         }
     }
-
+    
     
 }
 

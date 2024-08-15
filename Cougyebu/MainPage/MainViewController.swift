@@ -91,13 +91,15 @@ class MainViewController: UIViewController {
                 self?.mainView.tableView.reloadData()
                 self?.loadPrice()
                 self?.setPlaceholderLabel()
-                self?.setLabelColor()
             }
         }
     }
     
-    func loadCategory() {
-        viewModel.loadCategory()
+    func loadPrice() {
+        let (totalIncome, totalExpenditure, totalPrice) = self.viewModel.calculatePrice()
+        mainView.incomePriceLabel.text = "\(totalIncome.makeComma(num: totalIncome))원"
+        mainView.expenditurePriceLabel.text = "\(totalExpenditure.makeComma(num: totalExpenditure))원"
+        mainView.sumPriceLabel.text = "\(totalPrice.makeComma(num: totalPrice))원"
     }
     
     func setPlaceholderLabel() {
@@ -108,29 +110,12 @@ class MainViewController: UIViewController {
         }
     }
     
+    func loadCategory() {
+        viewModel.loadCategory()
+    }
+    
     func loadPost(dates: [String]) {
         viewModel.loadPost(dates: dates)
-    }
-    
-    func loadPrice() {
-        let (totalIncome, totalExpenditure, totalPrice) = self.viewModel.calculatePrice()
-        mainView.incomePriceLabel.text = "\(totalIncome.makeComma(num: totalIncome))원"
-        mainView.expenditurePriceLabel.text = "\(totalExpenditure.makeComma(num: totalExpenditure))원"
-        mainView.sumPriceLabel.text = "\(totalPrice.makeComma(num: totalPrice))원"
-    }
-    
-    func setLabelColor() {
-        for i in 0..<viewModel.observablePost.value.count {
-            let post = viewModel.observablePost.value[i]
-            if let cell = mainView.tableView.cellForRow(at: IndexPath(row: i, section: 0)) as? MainTableViewCell {
-                cell.priceLabel.textColor = post.group == "수입" ? .systemBlue : .systemRed
-            }
-        }
-    }
-
-    func setGesture() {
-        tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(toggleCalender(_:)))
-        mainView.tableView.addGestureRecognizer(tapGestureRecognizer)
     }
     
     func updateButtons() {
@@ -146,7 +131,8 @@ class MainViewController: UIViewController {
     // MARK: - @objc
     @objc func showCalendar() {
         mainView.calendar.isHidden = false
-        setGesture()
+        tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(toggleCalender(_:)))
+        mainView.tableView.addGestureRecognizer(tapGestureRecognizer)
     }
     
     @objc func toggleCalender(_ sender: UITapGestureRecognizer) {
@@ -232,7 +218,7 @@ extension MainViewController: UITableViewDataSource {
 extension MainViewController: FSCalendarDelegate {
     
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
-        // case 1. 선택 x: 선택 date를 firstDate 설정
+        // 선택 x: 선택 date를 firstDate 설정
         if firstDate == nil {
             firstDate = date
             datesRange = []
@@ -240,9 +226,9 @@ extension MainViewController: FSCalendarDelegate {
             return
         }
         
-        //  case 2. firstDate 하나만 선택된 경우
+        //  firstDate 하나만 선택된 경우
         if firstDate != nil && lastDate == nil {
-            // case 2-1. firstDate 이전 날짜 선택: firstDate 변경
+            // firstDate 이전 날짜 선택: firstDate 변경
             if date < firstDate! {
                 calendar.deselect(firstDate!)
                 firstDate = date
@@ -250,7 +236,7 @@ extension MainViewController: FSCalendarDelegate {
                 mainView.calendar.reloadData()
                 calendar.select(date)
                 return
-                // case 2-2. firstDate 이후 날짜 선택: 범위 선택
+                // firstDate 이후 날짜 선택: 범위 선택
             } else {
                 var range: [Date] = []
                 var currentDate = firstDate!
@@ -279,7 +265,7 @@ extension MainViewController: FSCalendarDelegate {
             }
         }
 
-        // case 3. 두개 선택: 선택날짜 전체해제 후 선택 날짜를 firstDate로 설정
+        // 두개 선택: 선택날짜 전체해제 후 선택 날짜를 firstDate로 설정
         if firstDate != nil && lastDate != nil {
             
             for day in calendar.selectedDates {

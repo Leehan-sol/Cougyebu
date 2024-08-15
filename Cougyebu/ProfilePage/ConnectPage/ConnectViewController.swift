@@ -28,12 +28,22 @@ class ConnectViewController: UIViewController {
         super.viewDidLoad()
         setNavigationBar()
         setTextField()
+        setBinding()
         setAddTarget()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        setUI()
+//    override func viewWillAppear(_ animated: Bool) {
+//        setUI()
+//    }
+//
+    func setBinding() {
+        viewModel.observableUser?.bind { [weak self] _ in
+            DispatchQueue.main.async {
+                self?.setUI()
+            }
+        }
     }
+
     
     func setNavigationBar() {
         self.title = "커플 연결"
