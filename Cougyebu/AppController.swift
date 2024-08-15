@@ -6,19 +6,18 @@
 //
 
 import UIKit
-import Combine
+import RxSwift
 import FirebaseAuth
 
 class AppController {
     static let shared = AppController()
-    private var cancellables = Set<AnyCancellable>()
+    private var disposeBag = DisposeBag()
     
     func start() {
-        NotificationCenter.authStateDidChangePublisher
-            .sink { _ in
+        NotificationCenter.default.rx.notification(.authStateDidChange)
+            .subscribe { _ in
                 self.updateRootVC(animated: true)
-            }
-            .store(in: &cancellables)
+            }.disposed(by: disposeBag)
         
         updateRootVC(animated: false)
     }

@@ -236,7 +236,7 @@ extension MainViewController: FSCalendarDelegate {
                 mainView.calendar.reloadData()
                 calendar.select(date)
                 return
-                // cfirstDate 이후 날짜 선택: 범위 선택
+                // firstDate 이후 날짜 선택: 범위 선택
             } else {
                 var range: [Date] = []
                 var currentDate = firstDate!

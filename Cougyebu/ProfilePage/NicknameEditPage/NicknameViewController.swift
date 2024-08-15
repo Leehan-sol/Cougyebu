@@ -111,8 +111,8 @@ class NicknameEditViewController: UIViewController {
                 }
             }, receiveValue: { success in
                 if success {
-                    self.user?.value.nickname = newNickname
                     AlertManager.showAlertOneButton(from: self, title: "닉네임 변경", message: "닉네임이 변경되었습니다.", buttonTitle: "확인"){
+                        self.user?.value.nickname = newNickname
                         self.navigationController?.popViewController(animated: true)
                     }
                 } else {

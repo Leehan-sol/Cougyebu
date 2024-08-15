@@ -70,7 +70,6 @@ class UserManager {
         }
     }
     
-    
     func findId(email: String, completion: @escaping (Bool) -> Void) {
         let userDB = db.collection("User")
         let query = userDB.whereField("email", isEqualTo: email)
@@ -158,7 +157,6 @@ class UserManager {
         }
     }
     
-    
     // 유저 업데이트
     func updateUser(email: String, updatedFields: [String: Any], completion: ((Bool?) -> Void)?) {
         db.collection("User").document(email).updateData(updatedFields) { error in
@@ -200,8 +198,6 @@ class UserManager {
             }
         }
     }
-    
-    
     
     // 유저 연결 (inputEmail: 상대이메일)
     func connectUser(inputEmail: String, inputCode: String) {
@@ -277,7 +273,6 @@ class UserManager {
         }
     }
     
-    
     // 카테고리 추가
     func addCategory(email: String?, category: String, categoryType: String) {
         guard let email = email else { return }
@@ -318,7 +313,6 @@ class UserManager {
             }
         }
     }
-    
     
     // 카테고리 삭제
     func deleteCategory(email: String, category: String, categoryType: String) {
