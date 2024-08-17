@@ -31,7 +31,6 @@ protocol RegisterProtocol: AnyObject {
 
 // MARK: - RegisterViewModel
 class RegisterViewModel: RegisterProtocol {
-    
     private let userManager = UserManager()
     private var seconds = 0
     private var timer: Timer?
@@ -45,7 +44,6 @@ class RegisterViewModel: RegisterProtocol {
     let checkEmailAuthResult = BehaviorSubject(value: false)
     let checkNicknameResult = BehaviorSubject(value: false)
     let doneRegister = PublishSubject<Void>()
-    
     private let disposeBag = DisposeBag()
     
     func sendEmailForAuth(email: String) {
@@ -75,8 +73,7 @@ class RegisterViewModel: RegisterProtocol {
                 self.userAuthCode.onNext(code)
             }, onError: { error in
                 self.showAlert.onNext(("이메일 발송 실패", "이메일 발송을 실패했습니다. 다시 시도해주세요."))
-            })
-            .disposed(by: disposeBag)
+            }).disposed(by: disposeBag)
     }
     
     func checkAuthCode(code: String) {
@@ -102,8 +99,7 @@ class RegisterViewModel: RegisterProtocol {
                         showAlert.onNext(("사용 가능", "사용 가능한 닉네임입니다. \n 입력하신 닉네임은 아이디 찾기시 이용됩니다."))
                         checkNicknameResult.onNext(true)
                     }
-                },
-                onError: { [weak self] error in
+                }, onError: { [weak self] error in
                     self?.showAlert.onNext(("오류", error.localizedDescription))
                 }).disposed(by: disposeBag)
     }
@@ -163,6 +159,4 @@ class RegisterViewModel: RegisterProtocol {
         }
         return password
     }
-    
-    
 }

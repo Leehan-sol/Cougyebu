@@ -41,18 +41,9 @@ class LoginViewController: UIViewController {
         navigationItem.leftBarButtonItem = nil
     }
     
-    // 뷰컨 로직 실행
     private func setGesture() {
-        loginView.showPwButton.rx.tap
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] in
-                guard let self = self else { return }
-                loginView.showPwButton.isSelected.toggle()
-                let imageName = loginView.showPwButton.isSelected ? "eye.fill" : "eye.slash"
-                loginView.showPwButton.setImage(UIImage(systemName: imageName), for: .normal)
-                loginView.pwTextField.isSecureTextEntry = !loginView.showPwButton.isSelected
-            }).disposed(by: disposeBag)
-    
+        loginView.showPwButton.showPasswordButtonToggle(textField: loginView.pwTextField, disposeBag: disposeBag)
+        
         loginView.findPwButton.rx.tap
             .observe(on: MainScheduler.instance)
             .subscribe (onNext: { [weak self] in
@@ -73,18 +64,12 @@ class LoginViewController: UIViewController {
         
         animateLabelOnEditing(textField: loginView.pwTextField, label: loginView.pwLabel, centerYConstraint: loginView.pwLabelCenterY, fontSize: 9)
         
-        loginView.idTextField.rx.controlEvent(.editingDidEndOnExit)
-            .subscribe(onNext: { [weak self] in
-                self?.loginView.pwTextField.becomeFirstResponder()
-            }).disposed(by: disposeBag)
-        
-        loginView.pwTextField.rx.controlEvent(.editingDidEndOnExit)
-            .subscribe(onNext: { [weak self] in
-                self?.loginView.pwTextField.resignFirstResponder()
-            }).disposed(by: disposeBag)
+        bindTextFieldsToMoveNext(fields: [
+            loginView.idTextField,
+            loginView.pwTextField,
+        ], disposeBag: disposeBag)
     }
     
-    // 뷰모델 로직 실행
     private func setAction() {
         loginView.loginButton.rx.tap
             .bind { [weak self] in
@@ -99,7 +84,6 @@ class LoginViewController: UIViewController {
             }).disposed(by: disposeBag)
     }
     
-    // 뷰모델 값에 바인딩
     private func setBinding() {
         viewModel.showAlert
             .observe(on: MainScheduler.instance)
@@ -108,21 +92,25 @@ class LoginViewController: UIViewController {
             }).disposed(by: disposeBag)
         
         viewModel.checkResult
-            .subscribe(onNext: { [weak self] bool in
+            .subscribe(onNext: { bool in
                 if bool {
                     NotificationCenter.default.post(name: .authStateDidChange, object: nil)
                 }
             }).disposed(by: disposeBag)
     }
-    
+}
+
+
+
+// MARK: - Extension
+extension LoginViewController {
     
     private func animateLabelOnEditing(textField: UITextField, label: UILabel, centerYConstraint: NSLayoutConstraint, fontSize: CGFloat) {
         textField.rx.controlEvent(.editingDidBegin)
             .bind { [weak self] in
                 guard let self = self else { return }
                 animateLabel(label: label, centerYConstraint: centerYConstraint, fontSize: fontSize)
-            }
-            .disposed(by: disposeBag)
+            }.disposed(by: disposeBag)
         
         textField.rx.controlEvent(.editingDidEnd)
             .bind { [weak self] in
@@ -130,16 +118,8 @@ class LoginViewController: UIViewController {
                 if let text = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines), text == "" {
                     animateLabel(label: label, centerYConstraint: centerYConstraint, fontSize: fontSize == 9 ? 16 : 9)
                 }
-            }
-            .disposed(by: disposeBag)
+            }.disposed(by: disposeBag)
     }
-    
-}
-
-
-
-// MARK: - Extension
-extension LoginViewController {
     
     private func animateLabel(label: UILabel, centerYConstraint: NSLayoutConstraint, fontSize: CGFloat) {
         label.font = UIFont.systemFont(ofSize: fontSize)

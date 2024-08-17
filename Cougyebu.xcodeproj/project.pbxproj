@@ -44,6 +44,7 @@
 		CC4956382B999485003B3341 /* WithdrawalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4956372B999485003B3341 /* WithdrawalViewController.swift */; };
 		CC49563A2B9995BF003B3341 /* Secret.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4956392B9995BF003B3341 /* Secret.swift */; };
 		CC49563E2B9997F2003B3341 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = CC49563D2B9997F2003B3341 /* .gitignore */; };
+		CC50A1CA2C70EDAF00CDEE98 /* UIViewController +.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC50A1C92C70EDAF00CDEE98 /* UIViewController +.swift */; };
 		CC53482A2BB85E0600037DC1 /* AppController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5348292BB85E0600037DC1 /* AppController.swift */; };
 		CC53482C2BB869FD00037DC1 /* PasswordChangeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC53482B2BB869FD00037DC1 /* PasswordChangeViewModel.swift */; };
 		CC570FFA2B9EAE0C00DF000D /* ChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC570FF92B9EAE0C00DF000D /* ChartView.swift */; };
@@ -173,6 +174,7 @@
 		CC4956372B999485003B3341 /* WithdrawalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WithdrawalViewController.swift; sourceTree = "<group>"; };
 		CC4956392B9995BF003B3341 /* Secret.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Secret.swift; sourceTree = "<group>"; };
 		CC49563D2B9997F2003B3341 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		CC50A1C92C70EDAF00CDEE98 /* UIViewController +.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController +.swift"; sourceTree = "<group>"; };
 		CC5348292BB85E0600037DC1 /* AppController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppController.swift; sourceTree = "<group>"; };
 		CC53482B2BB869FD00037DC1 /* PasswordChangeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordChangeViewModel.swift; sourceTree = "<group>"; };
 		CC570FF92B9EAE0C00DF000D /* ChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartView.swift; sourceTree = "<group>"; };
@@ -302,6 +304,7 @@
 		CC4955F12B998E98003B3341 /* Extension */ = {
 			isa = PBXGroup;
 			children = (
+				CC50A1C92C70EDAF00CDEE98 /* UIViewController +.swift */,
 				CC580F162BA071700047E614 /* Int +.swift */,
 				CC4955F42B998EB9003B3341 /* String +.swift */,
 				CC5A560A2B9B55630012F661 /* Date +.swift */,
@@ -352,9 +355,9 @@
 			isa = PBXGroup;
 			children = (
 				CC49560E2B999246003B3341 /* MainView.swift */,
+				CC62E3072B9BECFE00E0438F /* MainTableViewCell.swift */,
 				CC4956102B999250003B3341 /* MainViewController.swift */,
 				CC4956122B99925A003B3341 /* MainViewModel.swift */,
-				CC62E3072B9BECFE00E0438F /* MainTableViewCell.swift */,
 				CC5A56032B9B429A0012F661 /* PostingPage */,
 			);
 			path = MainPage;
@@ -650,6 +653,7 @@
 				CC4956052B9991CC003B3341 /* RegisterView.swift in Sources */,
 				CC4956072B9991D6003B3341 /* RegisterViewController.swift in Sources */,
 				CC4956022B998FB3003B3341 /* SMTPManager.swift in Sources */,
+				CC50A1CA2C70EDAF00CDEE98 /* UIViewController +.swift in Sources */,
 				CC4956222B99932E003B3341 /* PrivacyPolicyViewController.swift in Sources */,
 				CC5A56052B9B42AC0012F661 /* PostingView.swift in Sources */,
 				CC5E35E02BA134320082FDC1 /* PasswordChangeView.swift in Sources */,
