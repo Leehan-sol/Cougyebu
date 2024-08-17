@@ -12,9 +12,9 @@ class WithdrawalViewController: UIViewController {
     private let withdrawalView = WithdrawalView()
     private let userManager = UserManager()
     private let postManager = PostManager()
-    private let user: Observable<User>?
+    private let user: Observable2<User>?
     
-    init(user: Observable<User>?) {
+    init(user: Observable2<User>?) {
         self.user = user
         super.init(nibName: nil, bundle: nil)
     }

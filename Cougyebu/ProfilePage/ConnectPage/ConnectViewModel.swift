@@ -6,14 +6,16 @@
 //
 
 import Foundation
+import RxSwift
 
 class ConnectViewModel {
 
     private let userManager = UserManager()
+    private let disposeBag = DisposeBag()
     
-    var observableUser: Observable<User>?
+    var observableUser: Observable2<User>?
     
-    init(observableUser:  Observable<User>) {
+    init(observableUser:  Observable2<User>) {
         self.observableUser = observableUser
     }
     
@@ -24,9 +26,10 @@ class ConnectViewModel {
     }
     
     func findId(email: String, completion: @escaping (Bool) -> Void) {
-        userManager.findId(email: email) { bool in
-            completion(bool)
-        }
+        userManager.findId(email: email)
+            .subscribe(onNext: { exists in
+                completion(exists)
+            }).disposed(by: disposeBag)
     }
     
     func connectUser(email: String, code: String, request: Bool) {

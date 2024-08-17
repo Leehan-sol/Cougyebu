@@ -58,28 +58,28 @@ class PasswordChangeViewModel: PasswordChangeViewProtocol {
     }
     
     func sendAuthCode(email: String) {
-        userManager.findUser(email: email) { [weak self] user in
-            guard let self = self else { return }
-            if user != nil {
-                if let timer = self.timer, timer.isValid {
-                    self.seconds = 181
-                }
-                self.setTimer()
-                self.sendEmailForCheckId.send(true)
-                self.showAlert.send(("인증 메일 발송", "인증 메일을 발송했습니다."))
-                
-                DispatchQueue.global().async {
-                    SMTPManager.sendAuth(userEmail: email) { [weak self] (authCode, success) in
-                        guard let self = self else { return }
-                        if authCode >= 10000 && authCode <= 99999 && success {
-                            self.userAuthCode = authCode
-                        }
-                    }
-                }
-            } else {
-                self.showAlert.send(("이메일 찾기 실패", "가입되지 않은 이메일입니다."))
-            }
-        }
+//        userManager.findUser(email: email) { [weak self] user in
+//            guard let self = self else { return }
+//            if user != nil {
+//                if let timer = self.timer, timer.isValid {
+//                    self.seconds = 181
+//                }
+//                self.setTimer()
+//                self.sendEmailForCheckId.send(true)
+//                self.showAlert.send(("인증 메일 발송", "인증 메일을 발송했습니다."))
+//                
+//                DispatchQueue.global().async {
+//                    SMTPManager.sendAuth(userEmail: email) { [weak self] (authCode, success) in
+//                        guard let self = self else { return }
+//                        if authCode >= 10000 && authCode <= 99999 && success {
+//                            self.userAuthCode = authCode
+//                        }
+//                    }
+//                }
+//            } else {
+//                self.showAlert.send(("이메일 찾기 실패", "가입되지 않은 이메일입니다."))
+//            }
+//        }
     }
     
     func verifyAuthCode(enteredCode: String) {

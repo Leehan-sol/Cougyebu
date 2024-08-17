@@ -11,7 +11,7 @@ class PostingViewModel {
     private let userManager = UserManager()
     private let postManager = PostManager()
     
-    var observablePost: Observable<[Posts]>
+    var observablePost: Observable2<[Posts]>
     var userEmail: String
     var coupleEmail: String
     var userIncomeCategory: [String]
@@ -20,7 +20,7 @@ class PostingViewModel {
     var post: Posts?
     var indexPath: Int?
     
-    init(observablePost: Observable<[Posts]>, userEmail: String, coupleEmail: String, userIncomeCategory: [String], userExpenditureCategory: [String]) {
+    init(observablePost: Observable2<[Posts]>, userEmail: String, coupleEmail: String, userIncomeCategory: [String], userExpenditureCategory: [String]) {
         self.observablePost = observablePost
         self.userEmail = userEmail
         self.coupleEmail = coupleEmail

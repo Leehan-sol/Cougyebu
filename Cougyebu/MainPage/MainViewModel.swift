@@ -11,8 +11,8 @@ class MainViewModel {
     private let userManager = UserManager()
     private let postManager = PostManager()
     
-    var observableUser: Observable<User>?
-    var observablePost: Observable<[Posts]> = Observable<[Posts]>([])
+    var observableUser: Observable2<User>?
+    var observablePost: Observable2<[Posts]> = Observable2<[Posts]>([])
     
     var userEmail: String
     var userIncomeCategory: [String] = []
@@ -24,7 +24,7 @@ class MainViewModel {
     
     init(userEmail: String) {
         self.userEmail = userEmail
-        self.observableUser = Observable<User>(User(email: "", nickname: "", isConnect: false))
+        self.observableUser = Observable2<User>(User(email: "", nickname: "", isConnect: false))
     }
     
     // user 세팅

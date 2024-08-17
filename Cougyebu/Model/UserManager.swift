@@ -5,10 +5,10 @@
 //  Created by hansol on 2024/03/07.
 //
 
-import Combine
 import Foundation
 import FirebaseFirestore
 import FirebaseAuth
+import RxSwift
 
 class UserManager {
     
@@ -69,46 +69,55 @@ class UserManager {
             }
         }
     }
-    
-    func findId(email: String, completion: @escaping (Bool) -> Void) {
+
+    func findId(email: String) -> Observable<Bool> {
         let userDB = db.collection("User")
         let query = userDB.whereField("email", isEqualTo: email)
-        query.getDocuments { (snapShot, error) in
-            if let error = error {
-                print(error.localizedDescription)
-                completion(false)
-            } else if let qs = snapShot, !qs.documents.isEmpty {
-                completion(true)
-            } else {
-                completion(false)
+        
+        return Observable.create { observer in
+            query.getDocuments { snapshot, error in
+                if let error = error {
+                    print(error.localizedDescription)
+                    observer.onError(error)
+                } else if let snapshot = snapshot, !snapshot.documents.isEmpty {
+                    observer.onNext(true)
+                    observer.onCompleted()
+                } else {
+                    observer.onNext(false)
+                    observer.onCompleted()
+                }
             }
+            return Disposables.create()
         }
     }
     
-    func findNickname(nickname: String) -> AnyPublisher<User?, Error> {
+    func findNickname(nickname: String) -> Observable<User?> {
         let userDB = db.collection("User")
         let query = userDB.whereField("nickname", isEqualTo: nickname)
         
-        return Future<User?, Error> { promise in
-            query.getDocuments { (snapshot, error) in
+        return Observable.create { observer in
+            query.getDocuments { snapshot, error in
                 if let error = error {
-                    promise(.failure(error))
+                    observer.onError(error)
                 } else if let snapshot = snapshot, !snapshot.documents.isEmpty {
-                    if let data = snapshot.documents.first?.data() {
-                        let email = data["email"] as? String ?? ""
-                        let nickname = data["nickname"] as? String ?? ""
-                        let isConnect = data["isConnect"] as? Bool ?? false
-                        let user = User(email: email, nickname: nickname, isConnect: isConnect)
-                        promise(.success(user))
-                    } else {
-                        promise(.success(nil))
+                    guard let data = snapshot.documents.first?.data() else {
+                        observer.onNext(nil)
+                        observer.onCompleted()
+                        return
                     }
+                    let email = data["email"] as? String ?? ""
+                    let nickname = data["nickname"] as? String ?? ""
+                    let isConnect = data["isConnect"] as? Bool ?? false
+                    let user = User(email: email, nickname: nickname, isConnect: isConnect)
+                    observer.onNext(user)
+                    observer.onCompleted()
                 } else {
-                    promise(.success(nil))
+                    observer.onNext(nil)
+                    observer.onCompleted()
                 }
             }
+            return Disposables.create()
         }
-        .eraseToAnyPublisher()
     }
     
     func findCategory(email: String, completion: @escaping (([String]?, [String]?) -> Void)) {
@@ -170,19 +179,20 @@ class UserManager {
         }
     }
     
-    func updateUserNickname(email: String, updatedFields: [String: Any]) -> AnyPublisher<Bool, Error> {
-        return Future<Bool, Error> { promise in
+    func updateUserNickname(email: String, updatedFields: [String: Any]) -> Observable<Bool> {
+        return Observable.create { observer in
             self.db.collection("User").document(email).updateData(updatedFields) { error in
                 if let error = error {
                     print("Error: \(error)")
-                    promise(.failure(error))
+                    observer.onError(error)
                 } else {
                     print("유저 정보 업데이트 성공")
-                    promise(.success(true))
+                    observer.onNext(true)
+                    observer.onCompleted()
                 }
             }
+            return Disposables.create()
         }
-        .eraseToAnyPublisher()
     }
     
     // 유저 삭제
@@ -241,7 +251,6 @@ class UserManager {
             }
         }
     }
-    
     
     // 유저 연결 해제
     func disconnectUser(inputEmail: String, completion: ((Bool?) -> Void)?) {
