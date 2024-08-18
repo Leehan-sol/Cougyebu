@@ -11,31 +11,49 @@ import RxSwift
 
 // MARK: - LoginProtocol
 protocol LoginProtocol: AnyObject {
-    var showAlert: PublishSubject<(String, String)> { get }
-    var checkResult: PublishSubject<Bool> { get }
-    
-    func login(id: String, password: String)
-    func findId(_ nickname: String)
-    func maskEmail(email: String) -> String
+    func transform(input: LoginViewModel.Input) -> LoginViewModel.Output 
 }
-
 
 // MARK: - LoginViewModel
 class LoginViewModel: LoginProtocol {
     private let userManager = UserManager()
     
-    let showAlert = PublishSubject<(String, String)>()
-    let checkResult = PublishSubject<Bool>()
+    private let showAlert = PublishSubject<(String, String)>()
+    private let checkResult = PublishSubject<Bool>()
     private let disposeBag = DisposeBag()
     
-    func login(id: String, password: String) {
+    struct Input {
+        let loginAction: PublishSubject<(String, String)>
+        let findIdAction: PublishSubject<String>
+    }
+    
+    struct Output {
+        let showAlert: PublishSubject<(String, String)>
+        let checkResult: PublishSubject<Bool>
+    }
+    
+    func transform(input: Input) -> Output {
+        input.loginAction
+            .bind(onNext: { id, pw in
+                self.login(id: id, password: pw)
+            }).disposed(by: disposeBag)
+        
+        input.findIdAction
+            .bind(onNext: { nickname in
+                self.findId(nickname: nickname)
+            }).disposed(by: disposeBag)
+        
+        return Output(showAlert: showAlert,
+                      checkResult: checkResult)
+    }
+    
+    private func login(id: String, password: String) {
         guard !id.isEmpty, !password.isEmpty else {
             showAlert.onNext(("입력 필요", "아이디와 비밀번호를 입력하세요."))
             return
         }
-        
         Auth.auth().signIn(withEmail: id, password: password) { [weak self] authResult, error in
-            if let error = error {
+            if error != nil {
                 self?.showAlert.onNext(("로그인 실패", "아이디 또는 비밀번호가 틀렸습니다."))
                 self?.checkResult.onNext(false)
             } else {
@@ -55,7 +73,7 @@ class LoginViewModel: LoginProtocol {
         }
     }
     
-    func findId(_ nickname: String) {
+    private func findId(nickname: String) {
         userManager.findNickname(nickname: nickname)
             .subscribe(onNext: { [weak self] user in
                 if let user = user {
@@ -73,14 +91,8 @@ class LoginViewModel: LoginProtocol {
                 self.showAlert.onNext((alertTitle, alertMessage))
             }).disposed(by: disposeBag)
     }
-
-}
-
-
-// MARK: - Extension
-// String Extension으로 빼기 
-extension LoginViewModel {
-    func maskEmail(email: String) -> String {
+    
+    private func maskEmail(email: String) -> String {
         let components = email.components(separatedBy: "@")
         let firstPart = components[0] // @ 이전
         let secondPart = components[1] // @ 이후
@@ -89,4 +101,5 @@ extension LoginViewModel {
         
         return maskedFirstPart + "@" + secondPart
     }
+    
 }

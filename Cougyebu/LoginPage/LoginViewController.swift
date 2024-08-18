@@ -14,6 +14,9 @@ class LoginViewController: UIViewController {
     
     private let loginView = LoginView()
     private let viewModel: LoginProtocol
+    
+    private let loginAction = PublishSubject<(String, String)>()
+    private let findIdAction = PublishSubject<String>()
     private let disposeBag = DisposeBag()
     
     init(viewModel: LoginProtocol) {
@@ -60,6 +63,11 @@ class LoginViewController: UIViewController {
                 self.navigationController?.pushViewController(registerVC, animated: true)
             }).disposed(by: disposeBag)
         
+        loginView.findIdButton.rx.tap
+            .subscribe(onNext: { [weak self] in
+                self?.showFindIdAlert()
+            }).disposed(by: disposeBag)
+        
         animateLabelOnEditing(textField: loginView.idTextField, label: loginView.idLabel, centerYConstraint: loginView.idLabelCenterY, fontSize: 9)
         
         animateLabelOnEditing(textField: loginView.pwTextField, label: loginView.pwLabel, centerYConstraint: loginView.pwLabelCenterY, fontSize: 9)
@@ -75,23 +83,44 @@ class LoginViewController: UIViewController {
             .bind { [weak self] in
                 guard let self = self else { return }
                 guard let id = loginView.idTextField.text, let pw = loginView.pwTextField.text else { return }
-                viewModel.login(id: id, password: pw)
+                loginAction.onNext((id, pw))
             }.disposed(by: disposeBag)
-        
-        loginView.findIdButton.rx.tap
-            .subscribe(onNext: { [weak self] in
-                self?.showFindIdAlert()
-            }).disposed(by: disposeBag)
     }
     
+    private func showFindIdAlert() {
+        AlertManager.showAlertWithOneTF(from: self,
+                                        title: "아이디 찾기",
+                                        message: "등록한 닉네임을 입력해주세요.",
+                                        placeholder: "닉네임",
+                                        button1Title: "찾기",
+                                        button2Title: "취소") { [weak self] text in
+            guard let self = self else { return }
+            let nickname = text?.trimmingCharacters(in: .whitespaces) ?? ""
+            
+            if nickname.isEmpty {
+                AlertManager.showAlertOneButton(from: self,
+                                                title: "닉네임 입력",
+                                                message: "닉네임을 입력해주세요.",
+                                                buttonTitle: "확인")
+            } else {
+                findIdAction.onNext(nickname)
+            }
+        }
+    }
+
+    
     private func setBinding() {
-        viewModel.showAlert
+        let input = LoginViewModel.Input(loginAction: loginAction, findIdAction: findIdAction)
+        
+        let output = viewModel.transform(input: input)
+        
+        output.showAlert
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] (title, message) in
                 AlertManager.showAlertOneButton(from: self!, title: title, message: message, buttonTitle: "확인")
             }).disposed(by: disposeBag)
         
-        viewModel.checkResult
+        output.checkResult
             .subscribe(onNext: { bool in
                 if bool {
                     NotificationCenter.default.post(name: .authStateDidChange, object: nil)
@@ -126,27 +155,6 @@ extension LoginViewController {
         centerYConstraint.constant = fontSize == 9 ? -18 : 0
         UIView.animate(withDuration: 0.3) {
             self.loginView.layoutIfNeeded()
-        }
-    }
-    
-    private func showFindIdAlert() {
-        AlertManager.showAlertWithOneTF(from: self,
-                                        title: "아이디 찾기",
-                                        message: "등록한 닉네임을 입력해주세요.",
-                                        placeholder: "닉네임",
-                                        button1Title: "찾기",
-                                        button2Title: "취소") { [weak self] text in
-            guard let self = self else { return }
-            let nickname = text?.trimmingCharacters(in: .whitespaces) ?? ""
-            
-            if nickname.isEmpty {
-                AlertManager.showAlertOneButton(from: self,
-                                                title: "닉네임 입력",
-                                                message: "닉네임을 입력해주세요.",
-                                                buttonTitle: "확인")
-            } else {
-                self.viewModel.findId(nickname)
-            }
         }
     }
     

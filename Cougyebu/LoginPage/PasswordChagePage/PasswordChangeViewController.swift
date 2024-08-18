@@ -12,6 +12,11 @@ import RxSwift
 class PasswordChangeViewController: UIViewController {
     private let passwordChangeView = PasswordChangeView()
     private var viewModel: PasswordChangeViewProtocol
+    
+    let sendAuthCodeAction = PublishSubject<String>()
+    let checkAuthCodeAction = PublishSubject<String>()
+    let sendPasswordResetEmailAction = PublishSubject<String>()
+    let checkEmailAuthResultChanged = PublishSubject<Bool>()
     private let disposeBag = DisposeBag()
     
     init(viewModel: PasswordChangeViewProtocol) {
@@ -53,40 +58,45 @@ class PasswordChangeViewController: UIViewController {
             .bind(onNext: { [weak self] in
                 guard let self = self else { return }
                 guard let email = passwordChangeView.registerIdTextField.text else { return }
-                viewModel.sendAuthCode(email: email)
+                sendAuthCodeAction.onNext(email)
             }).disposed(by: disposeBag)
         
         passwordChangeView.authCodeButton.rx.tap
             .bind(onNext: { [weak self] in
                 guard let self = self else { return }
                 guard let enteredCode = passwordChangeView.authCodeTextField.text else { return }
-                viewModel.checkAuthCode(code: enteredCode)
+                checkAuthCodeAction.onNext(enteredCode)
             }).disposed(by: disposeBag)
         
         passwordChangeView.changePasswordButton.rx.tap
             .bind(onNext: { [weak self] in
                 guard let self = self else { return }
                 guard let userEmail = passwordChangeView.registerIdTextField.text else { return }
-                viewModel.sendPasswordResetEmail(email: userEmail)
+                sendPasswordResetEmailAction.onNext(userEmail)
             }).disposed(by: disposeBag)
         
         passwordChangeView.registerIdTextField.rx.controlEvent(.editingChanged)
             .bind(onNext: { [weak self] in
                 guard let self = self else { return }
-                viewModel.sendEmailResult.onNext(false)
-                viewModel.checkEmailAuthResult.onNext(false)
-                viewModel.userAuthCode.onNext(Int.random(in: 1...10000))
+                checkEmailAuthResultChanged.onNext(false)
             }).disposed(by: disposeBag)
     }
     
     private func setbinding() {
-        viewModel.showAlert
+        let input = PasswordChangeViewModel.Input(sendAuthCodeAction: sendAuthCodeAction,
+                                                  checkAuthCodeAction: checkAuthCodeAction,
+                                                  sendPasswordResetEmailAction: sendPasswordResetEmailAction,
+                                                  checkEmailAuthResultChanged: checkEmailAuthResultChanged)
+        
+        let output = viewModel.transform(input: input)
+        
+        output.showAlert
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] (title, message) in
                 AlertManager.showAlertOneButton(from: self!, title: title, message: message, buttonTitle: "확인")
             }).disposed(by: disposeBag)
         
-        viewModel.showTimer
+        output.showTimer
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] seconds in
                 guard let self = self else { return }
@@ -96,7 +106,7 @@ class PasswordChangeViewController: UIViewController {
                 passwordChangeView.timerLabel.text = String(format: "%d:%02d", min, sec)
             }).disposed(by: disposeBag)
         
-        viewModel.invalidTimer
+        output.invalidTimer
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] in
                 guard let self = self else { return }
@@ -107,21 +117,22 @@ class PasswordChangeViewController: UIViewController {
                 passwordChangeView.authCodeButton.setTitleColor(UIColor.black, for: .normal)
             }).disposed(by: disposeBag)
         
-        viewModel.sendEmailResult
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] bool in
-                guard let self = self else { return }
-                passwordChangeView.authIdButton.backgroundColor = bool ? .black : .systemGray6
-                passwordChangeView.authIdButton.setTitleColor(bool ? UIColor.white : UIColor.black, for: .normal)
-            }).disposed(by: disposeBag)
-        
-        viewModel.checkEmailAuthResult
+        output.sendEmailResult
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] bool in
                 guard let self = self else { return }
                 passwordChangeView.timerLabel.isHidden = bool
                 passwordChangeView.authIdButton.backgroundColor = bool ? .black : .systemGray6
                 passwordChangeView.authIdButton.setTitleColor(bool ? UIColor.white : UIColor.black, for: .normal)
+            }).disposed(by: disposeBag)
+        
+        output.checkEmailAuthResult
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] bool in
+                guard let self = self else { return }
+                if bool {
+                    passwordChangeView.timerLabel.isHidden = bool
+                }
                 passwordChangeView.authCodeButton.backgroundColor = bool ? .black : .systemGray6
                 passwordChangeView.authCodeButton.setTitleColor(bool ? UIColor.white : UIColor.black, for: .normal)
                 passwordChangeView.changePasswordButton.backgroundColor = bool ? .black : .systemGray6

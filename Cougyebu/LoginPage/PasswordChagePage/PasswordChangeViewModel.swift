@@ -11,16 +11,7 @@ import RxSwift
 
 // MARK: - PasswordViewProtocol
 protocol PasswordChangeViewProtocol {
-    var userAuthCode: BehaviorSubject<Int> { get }
-    var showAlert: PublishSubject<(String, String)> { get }
-    var showTimer: PublishSubject<Int> { get }
-    var invalidTimer: PublishSubject<Void> { get }
-    var sendEmailResult: BehaviorSubject<Bool> { get }
-    var checkEmailAuthResult: BehaviorSubject<Bool> { get }
-    
-    func sendAuthCode(email: String)
-    func checkAuthCode(code: String)
-    func sendPasswordResetEmail(email: String)
+    func transform(input: PasswordChangeViewModel.Input) -> PasswordChangeViewModel.Output
 }
 
 // MARK: - PasswordChangeViewModel
@@ -37,7 +28,53 @@ class PasswordChangeViewModel: PasswordChangeViewProtocol {
     let checkEmailAuthResult = BehaviorSubject(value: false)
     private let disposeBag = DisposeBag()
     
-    func sendAuthCode(email: String) {
+    struct Input {
+        let sendAuthCodeAction: PublishSubject<String>
+        let checkAuthCodeAction: PublishSubject<String>
+        let sendPasswordResetEmailAction: PublishSubject<String>
+        let checkEmailAuthResultChanged: PublishSubject<Bool>
+    }
+    
+    struct Output {
+        let userAuthCode: BehaviorSubject<Int>
+        let showAlert: PublishSubject<(String, String)>
+        let showTimer: PublishSubject<Int>
+        let invalidTimer: PublishSubject<Void>
+        let sendEmailResult: BehaviorSubject<Bool>
+        let checkEmailAuthResult: BehaviorSubject<Bool>
+    }
+    
+    func transform(input: Input) -> Output {
+        input.sendAuthCodeAction
+            .bind(onNext: { email in
+                self.sendAuthCode(email: email)
+            }).disposed(by: disposeBag)
+        
+        input.checkAuthCodeAction
+            .bind(onNext: { code in
+                self.checkAuthCode(code: code)
+            }).disposed(by: disposeBag)
+        
+        input.sendPasswordResetEmailAction
+            .bind(onNext: { email in
+                self.sendPasswordResetEmail(email: email)
+            }).disposed(by: disposeBag)
+        
+        input.checkEmailAuthResultChanged
+            .bind(onNext: { bool in
+                self.checkEmailAuthResult.onNext(bool)
+                self.userAuthCode.onNext(Int.random(in: 1...10000))
+            }).disposed(by: disposeBag)
+        
+        return Output(userAuthCode: userAuthCode,
+                      showAlert: showAlert,
+                      showTimer: showTimer,
+                      invalidTimer: invalidTimer,
+                      sendEmailResult: sendEmailResult,
+                      checkEmailAuthResult: checkEmailAuthResult)
+    }
+    
+    private func sendAuthCode(email: String) {
         userManager.findId(email: email)
             .subscribe(onNext: { [weak self] isUsed in
                 guard let self = self else { return }
@@ -79,7 +116,7 @@ class PasswordChangeViewModel: PasswordChangeViewProtocol {
         }
     }
     
-    func checkAuthCode(code: String) {
+    private func checkAuthCode(code: String) {
         if code == (try? String(userAuthCode.value())) {
             showAlert.onNext(("인증 성공", "인증 성공했습니다."))
             timer?.invalidate()
@@ -90,7 +127,7 @@ class PasswordChangeViewModel: PasswordChangeViewProtocol {
         }
     }
 
-    func sendPasswordResetEmail(email: String) {
+    private func sendPasswordResetEmail(email: String) {
         if (try? sendEmailResult.value()) == true && (try? checkEmailAuthResult.value()) == true {
             Auth.auth().sendPasswordReset(withEmail: email) { error in
                 if let error = error {

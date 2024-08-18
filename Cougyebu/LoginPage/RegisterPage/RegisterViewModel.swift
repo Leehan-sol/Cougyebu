@@ -11,23 +11,8 @@ import RxSwift
 
 // MARK: - RegisterProtocol
 protocol RegisterProtocol: AnyObject {
-    var userAuthCode: BehaviorSubject<Int> { get }
-    
-    var showAlert: PublishSubject<(String, String)> { get }
-    var showTimer: PublishSubject<Int> { get }
-    var invalidTimer: PublishSubject<Void> { get }
-    
-    var sendEmailResult: PublishSubject<Bool> { get }
-    var checkEmailAuthResult: BehaviorSubject<Bool> { get }
-    var checkNicknameResult: BehaviorSubject<Bool> { get }
-    var doneRegister: PublishSubject<Void> { get }
-    
-    func sendEmailForAuth(email: String)
-    func checkAuthCode(code: String)
-    func checkNickname(nickname: String)
-    func registerUser(email: String, nickname: String, password: String, checkPassword: String)
+    func transform(input: RegisterViewModel.Input) -> RegisterViewModel.Output
 }
-
 
 // MARK: - RegisterViewModel
 class RegisterViewModel: RegisterProtocol {
@@ -35,18 +20,79 @@ class RegisterViewModel: RegisterProtocol {
     private var seconds = 0
     private var timer: Timer?
     
-    let userAuthCode = BehaviorSubject(value: Int.random(in: 1...10000))
-    let showAlert = PublishSubject<(String, String)>()
-    let showTimer = PublishSubject<Int>()
-    let invalidTimer = PublishSubject<Void>()
-    
-    let sendEmailResult = PublishSubject<Bool>()
-    let checkEmailAuthResult = BehaviorSubject(value: false)
-    let checkNicknameResult = BehaviorSubject(value: false)
-    let doneRegister = PublishSubject<Void>()
+    private let userAuthCode = BehaviorSubject(value: Int.random(in: 1...10000))
+    private let showAlert = PublishSubject<(String, String)>()
+    private let showTimer = PublishSubject<Int>()
+    private let invalidTimer = PublishSubject<Void>()
+    private let sendEmailResult = PublishSubject<Bool>()
+    private let checkEmailAuthResult = BehaviorSubject(value: false)
+    private let checkNicknameResult = BehaviorSubject(value: false)
+    private let doneRegister = PublishSubject<Void>()
     private let disposeBag = DisposeBag()
     
-    func sendEmailForAuth(email: String) {
+    struct Input {
+        let sendEmailforAuthAction: PublishSubject<String>
+        let checkAuthCodeAction: PublishSubject<String>
+        let checkNicknameAction: PublishSubject<String>
+        let registerUserAction: PublishSubject<(String, String, String, String)>
+        let checkEmailAuthResultChanged: PublishSubject<Bool>
+        let checkNicknameResultChanged: PublishSubject<Bool>
+    }
+    
+    struct Output {
+        let userAuthCode: BehaviorSubject<Int>
+        let showAlert: PublishSubject<(String, String)>
+        let showTimer: PublishSubject<Int>
+        let invalidTimer: PublishSubject<Void>
+        let sendEmailResult: PublishSubject<Bool>
+        let checkEmailAuthResult: BehaviorSubject<Bool>
+        let checkNicknameResult: BehaviorSubject<Bool>
+        let doneRegister: PublishSubject<Void>
+    }
+    
+    func transform(input: Input) -> Output {
+        input.sendEmailforAuthAction
+            .bind(onNext: { email in
+                self.sendEmailForAuth(email: email)
+            }).disposed(by: disposeBag)
+        
+        input.checkAuthCodeAction
+            .bind(onNext: { code in
+                self.checkAuthCode(code: code)
+            }).disposed(by: disposeBag)
+        
+        input.checkNicknameAction
+            .bind(onNext: { nickname in
+                self.checkNickname(nickname: nickname)
+            }).disposed(by: disposeBag)
+        
+        input.registerUserAction
+            .bind(onNext: { email, nickname, password, checkPassword in
+                self.registerUser(email: email, nickname: nickname, password: password, checkPassword: checkPassword)
+            }).disposed(by: disposeBag)
+        
+        input.checkEmailAuthResultChanged
+            .bind(onNext: { bool in
+                self.checkEmailAuthResult.onNext(bool)
+                self.userAuthCode.onNext(Int.random(in: 1...10000))
+            }).disposed(by: disposeBag)
+        
+        input.checkNicknameResultChanged
+            .bind(onNext: { bool in
+                self.checkNicknameResult.onNext(bool)
+            }).disposed(by: disposeBag)
+        
+        return RegisterViewModel.Output(userAuthCode: userAuthCode,
+                                        showAlert: showAlert,
+                                        showTimer: showTimer,
+                                        invalidTimer: invalidTimer,
+                                        sendEmailResult: sendEmailResult,
+                                        checkEmailAuthResult: checkEmailAuthResult,
+                                        checkNicknameResult: checkNicknameResult,
+                                        doneRegister: doneRegister)
+    }
+    
+    private func sendEmailForAuth(email: String) {
         guard email.isValidEmail() else {
             showAlert.onNext(("이메일 오류", "올바른 이메일 주소를 입력하세요."))
             return
@@ -76,7 +122,7 @@ class RegisterViewModel: RegisterProtocol {
             }).disposed(by: disposeBag)
     }
     
-    func checkAuthCode(code: String) {
+    private func checkAuthCode(code: String) {
         if code == (try? String(userAuthCode.value())) {
             showAlert.onNext(("인증 성공", "인증 성공했습니다."))
             timer?.invalidate()
@@ -87,7 +133,7 @@ class RegisterViewModel: RegisterProtocol {
         }
     }
     
-    func checkNickname(nickname: String) {
+    private func checkNickname(nickname: String) {
         userManager.findNickname(nickname: nickname)
             .subscribe(
                 onNext: { [weak self] user in
@@ -120,7 +166,7 @@ class RegisterViewModel: RegisterProtocol {
         }
     }
     
-    func registerUser(email: String, nickname: String, password: String, checkPassword: String) {
+    private func registerUser(email: String, nickname: String, password: String, checkPassword: String) {
         guard !email.isEmpty, !nickname.isEmpty, !password.isEmpty, !checkPassword.isEmpty else {
             showAlert.onNext(("입력 오류", "빈 필드가 있습니다. 모든 필드를 입력하세요."))
             return

@@ -16,6 +16,13 @@ class RegisterViewController: UIViewController {
     
     private let registerView = RegisterView()
     private let viewModel: RegisterProtocol
+    
+    private let sendEmailforAuthAction = PublishSubject<String>()
+    private let checkAuthCodeAction = PublishSubject<String>()
+    private let checkNicknameAction = PublishSubject<String>()
+    private let registerUserAction = PublishSubject<(String, String, String, String)>()
+    private let checkEmailAuthResultChanged = PublishSubject<Bool>()
+    private let checkNicknameResultChanged = PublishSubject<Bool>()
     private let disposeBag = DisposeBag()
     
     init(viewModel: RegisterProtocol) {
@@ -39,8 +46,6 @@ class RegisterViewController: UIViewController {
         setBinding()
     }
     
-    
-    // MARK: - Methods
     private func setNavigationBar() {
         self.title = "회원가입"
         navigationController?.navigationBar.tintColor = .black
@@ -52,44 +57,41 @@ class RegisterViewController: UIViewController {
         registerView.showPwCheckButton.showPasswordButtonToggle(textField: registerView.pwCheckTextField, disposeBag: disposeBag)
         
         bindTextFieldsToMoveNext(fields: [
-              registerView.idTextField,
-              registerView.authTextField,
-              registerView.nicknameTextField,
-              registerView.pwTextField,
-              registerView.pwCheckTextField
-          ], disposeBag: disposeBag)
+            registerView.idTextField,
+            registerView.authTextField,
+            registerView.nicknameTextField,
+            registerView.pwTextField,
+            registerView.pwCheckTextField
+        ], disposeBag: disposeBag)
     }
     
     private func setAction() {
         registerView.sendEmailButton.rx.tap
-            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] in
                 guard let self = self else { return }
                 guard let email = registerView.idTextField.text, !email.isEmpty else {
                     AlertManager.showAlertOneButton(from: self, title: "이메일 입력", message: "이메일을 입력해주세요", buttonTitle: "확인")
                     return }
-                viewModel.sendEmailForAuth(email: email)
+                sendEmailforAuthAction.onNext(email)
             }).disposed(by: disposeBag)
         
         registerView.authButton.rx.tap
-            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] in
                 guard let self = self else { return }
                 guard let code = registerView.authTextField.text, !code.isEmpty else {
                     AlertManager.showAlertOneButton(from: self, title: "코드 입력", message: "코드를 입력해주세요", buttonTitle: "확인")
                     return }
-                viewModel.checkAuthCode(code: code)
+                checkAuthCodeAction.onNext(code)
             }).disposed(by: disposeBag)
         
         registerView.nicknameCheckButton.rx.tap
-            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] in
                 guard let self = self else { return }
                 guard let nickname = registerView.nicknameTextField.text?.trimmingCharacters(in: .whitespaces), !nickname.isEmpty else {
                     AlertManager.showAlertOneButton(from: self, title: "닉네임 입력", message: "닉네임을 입력해주세요", buttonTitle: "확인")
                     return
                 }
-                viewModel.checkNickname(nickname: nickname)
+                checkNicknameAction.onNext(nickname)
             }).disposed(by: disposeBag)
         
         registerView.registerButton.rx.tap
@@ -99,22 +101,20 @@ class RegisterViewController: UIViewController {
                    let nickname = registerView.nicknameTextField.text?.trimmingCharacters(in: .whitespaces),
                    let password = registerView.pwTextField.text?.trimmingCharacters(in: .whitespaces),
                    let checkPassword = registerView.pwCheckTextField.text?.trimmingCharacters(in: .whitespaces) {
-                    viewModel.registerUser(email: email, nickname: nickname, password: password, checkPassword: checkPassword)
+                    registerUserAction.onNext((email, nickname, password, checkPassword))
                 }
             }).disposed(by: disposeBag)
-    
+        
         registerView.idTextField.rx.controlEvent(.editingChanged)
             .bind(onNext: { [weak self] in
                 guard let self = self else { return }
-                viewModel.sendEmailResult.onNext(false)
-                viewModel.checkEmailAuthResult.onNext(false)
-                viewModel.userAuthCode.onNext(Int.random(in: 1...10000))
+                checkEmailAuthResultChanged.onNext(false)
             }).disposed(by: disposeBag)
         
         registerView.nicknameTextField.rx.controlEvent(.editingChanged)
             .bind(onNext: { [weak self] in
                 guard let self = self else { return }
-                viewModel.checkNicknameResult.onNext(false)
+                checkNicknameResultChanged.onNext(false)
             }).disposed(by: disposeBag)
         
         registerView.nicknameTextField.rx.text.orEmpty
@@ -132,38 +132,24 @@ class RegisterViewController: UIViewController {
             .bind(to: registerView.nicknameTextField.rx.text)
             .disposed(by: disposeBag)
     }
-
     
     private func setBinding() {
-        let email = registerView.idTextField.rx.text.orEmpty
-        let nickname = registerView.nicknameTextField.rx.text.orEmpty
-        let password = registerView.pwTextField.rx.text.orEmpty
-        let checkPassword = registerView.pwCheckTextField.rx.text.orEmpty
-        let validEmail = viewModel.checkEmailAuthResult
-        let validNickname = viewModel.checkNicknameResult
+        let input = RegisterViewModel.Input(sendEmailforAuthAction: sendEmailforAuthAction,
+                                            checkAuthCodeAction: checkAuthCodeAction,
+                                            checkNicknameAction: checkNicknameAction,
+                                            registerUserAction: registerUserAction, 
+                                            checkEmailAuthResultChanged: checkEmailAuthResultChanged,
+                                            checkNicknameResultChanged: checkNicknameResultChanged)
         
-        Observable.combineLatest(email, nickname, password, checkPassword, validEmail, validNickname)
-        .map { email, nickname, password, checkPassword, validEmail, validNickname in
-            let isFormValid = !email.isEmpty && !nickname.isEmpty && !password.isEmpty && !checkPassword.isEmpty && validEmail && validNickname
-            let backgroundColor: UIColor = isFormValid ? .black : .systemGray6
-            let titleColor: UIColor = isFormValid ? .white : .black
-            return (isFormValid, backgroundColor, titleColor)
-        }
-        .observe(on: MainScheduler.instance)
-        .subscribe(onNext: { [weak self] isFormValid, backgroundColor, titleColor in
-            guard let self = self else { return }
-            registerView.registerButton.isEnabled = isFormValid
-            registerView.registerButton.backgroundColor = backgroundColor
-            registerView.registerButton.setTitleColor(titleColor, for: .normal)
-        }).disposed(by: disposeBag)
+        let output = viewModel.transform(input: input)
         
-        viewModel.showAlert
+        output.showAlert
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] (title, message) in
                 AlertManager.showAlertOneButton(from: self!, title: title, message: message, buttonTitle: "확인")
             }).disposed(by: disposeBag)
         
-        viewModel.showTimer
+        output.showTimer
             .observe(on: MainScheduler.instance)
             .bind(onNext: { [weak self] seconds in
                 guard let self = self else { return }
@@ -173,7 +159,7 @@ class RegisterViewController: UIViewController {
                 registerView.timerLabel.text = String(format: "%d:%02d", min, sec)
             }).disposed(by: disposeBag)
         
-        viewModel.invalidTimer
+        output.invalidTimer
             .observe(on: MainScheduler.instance)
             .bind(onNext: { [weak self] in
                 guard let self = self else { return }
@@ -184,24 +170,27 @@ class RegisterViewController: UIViewController {
                 registerView.authButton.setTitleColor(UIColor.black, for: .normal)
             }).disposed(by: disposeBag)
         
-        viewModel.sendEmailResult
-            .observe(on: MainScheduler.instance)
-            .bind(onNext: { [weak self] bool in
-                guard let self = self else { return }
-                registerView.sendEmailButton.backgroundColor = bool ? .black : .systemGray6
-                registerView.sendEmailButton.setTitleColor(bool ? UIColor.white : UIColor.black, for: .normal)
-            }).disposed(by: disposeBag)
-        
-        viewModel.checkEmailAuthResult
+        output.sendEmailResult
             .observe(on: MainScheduler.instance)
             .bind(onNext: { [weak self] bool in
                 guard let self = self else { return }
                 registerView.timerLabel.isHidden = bool
+                registerView.sendEmailButton.backgroundColor = bool ? .black : .systemGray6
+                registerView.sendEmailButton.setTitleColor(bool ? UIColor.white : UIColor.black, for: .normal)
+            }).disposed(by: disposeBag)
+        
+        output.checkEmailAuthResult
+            .observe(on: MainScheduler.instance)
+            .bind(onNext: { [weak self] bool in
+                guard let self = self else { return }
+                if bool {
+                    registerView.timerLabel.isHidden = bool
+                }
                 registerView.authButton.backgroundColor = bool ? .black : .systemGray6
                 registerView.authButton.setTitleColor(bool ? .white : .black, for: .normal)
             }).disposed(by: disposeBag)
         
-        viewModel.checkNicknameResult
+        output.checkNicknameResult
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] bool in
                 guard let self = self else { return }
@@ -209,12 +198,35 @@ class RegisterViewController: UIViewController {
                 registerView.nicknameCheckButton.setTitleColor(bool ? .white : .black, for: .normal)
             }).disposed(by: disposeBag)
         
-        viewModel.doneRegister
-            .observe(on: MainScheduler.instance)
+        output.doneRegister
             .bind(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 navigationController?.popViewController(animated: true)
             }).disposed(by: disposeBag)
+        
+        let email = registerView.idTextField.rx.text.orEmpty
+        let nickname = registerView.nicknameTextField.rx.text.orEmpty
+        let password = registerView.pwTextField.rx.text.orEmpty
+        let checkPassword = registerView.pwCheckTextField.rx.text.orEmpty
+        let validEmail = output.checkEmailAuthResult
+        let validNickname = output.checkNicknameResult
+        
+        Observable.combineLatest(email, nickname, password, checkPassword, validEmail, validNickname)
+            .map { email, nickname, password, checkPassword, validEmail, validNickname in
+                let isFormValid = !email.isEmpty && !nickname.isEmpty && !password.isEmpty && !checkPassword.isEmpty && validEmail && validNickname
+                print(isFormValid)
+                let backgroundColor: UIColor = isFormValid ? .black : .systemGray6
+                let titleColor: UIColor = isFormValid ? .white : .black
+                return (isFormValid, backgroundColor, titleColor)
+            }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] isFormValid, backgroundColor, titleColor in
+                guard let self = self else { return }
+                registerView.registerButton.isEnabled = isFormValid
+                registerView.registerButton.backgroundColor = backgroundColor
+                registerView.registerButton.setTitleColor(titleColor, for: .normal)
+            }).disposed(by: disposeBag)
+        
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
