@@ -54,10 +54,6 @@ class MainViewController: UIViewController {
         navigationController?.isNavigationBarHidden = true
     }
     
-//    override func viewWillAppear(_ animated: Bool) {
-//        loadCategory()
-//    } // Rx로 수정, 바인딩 1
-    
     func setButton() {
         mainView.startButton.setTitle(startOfMonth, for: .normal)
         mainView.lastButton.setTitle(endOfMonth, for: .normal)
@@ -72,7 +68,6 @@ class MainViewController: UIViewController {
         mainView.calendar.isHidden = true
         dateFormatter.dateFormat = "yyyy.MM.dd"
     }
-    
     
     // 뷰컨 로직 실행
     func setGesture() {
@@ -110,7 +105,34 @@ class MainViewController: UIViewController {
     
     // 뷰모델 로직 실행
     func setAction() {
+//        recordView.recordTableView.rx.itemSelected
+//            .subscribe(onNext: { [weak self] indexPath in
+//                self?.recordView.recordTableView.deselectRow(at: indexPath, animated: true)
+//                self?.saveReadNewsAction.onNext(indexPath.row)
+//            }).disposed(by: disposeBag)
         
+        //    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        //        tableView.deselectRow(at: indexPath, animated: true)
+        //
+        //        let post = viewModel.observablePost.value[indexPath.row]
+        //        let postingVM = PostingViewModel(observablePost: viewModel.observablePost, userEmail: viewModel.userEmail, coupleEmail: viewModel.coupleEmail ?? "", userIncomeCategory: viewModel.userIncomeCategory, userExpenditureCategory: viewModel.userExpenditureCategory)
+        //        postingVM.post = post
+        //        postingVM.datesRange = datesRange
+        //        postingVM.indexPath = indexPath.row
+        //        let postingVC = PostingViewController(viewModel: postingVM)
+        //
+        //        present(postingVC, animated: true)
+        //    }
+        
+        
+        
+        mainView.tableView.rx.itemDeleted
+            .subscribe(onNext: { [weak self] indexPath in
+                guard let self = self else { return }
+                mainView.tableView.beginUpdates()
+                viewModel.deletePost(index: indexPath.row)
+                mainView.tableView.endUpdates()
+            }).disposed(by: disposeBag)
     }
     
     // 뷰모델 바인딩
@@ -138,13 +160,10 @@ class MainViewController: UIViewController {
 //        }
 //    }
     
-//    func loadCategory() { // Rx로 수정, 바인딩 5
-//        viewModel.loadCategory()
-//    }
     
-//    func loadPost(dates: [String]) {
-//        viewModel.loadPost(dates: dates)
-//    }
+    
+    
+    
     
     func updateButtons() { // 캘린더, 추후 수정
         if let startDate = firstDate, let endDate = lastDate {
@@ -165,42 +184,11 @@ class MainViewController: UIViewController {
         mainView.calendar.isHidden = true
         mainView.tableView.removeGestureRecognizer(tapGestureRecognizer)
     }
-    
-    
 
-    
     
 }
     
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        tableView.deselectRow(at: indexPath, animated: true)
-//        
-//        let post = viewModel.observablePost.value[indexPath.row]
-//        let postingVM = PostingViewModel(observablePost: viewModel.observablePost, userEmail: viewModel.userEmail, coupleEmail: viewModel.coupleEmail ?? "", userIncomeCategory: viewModel.userIncomeCategory, userExpenditureCategory: viewModel.userExpenditureCategory)
-//        postingVM.post = post
-//        postingVM.datesRange = datesRange
-//        postingVM.indexPath = indexPath.row
-//        let postingVC = PostingViewController(viewModel: postingVM)
-//        
-//        present(postingVC, animated: true)
-//    }
 
-    
-    
-//    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-//        if editingStyle == .delete {
-//            let post = viewModel.observablePost.value[indexPath.row]
-//            
-//            viewModel.deletePost(date: post.date, uuid: post.uuid) { bool in
-//                if bool == true {
-//                    self.viewModel.observablePost.value.remove(at: indexPath.row)
-//                    tableView.deleteRows(at: [indexPath], with: .fade)
-//                } else {
-//                    AlertManager.showAlertOneButton(from: self, title: "삭제 실패", message: "삭제 실패했습니다.", buttonTitle: "확인")
-//                }
-//            }
-//        }
-//    }
 
 
 

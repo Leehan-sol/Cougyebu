@@ -13,14 +13,14 @@ class MainViewModel {
     private let userManager = UserManager()
     private let postManager = PostManager()
     
-    private var userEmail: String
-    var rxUser = BehaviorSubject<User?>(value: nil)
-    var rxPosts = BehaviorSubject<[Posts]>(value: [])
+    private let userEmail: String
+    var rxUser = BehaviorSubject<User?>(value: nil) // private으로 바꿀거
+    var rxPosts = BehaviorSubject<[Posts]>(value: []) // private으로 바꿀거
     private let disposeBag = DisposeBag()
     
     var userIncomeCategory: [String] = []
     var userExpenditureCategory: [String] = []
-
+    
     private let currentDate = Date()
     lazy var allDatesInMonth: [String] = currentDate.getAllDatesInMonth()
     
@@ -45,9 +45,9 @@ class MainViewModel {
     
     
     func loadPost(dates: [String]) {
-        let user = try? rxUser.value()
+        guard let user = try? rxUser.value() else { return }
         
-        if let coupleEmail = user?.coupleEmail, user?.isConnect == true  {
+        if let coupleEmail = user.coupleEmail, user.isConnect == true  {
             let coupleEmailPosts = postManager.fetchLoadPosts(email: coupleEmail, dates: dates)
             let userEmailPosts = postManager.fetchLoadPosts(email: userEmail, dates: dates)
             
@@ -72,26 +72,47 @@ class MainViewModel {
         }
     }
     
-    
-    
-    
-    func deletePost(date: String, uuid: String, completion: ((Bool?) -> Void)?) {
-        //        postManager.deletePost(email: userEmail, date: date, uuid: uuid) { [weak self] bool in
-        //            if bool == true {
-        //                completion?(true)
-        //            } else {
-        //                guard let self = self else { return }
-        //                guard let coupleEmail = coupleEmail else { return }
-        //                self.postManager.deletePost(email: coupleEmail, date: date, uuid: uuid) { bool in
-        //                    if bool == true {
-        //                        completion?(true)
-        //                    } else {
-        //                        completion?(false)
-        //                    }
-        //                }
-        //            }
-        //        }
+    func deletePost(index: Int) {
+        guard let post = try? rxPosts.value()[index] else { return }
+        guard let user = try? rxUser.value() else { return }
+        
+        if let coupleEmail = user.coupleEmail, user.isConnect == true {
+            let deleteCoupleEmail = postManager.deletePost(email: coupleEmail, post: post)
+                .catch { error in
+                    return Observable.just(false)
+                }
+            
+            let deleteUserEmail = postManager.deletePost(email: userEmail, post: post)
+                .catch { error in
+                    return Observable.just(false)
+                }
+            
+            Observable.zip(deleteCoupleEmail, deleteUserEmail)
+                .map { coupleSuccess, userSuccess in
+                    return (coupleSuccess || userSuccess)
+                }
+                .subscribe(onNext: { [weak self] result in
+                    print(result)
+                    if !result {
+                        print("삭제 실패") // 얼랏 이벤트 발행으로 수정
+                    } else {
+                        print("삭제 성공")
+                        guard let self = self else { return }
+                        if var currentPosts = try? rxPosts.value() {
+                            currentPosts.remove(at: index)
+                            rxPosts.onNext(currentPosts)
+                        }
+                    }
+                }).disposed(by: disposeBag)
+        } else {
+            postManager.deletePost(email: userEmail, post: post)
+                .subscribe(onError: { error in
+                    print(error)
+                }).disposed(by: disposeBag)
+        }
     }
+    
+    
     
     func calculatePrice() -> (income: Int, expenditure: Int, netIncome: Int) {
         var totalIncome = 0

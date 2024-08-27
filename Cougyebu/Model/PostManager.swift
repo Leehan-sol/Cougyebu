@@ -60,6 +60,7 @@ class PostManager {
         }
     }
     
+    // 게시글 추가
     func addPost(email: String, date: String, post: Posts) {
         let postData: [String: Any] = [
             "date": post.date,
@@ -94,118 +95,113 @@ class PostManager {
         }
     }
     
-    
+    // 게시글 수정
     func updatePost(email: String, originalDate: String, uuid: String, post: Posts, completion: ((Bool?) -> Void)?) {
-        let postDocRef = db.collection(email).document(originalDate)
+//        let postDocRef = db.collection(email).document(originalDate)
+//        
+//        postDocRef.getDocument { snapshot, error in
+//            if let error = error {
+//                print("Error getting document: \(error)")
+//                completion?(false)
+//                return
+//            }
+//            
+//            guard let snapshot = snapshot, snapshot.exists else {
+//                print("Document does not exist")
+//                completion?(false)
+//                return
+//            }
+//            
+//            let data = snapshot.data()
+//            
+//            if originalDate != post.date {
+//                self.deletePost(email: email, date: originalDate, uuid: uuid) { success in
+//                    if success! {
+//                        print("Original document deleted successfully")
+//                        self.addPost(email: email, date: post.date, post: post)
+//                        completion?(true)
+//                    } else {
+//                        print("Error deleting original document")
+//                        completion?(false)
+//                    }
+//                }
+//            } else {
+//                var posts = data?["posts"] as? [[String: Any]] ?? []
+//                if let index = posts.firstIndex(where: { $0["uuid"] as? String == uuid }) {
+//                    posts[index] = [
+//                        "date": post.date,
+//                        "group": post.group,
+//                        "category": post.category,
+//                        "content": post.content,
+//                        "cost": post.cost,
+//                        "uuid": post.uuid
+//                    ]
+//                } else {
+//                    print("Post with UUID \(uuid) not found")
+//                    completion?(false)
+//                    return
+//                }
+//                
+//                postDocRef.updateData(["posts": posts]) { error in
+//                    if let error = error {
+//                        print("Error updating document: \(error)")
+//                        completion?(false)
+//                    } else {
+//                        print("Post successfully updated")
+//                        completion?(true)
+//                    }
+//                }
+//            }
+//        }
+    }
+    
+    // 게시글 삭제
+    func deletePost(email: String, post: Posts) -> Observable<Bool> {
+        let postDocRef = db.collection(email).document(post.date)
         
-        postDocRef.getDocument { snapshot, error in
-            if let error = error {
-                print("Error getting document: \(error)")
-                completion?(false)
-                return
-            }
-            
-            guard let snapshot = snapshot, snapshot.exists else {
-                print("Document does not exist")
-                completion?(false)
-                return
-            }
-            
-            let data = snapshot.data()
-            
-            if originalDate != post.date {
-                self.deletePost(email: email, date: originalDate, uuid: uuid) { success in
-                    if success! {
-                        print("Original document deleted successfully")
-                        self.addPost(email: email, date: post.date, post: post)
-                        completion?(true)
-                    } else {
-                        print("Error deleting original document")
-                        completion?(false)
-                    }
-                }
-            } else {
-                var posts = data?["posts"] as? [[String: Any]] ?? []
-                if let index = posts.firstIndex(where: { $0["uuid"] as? String == uuid }) {
-                    posts[index] = [
-                        "date": post.date,
-                        "group": post.group,
-                        "category": post.category,
-                        "content": post.content,
-                        "cost": post.cost,
-                        "uuid": post.uuid
-                    ]
-                } else {
-                    print("Post with UUID \(uuid) not found")
-                    completion?(false)
+        return Observable.create { observer in
+            postDocRef.getDocument { snapshot, error in
+                if let error = error {
+                    observer.onError(error)
                     return
                 }
-                
-                postDocRef.updateData(["posts": posts]) { error in
-                    if let error = error {
-                        print("Error updating document: \(error)")
-                        completion?(false)
-                    } else {
-                        print("Post successfully updated")
-                        completion?(true)
+
+                guard let snapshot = snapshot, snapshot.exists else {
+                    observer.onNext(false)
+                    return
+                }
+
+                var posts = snapshot.data()?["posts"] as? [[String: Any]] ?? []
+                if let index = posts.firstIndex(where: { $0["uuid"] as? String == post.uuid }) {
+                    posts.remove(at: index)
+                } else {
+                    observer.onNext(false)
+                    return
+                }
+
+                if posts.isEmpty {
+                    postDocRef.delete { error in
+                        if let error = error {
+                            observer.onError(error)
+                        } else {
+                            observer.onNext(true)
+                            observer.onCompleted()
+                        }
+                    }
+                } else {
+                    postDocRef.updateData(["posts": posts]) { error in
+                        if let error = error {
+                            observer.onError(error)
+                        } else {
+                            observer.onNext(true)
+                            observer.onCompleted()
+                        }
                     }
                 }
             }
+            return Disposables.create()
         }
     }
-    
-    
-    
-    func deletePost(email: String, date: String, uuid: String, completion: ((Bool?) -> Void)?) {
-        let postDocRef = db.collection(email).document(date)
-        
-        postDocRef.getDocument { snapshot, error in
-            if let error = error {
-                print("Error getting document: \(error)")
-                completion?(false)
-                return
-            }
-            
-            guard let snapshot = snapshot, snapshot.exists else {
-                print("Document does not exist")
-                completion?(false)
-                return
-            }
-            
-            var posts = snapshot.data()?["posts"] as? [[String: Any]] ?? []
-            if let index = posts.firstIndex(where: { $0["uuid"] as? String == uuid }) {
-                posts.remove(at: index)
-            } else {
-                print("Post with UUID \(uuid) not found")
-                completion?(false)
-                return
-            }
-            
-            if posts.isEmpty {
-                postDocRef.delete { error in
-                    if let error = error {
-                        print("Error deleting document: \(error)")
-                        completion?(false)
-                    } else {
-                        print("Document successfully deleted")
-                        completion?(true)
-                    }
-                }
-            } else {
-                postDocRef.updateData(["posts": posts]) { error in
-                    if let error = error {
-                        print("Error updating document: \(error)")
-                        completion?(false)
-                    } else {
-                        print("Post successfully deleted")
-                        completion?(true)
-                    }
-                }
-            }
-        }
-    }
-    
-    
     
     func deleteAllPost(email: String, completion: ((Bool?) -> Void)?) {
         let userCollectionRef = db.collection(email)

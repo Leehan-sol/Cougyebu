@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CC43867E2BC596F000BE16DC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CC43867D2BC596F000BE16DC /* GoogleService-Info.plist */; };
 		CC4955922B998CE4003B3341 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4955912B998CE4003B3341 /* AppDelegate.swift */; };
 		CC4955942B998CE4003B3341 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4955932B998CE4003B3341 /* SceneDelegate.swift */; };
 		CC49559B2B998CE5003B3341 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CC49559A2B998CE5003B3341 /* Assets.xcassets */; };
@@ -65,6 +64,7 @@
 		CC5E35DE2BA133DD0082FDC1 /* PasswordChangeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5E35DD2BA133DD0082FDC1 /* PasswordChangeViewController.swift */; };
 		CC5E35E02BA134320082FDC1 /* PasswordChangeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5E35DF2BA134320082FDC1 /* PasswordChangeView.swift */; };
 		CC62E3082B9BECFE00E0438F /* MainTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC62E3072B9BECFE00E0438F /* MainTableViewCell.swift */; };
+		CC6BED4E2C7DB8A100AB34AC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CC6BED4D2C7DB8A100AB34AC /* GoogleService-Info.plist */; };
 		CCCCCCED2B9A946C00355EAA /* ConnectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCCCCCEC2B9A946C00355EAA /* ConnectViewModel.swift */; };
 		CCF8A7BF2C6DD95E00553143 /* Notification +.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCF8A7BE2C6DD95E00553143 /* Notification +.swift */; };
 		CCF8A8652C6DF5F400553143 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = CCF8A8642C6DF5F400553143 /* SnapKit */; };
@@ -135,7 +135,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		CC43867D2BC596F000BE16DC /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		CC49558E2B998CE4003B3341 /* Cougyebu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cougyebu.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC4955912B998CE4003B3341 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CC4955932B998CE4003B3341 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -195,6 +194,7 @@
 		CC5E35DD2BA133DD0082FDC1 /* PasswordChangeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordChangeViewController.swift; sourceTree = "<group>"; };
 		CC5E35DF2BA134320082FDC1 /* PasswordChangeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordChangeView.swift; sourceTree = "<group>"; };
 		CC62E3072B9BECFE00E0438F /* MainTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTableViewCell.swift; sourceTree = "<group>"; };
+		CC6BED4D2C7DB8A100AB34AC /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		CCCCCCEC2B9A946C00355EAA /* ConnectViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectViewModel.swift; sourceTree = "<group>"; };
 		CCF8A7BE2C6DD95E00553143 /* Notification +.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification +.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -296,7 +296,7 @@
 				CC49559A2B998CE5003B3341 /* Assets.xcassets */,
 				CC49559C2B998CE5003B3341 /* LaunchScreen.storyboard */,
 				CC49559F2B998CE5003B3341 /* Info.plist */,
-				CC43867D2BC596F000BE16DC /* GoogleService-Info.plist */,
+				CC6BED4D2C7DB8A100AB34AC /* GoogleService-Info.plist */,
 			);
 			path = Cougyebu;
 			sourceTree = "<group>";
@@ -597,8 +597,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				CC49563E2B9997F2003B3341 /* .gitignore in Resources */,
+				CC6BED4E2C7DB8A100AB34AC /* GoogleService-Info.plist in Resources */,
 				CC49559E2B998CE5003B3341 /* LaunchScreen.storyboard in Resources */,
-				CC43867E2BC596F000BE16DC /* GoogleService-Info.plist in Resources */,
 				CC49559B2B998CE5003B3341 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
