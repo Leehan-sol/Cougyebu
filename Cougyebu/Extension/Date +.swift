@@ -29,7 +29,7 @@ extension Date {
         return calendar.date(byAdding: components, to: self.startOfMonth())!
     }
       
-    func getAllDatesInMonthAsString() -> [String] {
+    func getAllDatesInMonth() -> [String] {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy.MM.dd"
         let startOfMonth = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month], from: self))!

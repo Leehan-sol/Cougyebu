@@ -80,6 +80,7 @@ class LoginViewController: UIViewController {
     
     private func setAction() {
         loginView.loginButton.rx.tap
+            .throttle(.milliseconds(5000), scheduler: MainScheduler.instance)
             .bind { [weak self] in
                 guard let self = self else { return }
                 guard let id = loginView.idTextField.text, let pw = loginView.pwTextField.text else { return }

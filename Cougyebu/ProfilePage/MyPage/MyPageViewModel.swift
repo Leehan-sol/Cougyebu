@@ -24,10 +24,10 @@ class MyPageViewModel {
     func setUser() {
         guard let email = userEmail else { return }
         
-        userManager.findUser(email: email) { user in
-            guard let user = user else { return }
-            self.observableUser?.value = user
-        }
+//        userManager.findUser(email: email) { user in
+//            guard let user = user else { return }
+//            self.observableUser?.value = user
+//        }
     }
     
     

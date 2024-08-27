@@ -59,7 +59,7 @@ class MainTableViewCell: UITableViewCell {
         stackView.addArrangedSubview(categoryLabel)
         stackView.addArrangedSubview(contentLabel)
         stackView.addArrangedSubview(priceLabel)
-
+        
         dateLabel.snp.makeConstraints {
             $0.top.bottom.equalTo(contentView).inset(10)
             $0.left.equalTo(contentView).inset(20)
@@ -69,6 +69,18 @@ class MainTableViewCell: UITableViewCell {
             $0.left.equalTo(dateLabel.snp.right).offset(20)
             $0.right.equalTo(contentView).inset(20)
         }
-        
     }
+    
+    func configure(post: Posts) {
+        let dateString = post.date
+        let startIndex = dateString.index(dateString.startIndex, offsetBy: 5)
+        let formattedDate = String(dateString[startIndex...])
+        
+        dateLabel.text = formattedDate
+        categoryLabel.text = post.category
+        contentLabel.text = post.content
+        priceLabel.text = "\(post.cost)원"
+        priceLabel.textColor = post.group == "수입" ? .systemBlue : .systemRed
+    }
+    
 }

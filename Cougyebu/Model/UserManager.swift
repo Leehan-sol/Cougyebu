@@ -15,20 +15,20 @@ class UserManager {
     private let db = Firestore.firestore()
     private let currentUser = Auth.auth().currentUser
     
-    func findUser(email: String, completion: @escaping (User?) -> Void) {
+    func findUser(email: String) -> Observable<User?> {
         let userDB = db.collection("User")
         let query = userDB.whereField("email", isEqualTo: email)
         
-        query.getDocuments { (snapshot, error) in
-            if let error = error {
-                print(error.localizedDescription)
-                completion(nil)
-                return
-            }
-            
-            if let snapshot = snapshot, !snapshot.isEmpty {
-                guard let data = snapshot.documents.first?.data() else {
-                    completion(nil)
+        return Observable.create { observer in
+            query.getDocuments { snapshot, error in
+                if let error = error {
+                    observer.onError(error)
+                    return
+                }
+                
+                guard let snapshot = snapshot, let data = snapshot.documents.first?.data() else {
+                    observer.onNext(nil)
+                    observer.onCompleted()
                     return
                 }
                 
@@ -41,35 +41,47 @@ class UserManager {
                 let incomeCategory = data["incomeCategory"] as? [String]
                 let expenditureCategory = data["expenditureCategory"] as? [String]
                 
-                // 커플 닉네임 가져오기
-                var coupleNickname: String?
                 if let coupleNicknameRef = data["coupleNickname"] as? DocumentReference {
-                    coupleNicknameRef.getDocument { (snapshot, error) in
+                    coupleNicknameRef.getDocument { coupleSnapshot, error in
                         if let error = error {
-                            print(error.localizedDescription)
-                            completion(nil)
+                            observer.onError(error)
                             return
                         }
                         
-                        guard let snapshot = snapshot, let data = snapshot.data() else {
-                            completion(nil)
-                            return
-                        }
-                        
-                        coupleNickname = data["nickname"] as? String
-                        let user = User(email: email, nickname: nickname, isConnect: isConnect, code: code, coupleEmail: coupleEmail, coupleNickname: coupleNickname, requestUser: requestUser, incomeCategory: incomeCategory, expenditureCategory: expenditureCategory)
-                        completion(user)
+                        let coupleNickname = coupleSnapshot?.data()?["nickname"] as? String
+                        let user = User(email: email,
+                            nickname: nickname,
+                            isConnect: isConnect,
+                            code: code,
+                            coupleEmail: coupleEmail,
+                            coupleNickname: coupleNickname,
+                            requestUser: requestUser,
+                            incomeCategory: incomeCategory,
+                            expenditureCategory: expenditureCategory
+                        )
+                        observer.onNext(user)
+                        observer.onCompleted()
                     }
                 } else {
-                    let user = User(email: email, nickname: nickname, isConnect: isConnect, code: code, coupleEmail: coupleEmail, coupleNickname: nil, requestUser: requestUser, incomeCategory: incomeCategory, expenditureCategory: expenditureCategory)
-                    completion(user)
+                    let user = User(
+                        email: email,
+                        nickname: nickname,
+                        isConnect: isConnect,
+                        code: code,
+                        coupleEmail: coupleEmail,
+                        coupleNickname: nil,
+                        requestUser: requestUser,
+                        incomeCategory: incomeCategory,
+                        expenditureCategory: expenditureCategory
+                    )
+                    observer.onNext(user)
+                    observer.onCompleted()
                 }
-            } else {
-                completion(nil)
             }
+            return Disposables.create()
         }
     }
-
+    
     func findId(email: String) -> Observable<Bool> {
         let userDB = db.collection("User")
         let query = userDB.whereField("email", isEqualTo: email)

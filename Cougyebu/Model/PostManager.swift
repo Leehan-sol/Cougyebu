@@ -8,62 +8,57 @@
 import Foundation
 import FirebaseFirestore
 import FirebaseAuth
+import RxSwift
 
 class PostManager {
     private let db = Firestore.firestore()
     
     // 게시글 로드
-    func loadPosts(email: String, date: String, completion: @escaping ([Posts]?) -> Void) {
-        DispatchQueue.global().async {
-            let userDB = self.db.collection(email)
-            let databaseRef = userDB.document(date)
-            
+    func fetchLoadPosts(email: String, dates: [String]) -> Observable<[Posts]> {
+        let apiCallObservables = dates.map { date -> Observable<[Posts]> in
+            return loadPosts(email: email, date: date)
+        }
+        
+        return Observable.zip(apiCallObservables)
+            .map { results in
+                return results.flatMap { $0 }
+            }
+    }
+    
+    func loadPosts(email: String, date: String) -> Observable<[Posts]> {
+        let userDB = db.collection(email)
+        let databaseRef = userDB.document(date)
+        
+        return Observable.create { observer in
             databaseRef.getDocument { snapshot, error in
                 if let error = error {
-                    print("Error getting document: \(error)")
-                    DispatchQueue.main.async {
-                        completion(nil)
+                    print(error.localizedDescription)
+                    observer.onNext([])
+                } else if let snapshot = snapshot, snapshot.exists {
+                    var posts: [Posts] = []
+                    if let postData = snapshot.data()?["posts"] as? [[String: Any]] {
+                        for data in postData {
+                            if let date = data["date"] as? String,
+                               let group = data["group"] as? String,
+                               let category = data["category"] as? String,
+                               let content = data["content"] as? String,
+                               let cost = data["cost"] as? String,
+                               let uuid = data["uuid"] as? String {
+                                let post = Posts(date: date, group: group, category: category, content: content, cost: cost, uuid: uuid)
+                                posts.append(post)
+                            }
+                        }
                     }
-                    return
-                }
-                
-                guard let snapshot = snapshot, snapshot.exists else {
-                    DispatchQueue.main.async {
-                        completion(nil)
-                    }
-                    return
-                }
-                
-                guard let data = snapshot.data(), let postsData = data["posts"] as? [[String: Any]] else {
-                    DispatchQueue.main.async {
-                        completion(nil)
-                    }
-                    return
-                }
-                
-                var posts: [Posts] = []
-                for postData in postsData {
-                    if let date = postData["date"] as? String,
-                       let group = postData["group"] as? String,
-                       let category = postData["category"] as? String,
-                       let content = postData["content"] as? String,
-                       let cost = postData["cost"] as? String,
-                       let uuid = postData["uuid"] as? String {
-                        let post = Posts(date: date, group: group, category: category, content: content, cost: cost, uuid: uuid)
-                        posts.append(post)
-                    } else {
-                        print("Error parsing post data")
-                    }
-                }
-                
-                DispatchQueue.main.async { 
-                    completion(posts)
+                    observer.onNext(posts)
+                    observer.onCompleted()
+                } else {
+                    observer.onNext([])
+                    observer.onCompleted()
                 }
             }
+            return Disposables.create()
         }
     }
-
-    
     
     func addPost(email: String, date: String, post: Posts) {
         let postData: [String: Any] = [
@@ -98,7 +93,7 @@ class PostManager {
             }
         }
     }
-
+    
     
     func updatePost(email: String, originalDate: String, uuid: String, post: Posts, completion: ((Bool?) -> Void)?) {
         let postDocRef = db.collection(email).document(originalDate)
@@ -158,7 +153,7 @@ class PostManager {
             }
         }
     }
-
+    
     
     
     func deletePost(email: String, date: String, uuid: String, completion: ((Bool?) -> Void)?) {

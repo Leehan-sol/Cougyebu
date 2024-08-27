@@ -6,94 +6,107 @@
 //
 
 import Foundation
+import RxSwift
+import RxCocoa
 
 class MainViewModel {
     private let userManager = UserManager()
     private let postManager = PostManager()
     
-    var observableUser: Observable2<User>?
-    var observablePost: Observable2<[Posts]> = Observable2<[Posts]>([])
+    private var userEmail: String
+    var rxUser = BehaviorSubject<User?>(value: nil)
+    var rxPosts = BehaviorSubject<[Posts]>(value: [])
+    private let disposeBag = DisposeBag()
     
-    var userEmail: String
     var userIncomeCategory: [String] = []
     var userExpenditureCategory: [String] = []
-    var coupleEmail: String?
-    var isConnect: Bool?
+
     private let currentDate = Date()
-    lazy var allDatesInMonth: [String] = currentDate.getAllDatesInMonthAsString()
+    lazy var allDatesInMonth: [String] = currentDate.getAllDatesInMonth()
     
     init(userEmail: String) {
         self.userEmail = userEmail
-        self.observableUser = Observable2<User>(User(email: "", nickname: "", isConnect: false))
+        setUserAndPosts()
     }
     
-    // user 세팅
-    func setUser() {
-        userManager.findUser(email: userEmail) { [self] user in
-            guard let user = user else { return }
-            self.observableUser?.value = user
-            self.coupleEmail = user.coupleEmail
-            self.isConnect = user.isConnect
-            self.loadPost(dates: allDatesInMonth)
-        }
+    func setUserAndPosts() {
+        userManager.findUser(email: userEmail)
+            .subscribe(onNext: { [weak self] user in
+                guard let self = self else { return }
+                rxUser.onNext(user)
+            }).disposed(by: disposeBag)
+        
+        rxUser
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                self.loadPost(dates: allDatesInMonth)
+            }).disposed(by: disposeBag)
     }
+    
     
     func loadPost(dates: [String]) {
-        var loadedPosts: [Posts] = []
+        let user = try? rxUser.value()
         
-        for date in dates {
-            // 커플 이메일
-            if let coupleEmail = coupleEmail, isConnect == true {
-                postManager.loadPosts(email: coupleEmail, date: date) { [weak self] posts in
-                    if let post = posts {
-                        loadedPosts.append(contentsOf: post)
+        if let coupleEmail = user?.coupleEmail, user?.isConnect == true  {
+            let coupleEmailPosts = postManager.fetchLoadPosts(email: coupleEmail, dates: dates)
+            let userEmailPosts = postManager.fetchLoadPosts(email: userEmail, dates: dates)
+            
+            Observable.combineLatest(coupleEmailPosts, userEmailPosts)
+                .map { couplePosts, myPosts in
+                    return (couplePosts + myPosts).sorted { $0.date < $1.date }
+                }
+                .subscribe(onNext: { [weak self] sortedPosts in
+                    guard let self = self else { return }
+                    rxPosts.onNext(sortedPosts)
+                }).disposed(by: disposeBag)
+        } else {
+            postManager.fetchLoadPosts(email: userEmail, dates: dates)
+                .map { posts in
+                    return posts.sorted { $0.date < $1.date }
+                }
+                .subscribe(onNext: { [weak self] sortedPosts in
+                    guard let self = self else { return
                     }
-                    self?.observablePost.value = loadedPosts.sorted(by: { $0.date < $1.date }) // 데이터 갱신
-                }
-            }
-            // 사용자 이메일
-            postManager.loadPosts(email: userEmail, date: date) { [weak self] posts in
-                if let post = posts {
-                    loadedPosts.append(contentsOf: post)
-                }
-                self?.observablePost.value = loadedPosts.sorted(by: { $0.date < $1.date }) // 데이터 갱신
-            }
+                    rxPosts.onNext(sortedPosts)
+                }).disposed(by: disposeBag)
         }
     }
+    
+    
     
     
     func deletePost(date: String, uuid: String, completion: ((Bool?) -> Void)?) {
-        postManager.deletePost(email: userEmail, date: date, uuid: uuid) { [weak self] bool in
-            if bool == true {
-                completion?(true)
-            } else {
-                guard let self = self else { return }
-                guard let coupleEmail = coupleEmail else { return }
-                self.postManager.deletePost(email: coupleEmail, date: date, uuid: uuid) { bool in
-                    if bool == true {
-                        completion?(true)
-                    } else {
-                        completion?(false)
-                    }
-                }
-            }
-        }
+        //        postManager.deletePost(email: userEmail, date: date, uuid: uuid) { [weak self] bool in
+        //            if bool == true {
+        //                completion?(true)
+        //            } else {
+        //                guard let self = self else { return }
+        //                guard let coupleEmail = coupleEmail else { return }
+        //                self.postManager.deletePost(email: coupleEmail, date: date, uuid: uuid) { bool in
+        //                    if bool == true {
+        //                        completion?(true)
+        //                    } else {
+        //                        completion?(false)
+        //                    }
+        //                }
+        //            }
+        //        }
     }
     
     func calculatePrice() -> (income: Int, expenditure: Int, netIncome: Int) {
         var totalIncome = 0
         var totalExpenditure = 0
         
-        for post in observablePost.value {
-            let costStringWithoutComma = post.cost.replacingOccurrences(of: ",", with: "")
-            if let cost = Int(costStringWithoutComma) {
-                if post.group == "수입" {
-                    totalIncome += cost
-                } else if post.group == "지출" {
-                    totalExpenditure += cost
-                }
-            }
-        }
+        //        for post in observablePost.value {
+        //            let costStringWithoutComma = post.cost.replacingOccurrences(of: ",", with: "")
+        //            if let cost = Int(costStringWithoutComma) {
+        //                if post.group == "수입" {
+        //                    totalIncome += cost
+        //                } else if post.group == "지출" {
+        //                    totalExpenditure += cost
+        //                }
+        //            }
+        //        }
         
         let netIncome = totalIncome - totalExpenditure
         
