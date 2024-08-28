@@ -11,9 +11,27 @@ import FirebaseAuth
 import RxSwift
 
 class UserManager {
-    
     private let db = Firestore.firestore()
     private let currentUser = Auth.auth().currentUser
+    
+    func addUser(user: User) {
+        db.collection("User").document(user.email).setData([
+            "email": user.email,
+            "nickname": user.nickname,
+            "code": user.code as Any,
+            "isConnect": user.isConnect as Any,
+            "coupleEmail": user.coupleEmail as Any,
+            "coupleNickname": user.coupleNickname as Any,
+            "incomeCategory": user.incomeCategory as Any,
+            "expenditureCategory": user.expenditureCategory as Any
+        ]) { error in
+            if let error = error {
+                print("Error: \(error)")
+            } else {
+                print("유저생성 성공")
+            }
+        }
+    }
     
     func findUser(email: String) -> Observable<User?> {
         let userDB = db.collection("User")
@@ -132,49 +150,35 @@ class UserManager {
         }
     }
     
-    func findCategory(email: String, completion: @escaping (([String]?, [String]?) -> Void)) {
-        let userDB = db.collection("User")
+    func findCategory(email: String) -> Observable<([String], [String])> {
+        let userDB = Firestore.firestore().collection("User")
         let query = userDB.whereField("email", isEqualTo: email)
         
-        query.getDocuments { (snapshot, error) in
-            if let error = error {
-                print(error.localizedDescription)
-                completion(nil, nil)
-                return
-            }
-            
-            if let snapshot = snapshot, !snapshot.isEmpty {
-                guard let data = snapshot.documents.first?.data() else {
-                    completion(nil, nil)
+        return Observable.create { observer in
+            query.getDocuments { snapshot, error in
+                if let error = error {
+                    print(error.localizedDescription)
+                    observer.onError(error)
                     return
                 }
                 
-                let incomeCategory = data["incomeCategory"] as? [String]
-                let expenditureCategory = data["expenditureCategory"] as? [String]
-                completion(incomeCategory, expenditureCategory)
-            } else {
-                completion(nil, nil)
+                if let snapshot = snapshot, !snapshot.isEmpty {
+                    guard let data = snapshot.documents.first?.data() else {
+                        observer.onNext(([], []))
+                        observer.onCompleted()
+                        return
+                    }
+                    
+                    let incomeCategory = data["incomeCategory"] as? [String] ?? []
+                    let expenditureCategory = data["expenditureCategory"] as? [String] ?? []
+                    observer.onNext((incomeCategory, expenditureCategory))
+                    observer.onCompleted()
+                } else {
+                    observer.onNext(([], []))
+                    observer.onCompleted()
+                }
             }
-        }
-    }
-    
-    // 유저 생성
-    func addUser(user: User) {
-        db.collection("User").document(user.email).setData([
-            "email": user.email,
-            "nickname": user.nickname,
-            "code": user.code as Any,
-            "isConnect": user.isConnect as Any,
-            "coupleEmail": user.coupleEmail as Any,
-            "coupleNickname": user.coupleNickname as Any,
-            "incomeCategory": user.incomeCategory as Any,
-            "expenditureCategory": user.expenditureCategory as Any
-        ]) { error in
-            if let error = error {
-                print("Error: \(error)")
-            } else {
-                print("유저생성 성공")
-            }
+            return Disposables.create()
         }
     }
     

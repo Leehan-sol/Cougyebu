@@ -28,7 +28,7 @@ extension Date {
         components.day = -1
         return calendar.date(byAdding: components, to: self.startOfMonth())!
     }
-      
+    
     func getAllDatesInMonth() -> [String] {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy.MM.dd"

@@ -6,22 +6,23 @@
 //
 
 import Foundation
+import RxSwift
 
 class PostingViewModel {
     private let userManager = UserManager()
     private let postManager = PostManager()
     
-    var observablePost: Observable2<[Posts]>
+    var posts: BehaviorSubject<[Posts]>
     var userEmail: String
     var coupleEmail: String
-    var userIncomeCategory: [String]
-    var userExpenditureCategory: [String]
+    var userIncomeCategory: BehaviorSubject<[String]>
+    var userExpenditureCategory:  BehaviorSubject<[String]>
     var datesRange: [String]?
     var post: Posts?
     var indexPath: Int?
     
-    init(observablePost: Observable2<[Posts]>, userEmail: String, coupleEmail: String, userIncomeCategory: [String], userExpenditureCategory: [String]) {
-        self.observablePost = observablePost
+    init(observablePost: BehaviorSubject<[Posts]>, userEmail: String, coupleEmail: String, userIncomeCategory: BehaviorSubject<[String]>, userExpenditureCategory: BehaviorSubject<[String]>) {
+        self.posts = observablePost
         self.userEmail = userEmail
         self.coupleEmail = coupleEmail
         self.userIncomeCategory = userIncomeCategory
@@ -35,8 +36,8 @@ class PostingViewModel {
         guard let range = datesRange else { return }
         
         if range.contains(date) {
-            observablePost.value += [posts]
-            observablePost.value = observablePost.value.sorted(by: { $0.date < $1.date })
+//            observablePost.value += [posts]
+//            observablePost.value = observablePost.value.sorted(by: { $0.date < $1.date })
         }
     }
     
@@ -46,10 +47,10 @@ class PostingViewModel {
                   guard let self = self else { return }
                   guard let range = datesRange else { return }
                   if let index = self.indexPath, range.contains(post.date) {
-                      self.observablePost.value[index] = post
-                      self.observablePost.value = (self.observablePost.value.sorted(by: { $0.date < $1.date }))
+//                      self.observablePost.value[index] = post
+//                      self.observablePost.value = (self.observablePost.value.sorted(by: { $0.date < $1.date }))
                   } else if let index = self.indexPath {
-                      self.observablePost.value.remove(at: index)
+//                      self.observablePost.value.remove(at: index)
                   }
                   completion?(true)
               } else {
@@ -58,10 +59,10 @@ class PostingViewModel {
                           guard let self = self else { return }
                           guard let range = datesRange else { return }
                           if let index = self.indexPath, range.contains(post.date)  {
-                              self.observablePost.value[index] = post
-                              self.observablePost.value = (self.observablePost.value.sorted(by: { $0.date < $1.date }))
+//                              self.observablePost.value[index] = post
+//                              self.observablePost.value = (self.observablePost.value.sorted(by: { $0.date < $1.date }))
                           } else if let index = self.indexPath {
-                              self.observablePost.value.remove(at: index)
+//                              self.observablePost.value.remove(at: index)
                           }
                           completion?(true)
                       } else {

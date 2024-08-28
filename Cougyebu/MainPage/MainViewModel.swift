@@ -12,17 +12,26 @@ import RxCocoa
 class MainViewModel {
     private let userManager = UserManager()
     private let postManager = PostManager()
-    
     private let userEmail: String
-    var rxUser = BehaviorSubject<User?>(value: nil) // private으로 바꿀거
-    var rxPosts = BehaviorSubject<[Posts]>(value: []) // private으로 바꿀거
+    private let currentDate = Date()
+    let dateFormatter = DateFormatter()
+    
+    let isLoading: BehaviorSubject<Bool> = BehaviorSubject(value: false)
+    let rxUser = BehaviorSubject<User?>(value: nil) // private으로 바꿀거
+    let rxPosts = BehaviorSubject<[Posts]>(value: [])
+    let postsPrice = BehaviorSubject<(Int, Int, Int)>(value: (0, 0, 0))
+    let userIncomeCategory = BehaviorSubject<[String]>(value: [])
+    let userExpenditureCategory = BehaviorSubject<[String]>(value: [])
+    let movePostPage = PublishSubject<PostingViewModel>()
+    
+    let existingFirstDate = PublishSubject<Date?>()
+    let existingSelectedDates = PublishSubject<[String]>()
+    let selectedFirstDate = BehaviorSubject<Date?>(value: nil)
+    let selectedLastDate = BehaviorSubject<Date?>(value: nil)
+    let reloadCalendar = PublishSubject<Void>()
+    lazy var selectedDates = BehaviorSubject<[String]>(value: currentDate.getAllDatesInMonth())
     private let disposeBag = DisposeBag()
     
-    var userIncomeCategory: [String] = []
-    var userExpenditureCategory: [String] = []
-    
-    private let currentDate = Date()
-    lazy var allDatesInMonth: [String] = currentDate.getAllDatesInMonth()
     
     init(userEmail: String) {
         self.userEmail = userEmail
@@ -37,15 +46,39 @@ class MainViewModel {
             }).disposed(by: disposeBag)
         
         rxUser
-            .subscribe(onNext: { [weak self] _ in
+            .bind(onNext: { [weak self] _ in
                 guard let self = self else { return }
-                self.loadPost(dates: allDatesInMonth)
+                if let dates = try? selectedDates.value() {
+                    loadPost(dates: dates)
+                }
+            }).disposed(by: disposeBag)
+        
+        selectedDates
+            .subscribe(onNext: { [weak self] dates in
+                guard let self = self else { return }
+                loadPost(dates: dates)
+            }).disposed(by: disposeBag)
+        
+        rxPosts
+            .bind(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                calculatePostPrice()
             }).disposed(by: disposeBag)
     }
     
+    func loadCategory() {
+        userManager.findCategory(email: userEmail)
+            .subscribe(onNext: { [weak self] (incomeCategory, expenditureCategory) in
+                guard let self = self else { return }
+                userIncomeCategory.onNext(incomeCategory)
+                userExpenditureCategory.onNext(expenditureCategory)
+            }).disposed(by: disposeBag)
+    }
     
     func loadPost(dates: [String]) {
         guard let user = try? rxUser.value() else { return }
+        
+        isLoading.onNext(true)
         
         if let coupleEmail = user.coupleEmail, user.isConnect == true  {
             let coupleEmailPosts = postManager.fetchLoadPosts(email: coupleEmail, dates: dates)
@@ -58,6 +91,7 @@ class MainViewModel {
                 .subscribe(onNext: { [weak self] sortedPosts in
                     guard let self = self else { return }
                     rxPosts.onNext(sortedPosts)
+                    isLoading.onNext(false)
                 }).disposed(by: disposeBag)
         } else {
             postManager.fetchLoadPosts(email: userEmail, dates: dates)
@@ -68,8 +102,35 @@ class MainViewModel {
                     guard let self = self else { return
                     }
                     rxPosts.onNext(sortedPosts)
+                    isLoading.onNext(false)
                 }).disposed(by: disposeBag)
         }
+    }
+
+    
+    func calculatePostPrice() {
+        rxPosts
+            .map { posts in
+                let totalIncome = posts
+                    .filter { $0.group == "수입" }
+                    .map { post in
+                        Int(post.cost.replacingOccurrences(of: ",", with: "")) ?? 0
+                    }
+                    .reduce(0, +)
+                
+                let totalExpenditure = posts
+                    .filter { $0.group == "지출" }
+                    .map { post in
+                        Int(post.cost.replacingOccurrences(of: ",", with: "")) ?? 0
+                    }
+                    .reduce(0, +)
+                
+                let result = totalIncome - totalExpenditure
+                
+                return (totalIncome, totalExpenditure, result)
+            }
+            .bind(to: postsPrice)
+            .disposed(by: disposeBag)
     }
     
     func deletePost(index: Int) {
@@ -112,40 +173,75 @@ class MainViewModel {
         }
     }
     
-    
-    
-    func calculatePrice() -> (income: Int, expenditure: Int, netIncome: Int) {
-        var totalIncome = 0
-        var totalExpenditure = 0
+    func makePostViewModel() {
+        guard let user = try? rxUser.value() else { return }
         
-        //        for post in observablePost.value {
-        //            let costStringWithoutComma = post.cost.replacingOccurrences(of: ",", with: "")
-        //            if let cost = Int(costStringWithoutComma) {
-        //                if post.group == "수입" {
-        //                    totalIncome += cost
-        //                } else if post.group == "지출" {
-        //                    totalExpenditure += cost
-        //                }
-        //            }
-        //        }
-        
-        let netIncome = totalIncome - totalExpenditure
-        
-        return (totalIncome, totalExpenditure, netIncome)
+        let postingVM = PostingViewModel(observablePost: rxPosts,
+                                         userEmail: userEmail,
+                                         coupleEmail: user.coupleEmail ?? "",
+                                         userIncomeCategory: userIncomeCategory,
+                                         userExpenditureCategory: userExpenditureCategory)
+        movePostPage.onNext(postingVM)
     }
     
-    
-    func loadCategory() {
-        userManager.findCategory(email: userEmail) { incomeCategory, expenditureCategory in
-            if let incomeCategory = incomeCategory {
-                self.userIncomeCategory = incomeCategory
+    func handleDateSelection(selectedDate: Date) {
+        let firstDate = try? selectedFirstDate.value()
+        let lastDate = try? selectedLastDate.value()
+        let dates = try? selectedDates.value()
+        
+        print(#function, firstDate, lastDate, dates)
+        
+        if let firstDate = firstDate, let lastDate = lastDate {
+            // 1. firstDate와 lastDate가 설정된 경우
+            existingSelectedDates.onNext(dates ?? [])
+            selectedLastDate.onNext(nil)
+            selectedDates.onNext([])
+            selectedFirstDate.onNext(selectedDate)
+        } else if let firstDate = firstDate {
+            if selectedDate < firstDate {
+                // 2. firstDate 이전 날짜를 선택한 경우
+                existingFirstDate.onNext(firstDate)
+                selectedFirstDate.onNext(selectedDate)
+            } else {
+                // 3. firstDate 이후 날짜를 선택한 경우
+                selectedLastDate.onNext(selectedDate)
+                var range: [String] = []
+                var currentDate = firstDate
+                while currentDate <= selectedDate {
+                    let stringDate = dateFormatter.string(from: currentDate)
+                    range.append(stringDate)
+                    currentDate = Calendar.current.date(byAdding: .day, value: 1, to: currentDate)!
+                }
+                selectedDates.onNext(range)
             }
-            if let expenditureCategory = expenditureCategory {
-                self.userExpenditureCategory = expenditureCategory
-            }
+        } else {
+            // 4. 처음 날짜를 선택한 경우
+            selectedFirstDate.onNext(selectedDate)
         }
     }
     
     
     
+    
+    func handleDateDeselection(deselectedDate: Date) {
+        let firstDate = try? selectedFirstDate.value()
+        let lastDate = try? selectedLastDate.value()
+        let dates = try? selectedDates.value()
+        
+        print(#function, firstDate, lastDate, dates)
+        
+        if let currentFirstDate = firstDate, let currentLastDate = lastDate, let currentDates = dates {
+            existingSelectedDates.onNext(currentDates)
+            selectedFirstDate.onNext(nil)
+            selectedLastDate.onNext(nil)
+            selectedDates.onNext([])
+            reloadCalendar.onNext(())
+        } else if let currentDates = dates {
+            existingSelectedDates.onNext(currentDates)
+            selectedDates.onNext([])
+            reloadCalendar.onNext(())
+        }
+    }
+
+
 }

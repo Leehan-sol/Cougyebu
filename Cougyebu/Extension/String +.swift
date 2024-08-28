@@ -9,6 +9,12 @@ import Foundation
 
 extension String {
     
+    func fromString(_ dateString: String, withFormat format: String = "yyyy-MM-dd") -> Date? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = format
+        return dateFormatter.date(from: dateString)
+    }
+    
     var isConsonant: Bool {
         guard let scalar = UnicodeScalar(self)?.value else {
             return false
