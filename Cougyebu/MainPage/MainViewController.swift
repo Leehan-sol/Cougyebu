@@ -125,68 +125,39 @@ class MainViewController: UIViewController {
                 bool ? mainView.indicatorView.startAnimating() : mainView.indicatorView.stopAnimating()
             }.disposed(by: disposeBag)
         
-        viewModel.selectedFirstDate
+        viewModel.firstDate
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] date in
                 guard let self = self else { return }
-                DispatchQueue.main.async {
-                    self.mainView.calendar.reloadData()
-                    if let date = date {
-                        self.mainView.calendar.select(date)
-                    }
-                }
-            })
-            .disposed(by: disposeBag)
-        
-        viewModel.selectedLastDate
-            .subscribe(onNext: { [weak self] date in
-                guard let self = self else { return }
-                DispatchQueue.main.async {
-                    if let date = date {
-                        self.mainView.calendar.select(date)
-                    }
-                }
-            })
-            .disposed(by: disposeBag)
-        
-        viewModel.selectedDates
-            .subscribe(onNext: { [weak self] dates in
-                guard let self = self else { return }
-                DispatchQueue.main.async {
-                    self.mainView.calendar.reloadData()
-                    for dateString in dates {
-                        if let date = dateString.fromString(dateString) {
-                            self.mainView.calendar.select(date)
-                        }
-                    }
-                }
-            })
-            .disposed(by: disposeBag)
+                mainView.calendar.reloadData()
+            }).disposed(by: disposeBag)
         
         viewModel.existingFirstDate
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] date in
                 guard let self = self else { return }
-                DispatchQueue.main.async {
-                    if let date = date {
-                        self.mainView.calendar.deselect(date)
-                    }
+                if let date = date {
+                    mainView.calendar.deselect(date)
                 }
-            })
-            .disposed(by: disposeBag)
-    
-        viewModel.existingSelectedDates
-            .subscribe(onNext: { [weak self] dates in
-                guard let self = self else { return }
-                DispatchQueue.main.async {
-                    for dateString in dates {
-                        if let date = dateString.fromString(dateString) {
-                            self.mainView.calendar.deselect(date)
-                        }
-                    }
-                }
-            })
-            .disposed(by: disposeBag)
+            }).disposed(by: disposeBag)
         
-        viewModel.selectedDates
+        viewModel.selecteDate
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] date in
+                guard let self = self else { return }
+                mainView.calendar.select(date)
+            }).disposed(by: disposeBag)
+        
+        viewModel.deselecteDate
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] date in
+                guard let self = self else { return }
+                if let date = date {
+                    mainView.calendar.deselect(date)
+                }
+            }).disposed(by: disposeBag)
+     
+        viewModel.needLoadDates
             .subscribe(onNext: { [weak self] dates in
                 guard let self = self else { return }
                 mainView.startButton.setTitle(dates.first, for: .normal)
@@ -240,20 +211,11 @@ class MainViewController: UIViewController {
 extension MainViewController: FSCalendarDelegate {
     
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
-        viewModel.handleDateSelection(selectedDate: date)
+        viewModel.handleDateSelection(selectDate: date)
     }
     
     func calendar(_ calendar: FSCalendar, didDeselect date: Date, at monthPosition: FSCalendarMonthPosition) {
-        viewModel.handleDateDeselection(deselectedDate: date)
-    }
-    
-    // 날짜 31개까지 선택 가능
-    func calendar(_ calendar: FSCalendar, shouldSelect date: Date, at monthPosition: FSCalendarMonthPosition) -> Bool {
-        if calendar.selectedDates.count > 31 {
-            return false
-        } else {
-            return true
-        }
+        viewModel.handleDateDeselection(deselectDate: date)
     }
     
 }

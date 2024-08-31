@@ -25,16 +25,18 @@ class MainViewModel {
     let movePostPage = PublishSubject<PostingViewModel>()
     
     let existingFirstDate = PublishSubject<Date?>()
-    let existingSelectedDates = PublishSubject<[String]>()
-    let selectedFirstDate = BehaviorSubject<Date?>(value: nil)
-    let selectedLastDate = BehaviorSubject<Date?>(value: nil)
-    let reloadCalendar = PublishSubject<Void>()
-    lazy var selectedDates = BehaviorSubject<[String]>(value: currentDate.getAllDatesInMonth())
+    let firstDate = BehaviorSubject<Date?>(value: nil)
+    let lastDate = BehaviorSubject<Date?>(value: nil)
+    let selecteDate = BehaviorSubject<Date?>(value: nil)
+    let deselecteDate = BehaviorSubject<Date?>(value: nil)
+    lazy var needLoadDates = BehaviorSubject<[String]>(value: currentDate.getAllDatesInMonth())
+    
     private let disposeBag = DisposeBag()
     
     
     init(userEmail: String) {
         self.userEmail = userEmail
+        dateFormatter.dateFormat = "yyyy.MM.dd"
         setUserAndPosts()
     }
     
@@ -48,12 +50,12 @@ class MainViewModel {
         rxUser
             .bind(onNext: { [weak self] _ in
                 guard let self = self else { return }
-                if let dates = try? selectedDates.value() {
+                if let dates = try? needLoadDates.value() {
                     loadPost(dates: dates)
                 }
             }).disposed(by: disposeBag)
         
-        selectedDates
+        needLoadDates
             .subscribe(onNext: { [weak self] dates in
                 guard let self = self else { return }
                 loadPost(dates: dates)
@@ -184,64 +186,66 @@ class MainViewModel {
         movePostPage.onNext(postingVM)
     }
     
-    func handleDateSelection(selectedDate: Date) {
-        let firstDate = try? selectedFirstDate.value()
-        let lastDate = try? selectedLastDate.value()
-        let dates = try? selectedDates.value()
+    func handleDateSelection(selectDate: Date) {
+        let first = try? firstDate.value()
+        let last = try? lastDate.value()
+        let dates = try? needLoadDates.value()
         
-        print(#function, firstDate, lastDate, dates)
+        if first == nil {
+            firstDate.onNext(selectDate)
+            needLoadDates.onNext([])
+            return
+        }
         
-        if let firstDate = firstDate, let lastDate = lastDate {
-            // 1. firstDate와 lastDate가 설정된 경우
-            existingSelectedDates.onNext(dates ?? [])
-            selectedLastDate.onNext(nil)
-            selectedDates.onNext([])
-            selectedFirstDate.onNext(selectedDate)
-        } else if let firstDate = firstDate {
-            if selectedDate < firstDate {
-                // 2. firstDate 이전 날짜를 선택한 경우
-                existingFirstDate.onNext(firstDate)
-                selectedFirstDate.onNext(selectedDate)
+        if first != nil && last == nil {
+            if selectDate < first! {
+                existingFirstDate.onNext(first)
+                firstDate.onNext(selectDate)
+                needLoadDates.onNext([])
+                return
             } else {
-                // 3. firstDate 이후 날짜를 선택한 경우
-                selectedLastDate.onNext(selectedDate)
-                var range: [String] = []
-                var currentDate = firstDate
-                while currentDate <= selectedDate {
-                    let stringDate = dateFormatter.string(from: currentDate)
-                    range.append(stringDate)
+                var range = [Date]()
+                var currentDate = first!
+                while currentDate <= selectDate {
+                    range.append(currentDate)
                     currentDate = Calendar.current.date(byAdding: .day, value: 1, to: currentDate)!
                 }
-                selectedDates.onNext(range)
+                
+                var rangeString = [String]()
+                for day in range {
+                    let dateString = dateFormatter.string(from: day)
+                    rangeString.append(dateString)
+                    selecteDate.onNext(day)
+                }
+                firstDate.onNext(range.first)
+                lastDate.onNext(range.last)
+                needLoadDates.onNext(rangeString)
             }
-        } else {
-            // 4. 처음 날짜를 선택한 경우
-            selectedFirstDate.onNext(selectedDate)
         }
+        
+        if first != nil && last != nil {
+            for date in dates! {
+                let dateTypeDate = date.fromString(date)
+                deselecteDate.onNext(dateTypeDate)
+            }
+            firstDate.onNext(selectDate)
+            lastDate.onNext(nil)
+            needLoadDates.onNext([])
+        }
+        
     }
     
-    
-    
-    
-    func handleDateDeselection(deselectedDate: Date) {
-        let firstDate = try? selectedFirstDate.value()
-        let lastDate = try? selectedLastDate.value()
-        let dates = try? selectedDates.value()
+    func handleDateDeselection(deselectDate: Date) {
+        let dates = try? needLoadDates.value()
         
-        print(#function, firstDate, lastDate, dates)
-        
-        if let currentFirstDate = firstDate, let currentLastDate = lastDate, let currentDates = dates {
-            existingSelectedDates.onNext(currentDates)
-            selectedFirstDate.onNext(nil)
-            selectedLastDate.onNext(nil)
-            selectedDates.onNext([])
-            reloadCalendar.onNext(())
-        } else if let currentDates = dates {
-            existingSelectedDates.onNext(currentDates)
-            selectedDates.onNext([])
-            reloadCalendar.onNext(())
+        for date in dates! {
+            let dateTypeDate = date.fromString(date)
+            deselecteDate.onNext(dateTypeDate)
         }
+        firstDate.onNext(nil)
+        lastDate.onNext(nil)
+        needLoadDates.onNext([])
     }
-
-
 }
+
+
