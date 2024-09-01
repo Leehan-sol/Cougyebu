@@ -26,7 +26,7 @@ class PostingView: UIView {
     
     private let groupLabel: UILabel = {
         let label = UILabel()
-        label.text = "수입 / 지출"
+        label.text = "지출 / 수입"
         label.font = UIFont.boldSystemFont(ofSize: 16)
         return label
     }()

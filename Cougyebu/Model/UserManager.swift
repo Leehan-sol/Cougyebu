@@ -182,7 +182,7 @@ class UserManager {
         }
     }
     
-    // 유저 업데이트
+    // 📌 유저 업데이트
     func updateUser(email: String, updatedFields: [String: Any], completion: ((Bool?) -> Void)?) {
         db.collection("User").document(email).updateData(updatedFields) { error in
             if let error = error {
@@ -195,6 +195,7 @@ class UserManager {
         }
     }
     
+    // 📌 유저닉네임 업데이트
     func updateUserNickname(email: String, updatedFields: [String: Any]) -> Observable<Bool> {
         return Observable.create { observer in
             self.db.collection("User").document(email).updateData(updatedFields) { error in
@@ -268,7 +269,7 @@ class UserManager {
         }
     }
     
-    // 유저 연결 해제
+    // 📌 유저 연결 해제
     func disconnectUser(inputEmail: String, completion: ((Bool?) -> Void)?) {
         db.collection("User").document(inputEmail).getDocument { [self] (document, error) in
             guard let document = document, document.exists else {
@@ -379,7 +380,6 @@ class UserManager {
             }
         }
     }
-    
     
 }
 

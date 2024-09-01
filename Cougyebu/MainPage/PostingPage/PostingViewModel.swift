@@ -12,17 +12,17 @@ class PostingViewModel {
     private let userManager = UserManager()
     private let postManager = PostManager()
     
-    var posts: BehaviorSubject<[Posts]>
+    var post: Posts?
+    var postUpdated: PublishSubject<Void>
     var userEmail: String
     var coupleEmail: String
-    var userIncomeCategory: BehaviorSubject<[String]>
-    var userExpenditureCategory:  BehaviorSubject<[String]>
-    var datesRange: [String]?
-    var post: Posts?
-    var indexPath: Int?
+    var userIncomeCategory: [String]
+    var userExpenditureCategory:  [String]
+    var group = ["지출", "수입"]
     
-    init(observablePost: BehaviorSubject<[Posts]>, userEmail: String, coupleEmail: String, userIncomeCategory: BehaviorSubject<[String]>, userExpenditureCategory: BehaviorSubject<[String]>) {
-        self.posts = observablePost
+    init(post: Posts?, postUpdated: PublishSubject<Void>, userEmail: String, coupleEmail: String, userIncomeCategory: [String], userExpenditureCategory: [String]) {
+        self.post = post
+        self.postUpdated = postUpdated
         self.userEmail = userEmail
         self.coupleEmail = coupleEmail
         self.userIncomeCategory = userIncomeCategory
@@ -33,42 +33,40 @@ class PostingViewModel {
     func addPost(date: String, posts: Posts) {
         postManager.addPost(email: userEmail, date: date, post: posts)
         
-        guard let range = datesRange else { return }
-        
-        if range.contains(date) {
+//        if range.contains(date) {
 //            observablePost.value += [posts]
 //            observablePost.value = observablePost.value.sorted(by: { $0.date < $1.date })
-        }
+//        }
     }
     
     func updatePost(originalDate: String, uuid: String, post: Posts, completion: ((Bool?) -> Void)?) {
           postManager.updatePost(email: userEmail, originalDate: originalDate, uuid: uuid, post: post) { [weak self] bool in
               if bool == true {
                   guard let self = self else { return }
-                  guard let range = datesRange else { return }
-                  if let index = self.indexPath, range.contains(post.date) {
+//                  guard let range = datesRange else { return }
+//                  if let index = self.indexPath, range.contains(post.date) {
 //                      self.observablePost.value[index] = post
 //                      self.observablePost.value = (self.observablePost.value.sorted(by: { $0.date < $1.date }))
-                  } else if let index = self.indexPath {
+//                  } else if let index = self.indexPath {
 //                      self.observablePost.value.remove(at: index)
-                  }
-                  completion?(true)
-              } else {
-                  self?.postManager.updatePost(email: self!.coupleEmail, originalDate: originalDate, uuid: uuid, post: post) { [weak self] bool in
-                      if bool == true {
-                          guard let self = self else { return }
-                          guard let range = datesRange else { return }
-                          if let index = self.indexPath, range.contains(post.date)  {
+//                  }
+//                  completion?(true)
+//              } else {
+//                  self?.postManager.updatePost(email: self!.coupleEmail, originalDate: originalDate, uuid: uuid, post: post) { [weak self] bool in
+//                      if bool == true {
+//                          guard let self = self else { return }
+//                          guard let range = datesRange else { return }
+//                          if let index = self.indexPath, range.contains(post.date)  {
 //                              self.observablePost.value[index] = post
 //                              self.observablePost.value = (self.observablePost.value.sorted(by: { $0.date < $1.date }))
-                          } else if let index = self.indexPath {
+//                          } else if let index = self.indexPath {
 //                              self.observablePost.value.remove(at: index)
-                          }
-                          completion?(true)
-                      } else {
-                          completion?(false)
-                      }
-                  }
+//                          }
+//                          completion?(true)
+//                      } else {
+//                          completion?(false)
+//                      }
+//                  }
               }
           }
       }

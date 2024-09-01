@@ -8,12 +8,12 @@
 import Foundation
 
 struct Posts {
-    var date: String
-    var group: String
-    var category: String
-    var content: String
-    var cost: String
-    var uuid: String
+    let date: String
+    let group: String
+    let category: String
+    let content: String
+    let cost: String
+    let uuid: String
 }
 
 

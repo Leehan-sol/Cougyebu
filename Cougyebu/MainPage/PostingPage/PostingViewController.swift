@@ -6,16 +6,14 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 class PostingViewController: UIViewController {
     private let postingView = PostingView()
     private let viewModel: PostingViewModel
-    private let group = ["지출", "수입"]
-    private let charSet: CharacterSet = {
-        var cs = CharacterSet.lowercaseLetters
-        cs.insert(charactersIn: "0123456789")
-        return cs.inverted
-    }()
+    
+    private let disposeBag = DisposeBag()
     
     init(viewModel: PostingViewModel) {
         self.viewModel = viewModel
@@ -32,73 +30,108 @@ class PostingViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setTextField()
-        setAddTarget()
-        setPickerView()
         setUI()
+        setAction()
+        setBinding()
     }
     
-    func setTextField() {
-        postingView.contentTextField.delegate = self
-        postingView.costTextField.delegate = self
-    }
-    
-    func setAddTarget() {
-        postingView.addButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
-    }
-    
-    func setPickerView() {
-        postingView.groupPicker.delegate = self
-        postingView.groupPicker.dataSource = self
-        postingView.categoryPicker.delegate = self
-        postingView.categoryPicker.dataSource = self
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
     }
     
     func setUI() {
-        guard let post = viewModel.post else { return }
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy.MM.dd"
         
-        if let date = dateFormatter.date(from: post.date) {
+        if let post = viewModel.post, let date = dateFormatter.date(from: post.date) {
             postingView.datePicker.date = date
-        }
-
-        if let groupIndex = group.firstIndex(of: post.group) {
-            postingView.groupPicker.selectRow(groupIndex, inComponent: 0, animated: true)
+            postingView.contentTextField.text = post.content
+            postingView.costTextField.text = post.cost.removeComma(from: post.cost)
+            postingView.addButton.setTitle("수정하기", for: .normal)
         }
         
-//        if post.group == "수입" {
-//            if let categoryIndex = viewModel.userIncomeCategory.firstIndex(of: post.category) {
-//                postingView.categoryPicker.selectRow(categoryIndex, inComponent: 0, animated: true)
-//            }
-//        } else {
-//            if let categoryIndex = viewModel.userExpenditureCategory.firstIndex(of: post.category) {
-//                postingView.categoryPicker.selectRow(categoryIndex, inComponent: 0, animated: true)
-//            }
-//        }
-//        
-        postingView.contentTextField.text = post.content
-        postingView.costTextField.text = post.cost.removeComma(from: post.cost)
-        postingView.addButton.setTitle("수정하기", for: .normal)
+        let groupObserver = Observable.just(viewModel.group)
+        let selectedGroupCategories = BehaviorSubject<[String]>(value: viewModel.userExpenditureCategory)
+        
+        groupObserver
+            .bind(to: postingView.groupPicker.rx.itemTitles) { row, element in
+                return element
+            }.disposed(by: disposeBag)
+        
+        selectedGroupCategories
+            .bind(to: postingView.categoryPicker.rx.itemTitles) { row, element in
+                return element
+            }.disposed(by: disposeBag)
+        
+        groupObserver
+                .subscribe(onNext: { [weak self] _ in
+                    guard let self = self else { return }
+                    
+                    if let post = viewModel.post {
+                        if let index = viewModel.group.firstIndex(of: post.group) {
+                            postingView.groupPicker.selectRow(index, inComponent: 0, animated: true)
+                            
+                            let selectedCategories: [String]
+                            if post.group == "수입" {
+                                selectedCategories = viewModel.userIncomeCategory
+                            } else {
+                                selectedCategories = viewModel.userExpenditureCategory
+                            }
+                            
+                            selectedGroupCategories.onNext(selectedCategories)
+                            
+                            if let categoryIndex = selectedCategories.firstIndex(of: post.category) {
+                                postingView.categoryPicker.selectRow(categoryIndex, inComponent: 0, animated: true)
+                            }
+                        }
+                    }
+                }).disposed(by: disposeBag)
+        
+        postingView.groupPicker.rx.modelSelected(String.self)
+            .map { [weak self] selectedGroupName -> [String] in
+                guard let self = self else { return [] }
+                if selectedGroupName.first == "수입" {
+                    return viewModel.userIncomeCategory
+                } else {
+                    return viewModel.userExpenditureCategory
+                }
+            }
+            .bind(to: selectedGroupCategories)
+            .disposed(by: disposeBag)
     }
+    
 
     
-    @objc func addButtonTapped() {
+    // 뷰모델 로직 실행 (addButtonTapped x, 뷰모델 로직 실행으로 수정)
+    func setAction() {
+        postingView.addButton.rx.tap
+            .bind(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                addButtonTapped()
+            }).disposed(by: disposeBag)
+    }
+    
+    // 뷰모델 바인딩
+    func setBinding() {
+       
+    }
+    
+    func addButtonTapped() {
         if viewModel.post == nil {
             let dateString = postingView.datePicker.date.toString(format: "yyyy.MM.dd")
             
             let selectedGroupIndex = postingView.groupPicker.selectedRow(inComponent: 0)
-            let group = group[selectedGroupIndex]
+            let group = viewModel.group[selectedGroupIndex]
             
             let categories: [String]
-//            if group == "수입" {
-//                categories = viewModel.userIncomeCategory
-//            } else {
-//                categories = viewModel.userExpenditureCategory
-//            }
-//            
+            //            if group == "수입" {
+            //                categories = viewModel.userIncomeCategory
+            //            } else {
+            //                categories = viewModel.userExpenditureCategory
+            //            }
+            //
             let selectedCategoryIndex = postingView.categoryPicker.selectedRow(inComponent: 0)
-//            let category = categories[selectedCategoryIndex]
+            //            let category = categories[selectedCategoryIndex]
             
             let uuid = UUID().uuidString
             
@@ -118,8 +151,8 @@ class PostingViewController: UIViewController {
             }
             let resultCost = intCost.makeComma(num: intCost)
             
-//            let post = Posts(date: dateString, group: group, category: category, content: content, cost: resultCost, uuid: uuid)
-//            viewModel.addPost(date: dateString, posts: post)
+            //            let post = Posts(date: dateString, group: group, category: category, content: content, cost: resultCost, uuid: uuid)
+            //            viewModel.addPost(date: dateString, posts: post)
             dismiss(animated: true)
         } else {
             guard let post = viewModel.post else { return }
@@ -127,17 +160,17 @@ class PostingViewController: UIViewController {
             let dateString = postingView.datePicker.date.toString(format: "yyyy.MM.dd")
             
             let selectedGroupIndex = postingView.groupPicker.selectedRow(inComponent: 0)
-            let group = group[selectedGroupIndex]
+            let group = viewModel.group[selectedGroupIndex]
             
             let categories: [String]
-//            if group == "수입" {
-//                categories = viewModel.userIncomeCategory
-//            } else {
-//                categories = viewModel.userExpenditureCategory
-//            }
+            //            if group == "수입" {
+            //                categories = viewModel.userIncomeCategory
+            //            } else {
+            //                categories = viewModel.userExpenditureCategory
+            //            }
             
             let selectedCategoryIndex = postingView.categoryPicker.selectedRow(inComponent: 0)
-//            let category = categories[selectedCategoryIndex]
+            //            let category = categories[selectedCategoryIndex]
             
             guard let content = postingView.contentTextField.text, !content.trimmingCharacters(in: .whitespaces).isEmpty else {
                 AlertManager.showAlertOneButton(from: self, title: "내용 입력", message: "내용을 입력하세요", buttonTitle: "확인")
@@ -154,75 +187,20 @@ class PostingViewController: UIViewController {
             }
             let resultCost = intCost.makeComma(num: intCost)
             
-//            let updatedPost = Posts(date: dateString, group: group, category: category, content: content, cost: resultCost, uuid: post.uuid)
+            //            let updatedPost = Posts(date: dateString, group: group, category: category, content: content, cost: resultCost, uuid: post.uuid)
             
-//            viewModel.updatePost(originalDate: originalDate, uuid: post.uuid, post: updatedPost) { bool in
-//                if bool == true {
-//                    AlertManager.showAlertOneButton(from: self, title: "수정", message: "수정되었습니다.", buttonTitle: "확인") {
-//                        self.dismiss(animated: true)
-//                    }
-//                } else {
-//                    AlertManager.showAlertOneButton(from: self, title: "수정 실패", message: "수정 실패했습니다.", buttonTitle: "확인")
-//                }
-//            }
+            //            viewModel.updatePost(originalDate: originalDate, uuid: post.uuid, post: updatedPost) { bool in
+            //                if bool == true {
+            //                    AlertManager.showAlertOneButton(from: self, title: "수정", message: "수정되었습니다.", buttonTitle: "확인") {
+            //                        self.dismiss(animated: true)
+            //                    }
+            //                } else {
+            //                    AlertManager.showAlertOneButton(from: self, title: "수정 실패", message: "수정 실패했습니다.", buttonTitle: "확인")
+            //                }
+            //            }
         }
     }
-
-
-
     
-    
-}
-
-// MARK: - UITextFieldDelegate
-extension PostingViewController: UITextFieldDelegate {
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        self.view.endEditing(true)
-    }
-    
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if textField == postingView.costTextField, string.count > 0 {
-            guard string.rangeOfCharacter(from: charSet) == nil else { return false }
-        }
-        return true
-    }
-    
-    
-}
-
-
-// MARK: - UIPickerViewDataSource, UIPickerViewDelegate
-extension PostingViewController: UIPickerViewDataSource, UIPickerViewDelegate {
-    
-    func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 1
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-//        if pickerView == postingView.groupPicker {
-//            return 2
-//        } else {
-//            let groupIndex = postingView.groupPicker.selectedRow(inComponent: 0)
-//            return groupIndex == 0 ? viewModel.userExpenditureCategory.count : viewModel.userIncomeCategory.count
-//        }
-        return 1
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-//        if pickerView == postingView.groupPicker {
-//            return group[row]
-//        } else {
-//            let groupIndex = postingView.groupPicker.selectedRow(inComponent: 0)
-//            return groupIndex == 0 ? viewModel.userExpenditureCategory[row] : viewModel.userIncomeCategory[row]
-//        }
-        return ""
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        if pickerView == postingView.groupPicker {
-            postingView.categoryPicker.reloadComponent(0)
-        }
-    }
     
 }
 

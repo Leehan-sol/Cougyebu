@@ -95,7 +95,7 @@ class PostManager {
         }
     }
     
-    // 게시글 수정
+    // 📌 게시글 수정
     func updatePost(email: String, originalDate: String, uuid: String, post: Posts, completion: ((Bool?) -> Void)?) {
 //        let postDocRef = db.collection(email).document(originalDate)
 //        
@@ -203,6 +203,7 @@ class PostManager {
         }
     }
     
+    // 📌 탈퇴시 게시글 전체 삭제
     func deleteAllPost(email: String, completion: ((Bool?) -> Void)?) {
         let userCollectionRef = db.collection(email)
         

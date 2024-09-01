@@ -58,7 +58,6 @@ class MainViewController: UIViewController {
         mainView.calendar.delegate = self
     }
     
-    // 뷰컨 로직 실행
     func setGesture() {
         mainView.startButton.rx.tap
             .bind(onNext: { [weak self] in
@@ -79,28 +78,15 @@ class MainViewController: UIViewController {
             }).disposed(by: disposeBag)
     }
     
-    // 뷰모델 로직 실행
+    // 뷰모델 로직 실행 input
     func setAction() {
-        // 📌 테이블뷰 선택시 게시글 수정 로직
-        //        recordView.recordTableView.rx.itemSelected
-        //            .subscribe(onNext: { [weak self] indexPath in
-        //                self?.recordView.recordTableView.deselectRow(at: indexPath, animated: true)
-        //                self?.saveReadNewsAction.onNext(indexPath.row)
-        //            }).disposed(by: disposeBag)
-        
-        //    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //        tableView.deselectRow(at: indexPath, animated: true)
-        //
-        //        let post = viewModel.observablePost.value[indexPath.row]
-        //        let postingVM = PostingViewModel(observablePost: viewModel.observablePost, userEmail: viewModel.userEmail, coupleEmail: viewModel.coupleEmail ?? "", userIncomeCategory: viewModel.userIncomeCategory, userExpenditureCategory: viewModel.userExpenditureCategory)
-        //        postingVM.post = post
-        //        postingVM.datesRange = datesRange
-        //        postingVM.indexPath = indexPath.row
-        //        let postingVC = PostingViewController(viewModel: postingVM)
-        //
-        //        present(postingVC, animated: true)
-        //    }
-        
+        mainView.tableView.rx.itemSelected
+            .subscribe(onNext: { [weak self] indexPath in
+                guard let self = self else { return }
+                mainView.tableView.deselectRow(at: indexPath, animated: true)
+                viewModel.makePostViewModel(index: indexPath.row)
+            }).disposed(by: disposeBag)
+
         mainView.tableView.rx.itemDeleted
             .subscribe(onNext: { [weak self] indexPath in
                 guard let self = self else { return }
@@ -112,11 +98,11 @@ class MainViewController: UIViewController {
         mainView.floatingButton.rx.tap
             .bind(onNext: { [weak self] in
                 guard let self = self else { return }
-                viewModel.makePostViewModel()
+                viewModel.makePostViewModel(index: nil)
             }).disposed(by: disposeBag)
     }
     
-    // 뷰모델 바인딩
+    // 뷰모델 바인딩 output
     func setBinding() {
         viewModel.isLoading
             .observe(on: MainScheduler.instance)
@@ -124,6 +110,13 @@ class MainViewController: UIViewController {
                 guard let self = self else { return }
                 bool ? mainView.indicatorView.startAnimating() : mainView.indicatorView.stopAnimating()
             }.disposed(by: disposeBag)
+        
+        viewModel.alertAction
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] (title, message) in
+                guard let self = self else { return }
+                AlertManager.showAlertOneButton(from: self, title: title, message: message, buttonTitle: "확인")
+            }).disposed(by: disposeBag)
         
         viewModel.firstDate
             .observe(on: MainScheduler.instance)
@@ -157,7 +150,8 @@ class MainViewController: UIViewController {
                 }
             }).disposed(by: disposeBag)
      
-        viewModel.needLoadDates
+        viewModel.datesRange
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] dates in
                 guard let self = self else { return }
                 mainView.startButton.setTitle(dates.first, for: .normal)
@@ -166,16 +160,19 @@ class MainViewController: UIViewController {
         
         viewModel.rxPosts
             .map { !($0.isEmpty) }
+            .observe(on: MainScheduler.instance)
             .bind(to: mainView.placeholderLabel.rx.isHidden)
             .disposed(by: disposeBag)
         
         viewModel.rxPosts
+            .observe(on: MainScheduler.instance)
             .bind(to: mainView.tableView.rx.items(cellIdentifier: "MainCell", cellType: MainTableViewCell.self)) {
                 index, item, cell in
                 cell.configure(post: item)
             }.disposed(by: disposeBag)
         
         viewModel.postsPrice
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] (income, expenditure, result) in
                 guard let self = self else { return }
                 mainView.incomePriceLabel.text = "\(income.makeComma(num: income))원"
@@ -211,11 +208,11 @@ class MainViewController: UIViewController {
 extension MainViewController: FSCalendarDelegate {
     
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
-        viewModel.handleDateSelection(selectDate: date)
+        viewModel.calendarDidSelect(selectDate: date)
     }
     
     func calendar(_ calendar: FSCalendar, didDeselect date: Date, at monthPosition: FSCalendarMonthPosition) {
-        viewModel.handleDateDeselection(deselectDate: date)
+        viewModel.calendarDidDeselect(deselectDate: date)
     }
     
 }
