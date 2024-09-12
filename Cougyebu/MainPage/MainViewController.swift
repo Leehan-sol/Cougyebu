@@ -84,7 +84,7 @@ class MainViewController: UIViewController {
             .subscribe(onNext: { [weak self] indexPath in
                 guard let self = self else { return }
                 mainView.tableView.deselectRow(at: indexPath, animated: true)
-                viewModel.makePostViewModel(index: indexPath.row)
+                viewModel.makePostingVM(index: indexPath.row)
             }).disposed(by: disposeBag)
 
         mainView.tableView.rx.itemDeleted
@@ -98,7 +98,7 @@ class MainViewController: UIViewController {
         mainView.floatingButton.rx.tap
             .bind(onNext: { [weak self] in
                 guard let self = self else { return }
-                viewModel.makePostViewModel(index: nil)
+                viewModel.makePostingVM(index: nil)
             }).disposed(by: disposeBag)
     }
     

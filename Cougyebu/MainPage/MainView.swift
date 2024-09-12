@@ -115,7 +115,7 @@ class MainView: UIView {
     
     let placeholderLabel: UILabel = {
         let label = UILabel()
-        label.text = "저장된 데이터가 없습니다."
+        label.text = "작성한 게시글이 없습니다."
         label.textColor = .darkGray
         label.font = UIFont.systemFont(ofSize: 15)
         return label

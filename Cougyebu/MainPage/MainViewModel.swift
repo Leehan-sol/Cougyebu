@@ -150,12 +150,12 @@ class MainViewModel {
         guard let user = try? rxUser.value() else { return }
         
         if let coupleEmail = user.coupleEmail, user.isConnect == true {
-            let deleteCoupleEmail = postManager.deletePost(email: coupleEmail, post: post)
+            let deleteCoupleEmail = postManager.deletePost(email: coupleEmail, date: post.date, uuid: post.uuid)
                 .catch { error in
                     return Observable.just(false)
                 }
             
-            let deleteUserEmail = postManager.deletePost(email: userEmail, post: post)
+            let deleteUserEmail = postManager.deletePost(email: userEmail, date: post.date, uuid: post.uuid)
                 .catch { error in
                     return Observable.just(false)
                 }
@@ -167,7 +167,7 @@ class MainViewModel {
                 .subscribe(onNext: { [weak self] result in
                     guard let self = self else { return }
                     if !result {
-                        alertAction.onNext(("삭제 실패","게시글 삭제에 실패했습니다. 다시 시도해주세요."))
+                        alertAction.onNext(("게시글 삭제 실패", "게시글 삭제에 실패했습니다. 다시 시도해주세요."))
                     } else {
                         if var currentPosts = try? rxPosts.value() {
                             currentPosts.remove(at: index)
@@ -176,30 +176,33 @@ class MainViewModel {
                     }
                 }).disposed(by: disposeBag)
         } else {
-            postManager.deletePost(email: userEmail, post: post)
-                .subscribe(onError: { error in
-                    print(error)
+            postManager.deletePost(email: userEmail, date: post.date, uuid: post.uuid)
+                .subscribe(onError: { [weak self] error in
+                    guard let self = self else { return }
+                    alertAction.onNext(("게시글 삭제 실패","게시글 삭제에 실패했습니다. 다시 시도해주세요."))
                 }).disposed(by: disposeBag)
         }
     }
     
-    func makePostViewModel(index: Int?) {
+    func makePostingVM(index: Int?) {
         guard let user = try? rxUser.value() else { return }
         
-        let selectPost = {
+        let postSubject = {
             if let index = index {
-                return try? rxPosts.value()[index]
+                let selectedPost = try? rxPosts.value()[index]
+                return BehaviorSubject<Posts?>(value: selectedPost)
+            } else {
+                return BehaviorSubject<Posts?>(value: nil)
             }
-            return nil
         }()
         
         let postingVM = PostingViewModel(
-            post: selectPost,
-            postUpdated: postUpdated,
             userEmail: userEmail,
             coupleEmail: user.coupleEmail ?? "",
             userIncomeCategory: userIncomeCategory,
-            userExpenditureCategory: userExpenditureCategory
+            userExpenditureCategory: userExpenditureCategory,
+            post: postSubject,
+            postUpdated: postUpdated
         )
         movePostPage.onNext(postingVM)
     }
