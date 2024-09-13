@@ -19,10 +19,10 @@ class ChartViewController: UIViewController {
     private let dateFormatter = DateFormatter()
     private var firstDate: Date?
     private var lastDate: Date?
-    private lazy var datesRange: [String] = currentDate.getAllDatesInMonth()
     private let currentDate = Date()
     private lazy var startOfMonth = currentDate.startOfMonth().toString(format: "yyyy.MM.dd")
     private lazy var endOfMonth = currentDate.endOfMonth().toString(format: "yyyy.MM.dd")
+    lazy var datesRange: [String] = currentDate.getAllDatesInMonth()
     
     init(viewModel: ChartViewModel) {
         self.viewModel = viewModel
@@ -40,7 +40,6 @@ class ChartViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setAddtarget()
-        setButton()
         setCalendar()
         setBinding()
         setIncomeOutcome() // 초기값: 지출, 현재날짜기준 한달
@@ -48,6 +47,7 @@ class ChartViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         setViewModelUser()
+        setButton()
     }
     
     func setAddtarget() {
@@ -79,8 +79,9 @@ class ChartViewController: UIViewController {
     
     func setBinding() {
         viewModel.observablePost.bind { [weak self] posts in
+            guard let self = self else { return }
             DispatchQueue.main.async {
-                self?.setDataSource(posts: posts)
+                self.setDataSource(posts: posts)
             }
         }
     }
