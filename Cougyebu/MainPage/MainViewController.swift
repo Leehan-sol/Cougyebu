@@ -14,7 +14,14 @@ class MainViewController: UIViewController {
     private let mainView = MainView()
     private let viewModel: MainViewModel
     private var tapGestureRecognizer: UITapGestureRecognizer!
+    
+    private let loadCategoryAction = PublishSubject<Void>()
+    private let makePostingVMAction = PublishSubject<Int?>()
+    private let deletePostAction = PublishSubject<Int>()
+    private let calendarSelectAction = PublishSubject<Date>()
+    private let calendarDeselectAction = PublishSubject<Date>()
     private let disposeBag = DisposeBag()
+    
     
     init(viewModel: MainViewModel) {
         self.viewModel = viewModel
@@ -42,23 +49,23 @@ class MainViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
-        viewModel.loadCategory()
+        loadCategoryAction.onNext(())
     }
     
     
-    func setNavigationBar() {
+    private func setNavigationBar() {
         navigationController?.isNavigationBarHidden = true
     }
     
-    func setTableView() {
+    private func setTableView() {
         mainView.tableView.register(MainTableViewCell.self, forCellReuseIdentifier: "MainCell")
     }
     
-    func setCalendar() {
+    private func setCalendar() {
         mainView.calendar.delegate = self
     }
     
-    func setGesture() {
+    private func setGesture() {
         mainView.startButton.rx.tap
             .bind(onNext: { [weak self] in
                 guard let self = self else { return }
@@ -78,100 +85,73 @@ class MainViewController: UIViewController {
             }).disposed(by: disposeBag)
     }
     
-    // 뷰모델 로직 실행 input
-    func setAction() {
+    private func setAction() {
         mainView.tableView.rx.itemSelected
             .subscribe(onNext: { [weak self] indexPath in
                 guard let self = self else { return }
                 mainView.tableView.deselectRow(at: indexPath, animated: true)
-                viewModel.makePostingVM(index: indexPath.row)
+                makePostingVMAction.onNext(indexPath.row)
             }).disposed(by: disposeBag)
 
         mainView.tableView.rx.itemDeleted
             .subscribe(onNext: { [weak self] indexPath in
                 guard let self = self else { return }
                 mainView.tableView.beginUpdates()
-                viewModel.deletePost(index: indexPath.row)
+                deletePostAction.onNext(indexPath.row)
                 mainView.tableView.endUpdates()
             }).disposed(by: disposeBag)
         
         mainView.floatingButton.rx.tap
             .bind(onNext: { [weak self] in
                 guard let self = self else { return }
-                viewModel.makePostingVM(index: nil)
+                makePostingVMAction.onNext(nil)
             }).disposed(by: disposeBag)
     }
     
-    // 뷰모델 바인딩 output
-    func setBinding() {
-        viewModel.isLoading
+    private func setBinding() {
+        let input = MainViewModel.Input(loadCategoryAction: loadCategoryAction,
+                                        makePostingVMAction: makePostingVMAction,
+                                        deletePostAction: deletePostAction,
+                                        calendarSelectAction: calendarSelectAction,
+                                        calendarDeselectAction: calendarDeselectAction)
+        
+        let output = viewModel.transform(input: input)
+
+        output.isLoading
             .observe(on: MainScheduler.instance)
             .subscribe { [weak self] bool in
                 guard let self = self else { return }
                 bool ? mainView.indicatorView.startAnimating() : mainView.indicatorView.stopAnimating()
             }.disposed(by: disposeBag)
         
-        viewModel.alertAction
+        output.alertAction
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] (title, message) in
                 guard let self = self else { return }
                 AlertManager.showAlertOneButton(from: self, title: title, message: message, buttonTitle: "확인")
             }).disposed(by: disposeBag)
         
-        viewModel.firstDate
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] date in
+        output.movePostPageAction
+            .subscribe(onNext: { [weak self] viewModel in
                 guard let self = self else { return }
-                mainView.calendar.reloadData()
+                let postingVC = PostingViewController(viewModel: viewModel)
+                present(postingVC, animated: true)
             }).disposed(by: disposeBag)
         
-        viewModel.existingFirstDate
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] date in
-                guard let self = self else { return }
-                if let date = date {
-                    mainView.calendar.deselect(date)
-                }
-            }).disposed(by: disposeBag)
-        
-        viewModel.selecteDate
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] date in
-                guard let self = self else { return }
-                mainView.calendar.select(date)
-            }).disposed(by: disposeBag)
-        
-        viewModel.deselecteDate
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] date in
-                guard let self = self else { return }
-                if let date = date {
-                    mainView.calendar.deselect(date)
-                }
-            }).disposed(by: disposeBag)
-     
-        viewModel.datesRange
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] dates in
-                guard let self = self else { return }
-                mainView.startButton.setTitle(dates.first, for: .normal)
-                mainView.lastButton.setTitle(dates.last, for: .normal)
-            }).disposed(by: disposeBag)
-        
-        viewModel.rxPosts
+        output.rxPosts
             .map { !($0.isEmpty) }
             .observe(on: MainScheduler.instance)
             .bind(to: mainView.placeholderLabel.rx.isHidden)
             .disposed(by: disposeBag)
         
-        viewModel.rxPosts
+        output.rxPosts
             .observe(on: MainScheduler.instance)
             .bind(to: mainView.tableView.rx.items(cellIdentifier: "MainCell", cellType: MainTableViewCell.self)) {
                 index, item, cell in
                 cell.configure(post: item)
             }.disposed(by: disposeBag)
         
-        viewModel.postsPrice
+        output.postsPrice
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] (income, expenditure, result) in
                 guard let self = self else { return }
@@ -180,22 +160,55 @@ class MainViewController: UIViewController {
                 mainView.sumPriceLabel.text = "\(result.makeComma(num: result))원"
             }).disposed(by: disposeBag)
         
-        viewModel.movePostPage
-            .subscribe(onNext: { [weak self] viewModel in
+        output.firstDate
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] date in
                 guard let self = self else { return }
-                let postingVC = PostingViewController(viewModel: viewModel)
-                present(postingVC, animated: true)
+                mainView.calendar.reloadData()
+            }).disposed(by: disposeBag)
+        
+        output.existingFirstDate
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] date in
+                guard let self = self else { return }
+                if let date = date {
+                    mainView.calendar.deselect(date)
+                }
+            }).disposed(by: disposeBag)
+        
+        output.selectDate
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] date in
+                guard let self = self else { return }
+                mainView.calendar.select(date)
+            }).disposed(by: disposeBag)
+        
+        output.deselectDate
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] date in
+                guard let self = self else { return }
+                if let date = date {
+                    mainView.calendar.deselect(date)
+                }
+            }).disposed(by: disposeBag)
+     
+        output.datesRange
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] dates in
+                guard let self = self else { return }
+                mainView.startButton.setTitle(dates.first, for: .normal)
+                mainView.lastButton.setTitle(dates.last, for: .normal)
             }).disposed(by: disposeBag)
     }
     
     
-    func showCalendar() {
+    private func showCalendar() {
         mainView.calendar.isHidden.toggle()
         tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(toggleCalender(_:)))
         mainView.tableView.addGestureRecognizer(tapGestureRecognizer)
     }
     
-    @objc func toggleCalender(_ sender: UITapGestureRecognizer) {
+    @objc private func toggleCalender(_ sender: UITapGestureRecognizer) {
         mainView.calendar.isHidden = true
         mainView.tableView.removeGestureRecognizer(tapGestureRecognizer)
     }
@@ -208,11 +221,11 @@ class MainViewController: UIViewController {
 extension MainViewController: FSCalendarDelegate {
     
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
-        viewModel.calendarDidSelect(selectDate: date)
+        calendarSelectAction.onNext(date)
     }
     
     func calendar(_ calendar: FSCalendar, didDeselect date: Date, at monthPosition: FSCalendarMonthPosition) {
-        viewModel.calendarDidDeselect(deselectDate: date)
+        calendarDeselectAction.onNext(date)
     }
     
 }

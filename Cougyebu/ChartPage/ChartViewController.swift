@@ -85,7 +85,7 @@ class ChartViewController: UIViewController {
         }
     }
     
-    func setDataSource(posts: [Posts]) {
+    func setDataSource(posts: [Post]) {
         var categoryToSum: [String: Int] = [:]
         
         for post in posts {

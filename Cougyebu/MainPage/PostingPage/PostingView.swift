@@ -78,6 +78,7 @@ class PostingView: UIView {
     
     let costTextField: UITextField = {
         let tf = UITextField()
+        tf.keyboardType = .numberPad
         tf.setPlaceholderFontSize(size: 14, text: "가격을 입력하세요")
         return tf
     }()

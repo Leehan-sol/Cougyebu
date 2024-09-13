@@ -11,25 +11,62 @@ import RxSwift
 class PostingViewModel {
     private let userManager = UserManager()
     private let postManager = PostManager()
-    let group = BehaviorSubject<[String]>(value: ["지출", "수입"])
     
-    var userEmail: String
-    var coupleEmail: String
-    var userIncomeCategory: [String]
-    var userExpenditureCategory: [String]
+    private let userEmail: String
+    private let coupleEmail: String
+    private let userIncomeCategory: [String]
+    private let userExpenditureCategory: [String]
+    private let postUpdated: PublishSubject<Void>
     
-    let post: BehaviorSubject<Posts?>
-    let postUpdated: PublishSubject<Void>
-    let dismissAction = PublishSubject<Void>()
-    let alertAction = PublishSubject<(String, String)>()
+    private let alertAction = PublishSubject<(String, String)>()
+    private let dismissAction = PublishSubject<Void>()
     
-    let groupIndex = BehaviorSubject<Int?>(value: nil)
-    let categoryIndex = BehaviorSubject<Int?>(value: nil)
-    
-    lazy var currentCategories = BehaviorSubject<[String]>(value: userExpenditureCategory)
+    private let post: BehaviorSubject<Post?>
+    private let group = BehaviorSubject<[String]>(value: ["지출", "수입"])
+    private let groupIndex = BehaviorSubject<Int?>(value: nil)
+    private let categoryIndex = BehaviorSubject<Int?>(value: nil)
+    private lazy var currentCategories = BehaviorSubject<[String]>(value: userExpenditureCategory)
     private let disposeBag = DisposeBag()
     
-    init(userEmail: String, coupleEmail: String, userIncomeCategory: [String], userExpenditureCategory: [String], post: BehaviorSubject<Posts?>, postUpdated: PublishSubject<Void>) {
+    
+    struct Input {
+        let postAddOrUpdateAction: PublishSubject<(String, Int, Int, String?, String?)>
+        let selectGroupChangeAction: PublishSubject<String>
+    }
+    
+    struct Output {
+        let alertAction: PublishSubject<(String, String)>
+        let dismissAction: PublishSubject<Void>
+        let post: BehaviorSubject<Post?>
+        let group: BehaviorSubject<[String]>
+        let groupIndex: BehaviorSubject<Int?>
+        let categoryIndex: BehaviorSubject<Int?>
+        let currentCategories: BehaviorSubject<[String]>
+    }
+    
+    func transform(input: Input) -> Output {
+        input.postAddOrUpdateAction
+            .bind(onNext: { date, groupIndex, categoryIndex, content, cost in
+                self.addOrUpdatePost(date: date, groupIndex: groupIndex, categoryIndex: categoryIndex, content: content, cost: cost)
+            }).disposed(by: disposeBag)
+        
+        input.selectGroupChangeAction
+            .bind(onNext: { groupName in
+                self.selectedGroupChange(name: groupName)
+            }).disposed(by: disposeBag)
+        
+        
+        return Output(alertAction: alertAction,
+                      dismissAction: dismissAction,
+                      post: post,
+                      group: group,
+                      groupIndex: groupIndex,
+                      categoryIndex: categoryIndex,
+                      currentCategories: currentCategories)
+    }
+    
+    
+    init(userEmail: String, coupleEmail: String, userIncomeCategory: [String], userExpenditureCategory: [String], post: BehaviorSubject<Post?>, postUpdated: PublishSubject<Void>) {
         self.userEmail = userEmail
         self.coupleEmail = coupleEmail
         self.userIncomeCategory = userIncomeCategory
@@ -39,7 +76,7 @@ class PostingViewModel {
         setGroupAndCategory()
     }
     
-    func setGroupAndCategory() {
+    private func setGroupAndCategory() {
         guard let post = try? post.value() else { return }
         
         if let group = try? group.value(), let index = group.firstIndex(of: post.group) {
@@ -57,7 +94,7 @@ class PostingViewModel {
         }
     }
     
-    func selectedGroupChange(name: String) {
+    private func selectedGroupChange(name: String) {
         if name == "수입" {
             currentCategories.onNext(userIncomeCategory)
         } else {
@@ -65,7 +102,7 @@ class PostingViewModel {
         }
     }
     
-    func addOrUpdatePost(date: String, groupIndex: Int, categoryIndex: Int, content: String?, cost: String?) {
+    private func addOrUpdatePost(date: String, groupIndex: Int, categoryIndex: Int, content: String?, cost: String?) {
         guard let group = try? group.value(), let category = try? currentCategories.value() else { return }
         let selectedGroup = group[groupIndex]
         let selectedCategory = category[categoryIndex]
@@ -81,7 +118,7 @@ class PostingViewModel {
         }
         
         let uuid = UUID().uuidString
-        let newPost = Posts(date: date, group: selectedGroup, category: selectedCategory, content: content, cost: cost, uuid: uuid)
+        let newPost = Post(date: date, group: selectedGroup, category: selectedCategory, content: content, cost: cost, uuid: uuid)
         
         if let post = try? post.value() {
             updatePost(originalDate: post.date, uuid: post.uuid, post: newPost)
@@ -90,7 +127,7 @@ class PostingViewModel {
         }
     }
     
-    func addPost(date: String, posts: Posts) {
+    private func addPost(date: String, posts: Post) {
         postManager.addPost(email: userEmail, date: date, post: posts)
             .share(replay: 1)
             .subscribe(onNext: { [weak self] success in
@@ -105,7 +142,7 @@ class PostingViewModel {
             }).disposed(by: disposeBag)
     }
     
-    func updatePost(originalDate: String, uuid: String, post: Posts) {
+    private func updatePost(originalDate: String, uuid: String, post: Post) {
         if coupleEmail != "" {
             let updateCoupleEmailPost = postManager.updatePost(email: coupleEmail, originalDate: originalDate, uuid: uuid, post: post)
                 .catch { error in

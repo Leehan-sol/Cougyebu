@@ -16,7 +16,7 @@
 		CC4955F72B998EC2003B3341 /* UIDevice +.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4955F62B998EC2003B3341 /* UIDevice +.swift */; };
 		CC4955FA2B998F94003B3341 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4955F92B998F94003B3341 /* User.swift */; };
 		CC4955FC2B998F9E003B3341 /* UserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4955FB2B998F9E003B3341 /* UserManager.swift */; };
-		CC4955FE2B998FA4003B3341 /* Posts.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4955FD2B998FA4003B3341 /* Posts.swift */; };
+		CC4955FE2B998FA4003B3341 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4955FD2B998FA4003B3341 /* Post.swift */; };
 		CC4956002B998FAB003B3341 /* AlertManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4955FF2B998FAB003B3341 /* AlertManager.swift */; };
 		CC4956022B998FB3003B3341 /* SMTPManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4956012B998FB3003B3341 /* SMTPManager.swift */; };
 		CC4956052B9991CC003B3341 /* RegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4956042B9991CC003B3341 /* RegisterView.swift */; };
@@ -146,7 +146,7 @@
 		CC4955F62B998EC2003B3341 /* UIDevice +.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIDevice +.swift"; sourceTree = "<group>"; };
 		CC4955F92B998F94003B3341 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		CC4955FB2B998F9E003B3341 /* UserManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserManager.swift; sourceTree = "<group>"; };
-		CC4955FD2B998FA4003B3341 /* Posts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Posts.swift; sourceTree = "<group>"; };
+		CC4955FD2B998FA4003B3341 /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
 		CC4955FF2B998FAB003B3341 /* AlertManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertManager.swift; sourceTree = "<group>"; };
 		CC4956012B998FB3003B3341 /* SMTPManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMTPManager.swift; sourceTree = "<group>"; };
 		CC4956042B9991CC003B3341 /* RegisterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterView.swift; sourceTree = "<group>"; };
@@ -320,7 +320,7 @@
 			isa = PBXGroup;
 			children = (
 				CC4955F92B998F94003B3341 /* User.swift */,
-				CC4955FD2B998FA4003B3341 /* Posts.swift */,
+				CC4955FD2B998FA4003B3341 /* Post.swift */,
 				CC4955FB2B998F9E003B3341 /* UserManager.swift */,
 				CC5A55FE2B9B223F0012F661 /* PostManager.swift */,
 				CC4955FF2B998FAB003B3341 /* AlertManager.swift */,
@@ -644,7 +644,7 @@
 				CC49561C2B9992F3003B3341 /* Observable.swift in Sources */,
 				CC4956312B999434003B3341 /* PasswordEditView.swift in Sources */,
 				CC4955942B998CE4003B3341 /* SceneDelegate.swift in Sources */,
-				CC4955FE2B998FA4003B3341 /* Posts.swift in Sources */,
+				CC4955FE2B998FA4003B3341 /* Post.swift in Sources */,
 				CC49560F2B999246003B3341 /* MainView.swift in Sources */,
 				CC570FFE2B9EAE1D00DF000D /* ChartViewModel.swift in Sources */,
 				CC49560A2B999205003B3341 /* LoginView.swift in Sources */,

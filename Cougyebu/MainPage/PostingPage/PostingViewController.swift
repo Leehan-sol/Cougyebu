@@ -12,6 +12,9 @@ import RxCocoa
 class PostingViewController: UIViewController {
     private let postingView = PostingView()
     private let viewModel: PostingViewModel
+    
+    private let postAddOrUpdateAction = PublishSubject<(String, Int, Int, String?, String?)>()
+    private let selectGroupChangeAction = PublishSubject<String>()
     private let disposeBag = DisposeBag()
     
     init(viewModel: PostingViewModel) {
@@ -37,8 +40,7 @@ class PostingViewController: UIViewController {
         self.view.endEditing(true)
     }
     
-    // 뷰모델 로직 실행
-    func setAction() {
+    private func setAction() {
         postingView.addButton.rx.tap
             .bind(onNext: { [weak self] _ in
                 guard let self = self else { return }
@@ -49,57 +51,60 @@ class PostingViewController: UIViewController {
             .subscribe(onNext: { [weak self] name in
                 guard let self = self else { return }
                 if let selectedGroupName = name.first {
-                    viewModel.selectedGroupChange(name: selectedGroupName)
+                    selectGroupChangeAction.onNext(selectedGroupName)
                 }
             }).disposed(by: disposeBag)
     }
     
-    // 뷰모델 바인딩
-    func setBinding() {
-        viewModel.post
-            .subscribe(onNext: { [weak self] post in
-                guard let self = self else { return }
-                setUI(post: post)
-            }).disposed(by: disposeBag)
+    private func setBinding() {
+        let input = PostingViewModel.Input(postAddOrUpdateAction: postAddOrUpdateAction, selectGroupChangeAction: selectGroupChangeAction)
         
-        viewModel.group
-            .bind(to: postingView.groupPicker.rx.itemTitles) { row, element in
-                return element
-            }.disposed(by: disposeBag)
-
-        viewModel.currentCategories
-            .bind(to: postingView.categoryPicker.rx.itemTitles) { row, element in
-                return element
-            }.disposed(by: disposeBag)
+        let output = viewModel.transform(input: input)
         
-        viewModel.groupIndex
-             .subscribe(onNext: { [weak self] index in
-                 guard let self = self, let index = index else { return }
-                 self.postingView.groupPicker.selectRow(index, inComponent: 0, animated: true)
-             }).disposed(by: disposeBag)
-        
-        viewModel.categoryIndex
-            .subscribe(onNext: { [weak self] index in
-                guard let self = self, let index = index else { return }
-                self.postingView.categoryPicker.selectRow(index, inComponent: 0, animated: true)
-            }).disposed(by: disposeBag)
-        
-        viewModel.alertAction
+        output.alertAction
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] (title, message) in
                 guard let self = self else { return }
                 AlertManager.showAlertOneButton(from: self, title: title, message: message, buttonTitle: "확인")
             }).disposed(by: disposeBag)
         
-        viewModel.dismissAction
+        output.dismissAction
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 dismiss(animated: true)
             }).disposed(by: disposeBag)
+        
+        output.post
+            .subscribe(onNext: { [weak self] post in
+                guard let self = self else { return }
+                setUI(post: post)
+            }).disposed(by: disposeBag)
+        
+        output.group
+            .bind(to: postingView.groupPicker.rx.itemTitles) { row, element in
+                return element
+            }.disposed(by: disposeBag)
+        
+        output.groupIndex
+             .subscribe(onNext: { [weak self] index in
+                 guard let self = self, let index = index else { return }
+                 self.postingView.groupPicker.selectRow(index, inComponent: 0, animated: true)
+             }).disposed(by: disposeBag)
+        
+        output.categoryIndex
+            .subscribe(onNext: { [weak self] index in
+                guard let self = self, let index = index else { return }
+                self.postingView.categoryPicker.selectRow(index, inComponent: 0, animated: true)
+            }).disposed(by: disposeBag)
+        
+        output.currentCategories
+            .bind(to: postingView.categoryPicker.rx.itemTitles) { row, element in
+                return element
+            }.disposed(by: disposeBag)
     }
     
     
-    func setUI(post: Posts?) {
+    private func setUI(post: Post?) {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy.MM.dd"
         
@@ -111,18 +116,14 @@ class PostingViewController: UIViewController {
         }
     }
     
-    func addOrUpdateButtonTapped() {
+    private func addOrUpdateButtonTapped() {
         let date = postingView.datePicker.date.toString(format: "yyyy.MM.dd")
         let groupIndex = postingView.groupPicker.selectedRow(inComponent: 0)
         let categoryIndex = postingView.categoryPicker.selectedRow(inComponent: 0)
         let content = postingView.contentTextField.text
         let cost = postingView.costTextField.text
         
-        viewModel.addOrUpdatePost(date: date, 
-                           groupIndex: groupIndex,
-                           categoryIndex: categoryIndex,
-                           content: content,
-                           cost: cost)
+        postAddOrUpdateAction.onNext((date, groupIndex, categoryIndex, content, cost))
     }
 
 }

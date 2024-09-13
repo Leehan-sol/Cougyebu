@@ -12,7 +12,7 @@ class ChartViewModel {
     private let postManager = PostManager()
     
     var observableUser: Observable2<User>?
-    var observablePost: Observable2<[Posts]> = Observable2<[Posts]>([])
+    var observablePost: Observable2<[Post]> = Observable2<[Post]>([])
     
     var userEmail: String
     var coupleEmail: String?
@@ -36,7 +36,7 @@ class ChartViewModel {
     }
     
     func loadPost(dates: [String]) {
-        var loadedPosts: [Posts] = []
+        var loadedPosts: [Post] = []
         
 //        for date in dates {
 //            // 커플 이메일

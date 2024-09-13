@@ -15,8 +15,8 @@ class PostManager {
     private let disposeBag = DisposeBag()
     
     // 게시글 로드
-    func fetchLoadPosts(email: String, dates: [String]) -> Observable<[Posts]> {
-        let apiCallObservables = dates.map { date -> Observable<[Posts]> in
+    func fetchLoadPosts(email: String, dates: [String]) -> Observable<[Post]> {
+        let apiCallObservables = dates.map { date -> Observable<[Post]> in
             return loadPosts(email: email, date: date)
         }
         
@@ -26,7 +26,7 @@ class PostManager {
             }
     }
     
-    func loadPosts(email: String, date: String) -> Observable<[Posts]> {
+    func loadPosts(email: String, date: String) -> Observable<[Post]> {
         let userDB = db.collection(email)
         let databaseRef = userDB.document(date)
         
@@ -36,7 +36,7 @@ class PostManager {
                     print(error.localizedDescription)
                     observer.onNext([])
                 } else if let snapshot = snapshot, snapshot.exists {
-                    var posts: [Posts] = []
+                    var posts: [Post] = []
                     if let postData = snapshot.data()?["posts"] as? [[String: Any]] {
                         for data in postData {
                             if let date = data["date"] as? String,
@@ -45,7 +45,7 @@ class PostManager {
                                let content = data["content"] as? String,
                                let cost = data["cost"] as? String,
                                let uuid = data["uuid"] as? String {
-                                let post = Posts(date: date, group: group, category: category, content: content, cost: cost, uuid: uuid)
+                                let post = Post(date: date, group: group, category: category, content: content, cost: cost, uuid: uuid)
                                 posts.append(post)
                             }
                         }
@@ -62,7 +62,7 @@ class PostManager {
     }
     
     // 게시글 추가
-    func addPost(email: String, date: String, post: Posts) -> Observable<Bool> {
+    func addPost(email: String, date: String, post: Post) -> Observable<Bool> {
         let postDocRef = db.collection(email).document(date)
         let postData: [String: Any] = [
             "date": post.date,
@@ -106,7 +106,7 @@ class PostManager {
     }
     
     // 게시글 수정
-    func updatePost(email: String, originalDate: String, uuid: String, post: Posts) -> Observable<Bool> {
+    func updatePost(email: String, originalDate: String, uuid: String, post: Post) -> Observable<Bool> {
         print(#function, email, originalDate, post)
         let postDocRef = db.collection(email).document(originalDate)
         

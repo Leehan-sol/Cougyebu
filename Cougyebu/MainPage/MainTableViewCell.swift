@@ -71,7 +71,7 @@ class MainTableViewCell: UITableViewCell {
         }
     }
     
-    func configure(post: Posts) {
+    func configure(post: Post) {
         let dateString = post.date
         let startIndex = dateString.index(dateString.startIndex, offsetBy: 5)
         let formattedDate = String(dateString[startIndex...])

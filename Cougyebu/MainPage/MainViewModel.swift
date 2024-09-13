@@ -17,25 +17,82 @@ class MainViewModel {
     private var userExpenditureCategory = [String]()
     private let currentDate = Date()
     private let dateFormatter = DateFormatter()
-    
-    // private으로 바꿀거
-    let isLoading = BehaviorSubject(value: false)
-    let postUpdated = PublishSubject<Void>()
-    let alertAction = PublishSubject<(String, String)>()
-    let movePostPage = PublishSubject<PostingViewModel>()
-    
-    let rxUser = BehaviorSubject<User?>(value: nil)
-    let rxPosts = BehaviorSubject<[Posts]>(value: [])
-    let postsPrice = BehaviorSubject<(Int, Int, Int)>(value: (0, 0, 0))
+    private let rxUser = BehaviorSubject<User?>(value: nil)
+    private let lastDate = BehaviorSubject<Date?>(value: nil)
 
-    let existingFirstDate = PublishSubject<Date?>()
-    let firstDate = BehaviorSubject<Date?>(value: nil)
-    let lastDate = BehaviorSubject<Date?>(value: nil)
-    let selecteDate = BehaviorSubject<Date?>(value: nil)
-    let deselecteDate = BehaviorSubject<Date?>(value: nil)
-    lazy var datesRange = BehaviorSubject<[String]>(value: currentDate.getAllDatesInMonth())
+    private let isLoading = BehaviorSubject(value: false)
+    private let postUpdated = PublishSubject<Void>()
+    private let alertAction = PublishSubject<(String, String)>()
+    private let movePostPageAction = PublishSubject<PostingViewModel>()
+    
+    private let rxPosts = BehaviorSubject<[Post]>(value: [])
+    private let postsPrice = BehaviorSubject<(Int, Int, Int)>(value: (0, 0, 0))
+
+    private let firstDate = BehaviorSubject<Date?>(value: nil)
+    private let existingFirstDate = PublishSubject<Date?>()
+    private let selectDate = BehaviorSubject<Date?>(value: nil)
+    private let deselectDate = BehaviorSubject<Date?>(value: nil)
+    private lazy var datesRange = BehaviorSubject<[String]>(value: currentDate.getAllDatesInMonth())
     private let disposeBag = DisposeBag()
     
+    struct Input {
+        let loadCategoryAction: PublishSubject<Void>
+        let makePostingVMAction: PublishSubject<Int?>
+        let deletePostAction: PublishSubject<Int>
+        let calendarSelectAction: PublishSubject<Date>
+        let calendarDeselectAction: PublishSubject<Date>   
+    }
+    
+    struct Output {
+        let isLoading: BehaviorSubject<Bool>
+        let alertAction: PublishSubject<(String, String)>
+        let movePostPageAction: PublishSubject<PostingViewModel>
+        let rxPosts: BehaviorSubject<[Post]>
+        let postsPrice: BehaviorSubject<(Int, Int, Int)>
+        let firstDate: BehaviorSubject<Date?>
+        let existingFirstDate: PublishSubject<Date?>
+        let selectDate: BehaviorSubject<Date?>
+        let deselectDate: BehaviorSubject<Date?>
+        let datesRange: BehaviorSubject<[String]>
+    }
+    
+    func transform(input: Input) -> Output {
+        input.loadCategoryAction
+            .bind(onNext: { _ in
+                self.loadCategory()
+            }).disposed(by: disposeBag)
+        
+        input.makePostingVMAction
+            .bind(onNext: { index in
+                self.makePostingVM(index: index)
+            }).disposed(by: disposeBag)
+        
+        input.deletePostAction
+            .bind(onNext: { index in
+                self.deletePost(index: index)
+            }).disposed(by: disposeBag)
+        
+        input.calendarSelectAction
+            .bind(onNext: { date in
+                self.calendarDidSelect(date: date)
+            }).disposed(by: disposeBag)
+        
+        input.calendarDeselectAction
+            .bind(onNext: { date in
+                self.calendarDidDeselect(date: date)
+            }).disposed(by: disposeBag)
+        
+        return Output(isLoading: isLoading,
+                      alertAction: alertAction,
+                      movePostPageAction: movePostPageAction,
+                      rxPosts: rxPosts,
+                      postsPrice: postsPrice,
+                      firstDate: firstDate,
+                      existingFirstDate: existingFirstDate,
+                      selectDate: selectDate,
+                      deselectDate: deselectDate,
+                      datesRange: datesRange)
+    }
     
     init(userEmail: String) {
         self.userEmail = userEmail
@@ -43,7 +100,7 @@ class MainViewModel {
         setUserAndPosts()
     }
     
-    func setUserAndPosts() {
+    private func setUserAndPosts() {
         userManager.findUser(email: userEmail)
             .subscribe(onNext: { [weak self] user in
                 guard let self = self else { return }
@@ -79,7 +136,7 @@ class MainViewModel {
             }).disposed(by: disposeBag)
     }
     
-    func loadCategory() {
+    private func loadCategory() {
         userManager.findCategory(email: userEmail)
             .subscribe(onNext: { [weak self] (income, expenditure) in
                 guard let self = self else { return }
@@ -88,7 +145,7 @@ class MainViewModel {
             }).disposed(by: disposeBag)
     }
     
-    func loadPost(dates: [String]) {
+    private func loadPost(dates: [String]) {
         guard let user = try? rxUser.value() else { return }
         
         isLoading.onNext(true)
@@ -120,7 +177,7 @@ class MainViewModel {
         }
     }
     
-    func calculatePostPrice() {
+    private func calculatePostPrice() {
         rxPosts
             .map { posts in
                 let totalIncome = posts
@@ -145,7 +202,7 @@ class MainViewModel {
             .disposed(by: disposeBag)
     }
     
-    func deletePost(index: Int) {
+    private func deletePost(index: Int) {
         guard let post = try? rxPosts.value()[index] else { return }
         guard let user = try? rxUser.value() else { return }
         
@@ -184,15 +241,15 @@ class MainViewModel {
         }
     }
     
-    func makePostingVM(index: Int?) {
+    private func makePostingVM(index: Int?) {
         guard let user = try? rxUser.value() else { return }
         
         let postSubject = {
             if let index = index {
                 let selectedPost = try? rxPosts.value()[index]
-                return BehaviorSubject<Posts?>(value: selectedPost)
+                return BehaviorSubject<Post?>(value: selectedPost)
             } else {
-                return BehaviorSubject<Posts?>(value: nil)
+                return BehaviorSubject<Post?>(value: nil)
             }
         }()
         
@@ -204,30 +261,30 @@ class MainViewModel {
             post: postSubject,
             postUpdated: postUpdated
         )
-        movePostPage.onNext(postingVM)
+        movePostPageAction.onNext(postingVM)
     }
 
-    func calendarDidSelect(selectDate: Date) {
+    private func calendarDidSelect(date: Date) {
         let first = try? firstDate.value()
         let last = try? lastDate.value()
         let dates = try? datesRange.value()
         
         if first == nil {
-            firstDate.onNext(selectDate)
+            firstDate.onNext(date)
             datesRange.onNext([])
             return
         }
         
         if first != nil && last == nil {
-            if selectDate < first! {
+            if date < first! {
                 existingFirstDate.onNext(first)
-                firstDate.onNext(selectDate)
+                firstDate.onNext(date)
                 datesRange.onNext([])
                 return
             } else {
                 var range = [Date]()
                 var currentDate = first!
-                while currentDate <= selectDate {
+                while currentDate <= date {
                     range.append(currentDate)
                     currentDate = Calendar.current.date(byAdding: .day, value: 1, to: currentDate)!
                 }
@@ -236,7 +293,7 @@ class MainViewModel {
                 for day in range {
                     let dateString = dateFormatter.string(from: day)
                     rangeString.append(dateString)
-                    selecteDate.onNext(day)
+                    selectDate.onNext(day)
                 }
                 firstDate.onNext(range.first)
                 lastDate.onNext(range.last)
@@ -247,21 +304,21 @@ class MainViewModel {
         if first != nil && last != nil {
             for date in dates! {
                 let dateTypeDate = date.fromString(date)
-                deselecteDate.onNext(dateTypeDate)
+                deselectDate.onNext(dateTypeDate)
             }
-            firstDate.onNext(selectDate)
+            firstDate.onNext(date)
             lastDate.onNext(nil)
             datesRange.onNext([])
         }
         
     }
     
-    func calendarDidDeselect(deselectDate: Date) {
+    private func calendarDidDeselect(date: Date) {
         let dates = try? datesRange.value()
         
         for date in dates! {
             let dateTypeDate = date.fromString(date)
-            deselecteDate.onNext(dateTypeDate)
+            deselectDate.onNext(dateTypeDate)
         }
         firstDate.onNext(nil)
         lastDate.onNext(nil)
