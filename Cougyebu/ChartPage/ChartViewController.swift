@@ -19,7 +19,7 @@ class ChartViewController: UIViewController {
     private let dateFormatter = DateFormatter()
     private var firstDate: Date?
     private var lastDate: Date?
-    private lazy var datesRange: [String] = currentDate.getAllDatesInMonthAsString()
+    private lazy var datesRange: [String] = currentDate.getAllDatesInMonth()
     private let currentDate = Date()
     private lazy var startOfMonth = currentDate.startOfMonth().toString(format: "yyyy.MM.dd")
     private lazy var endOfMonth = currentDate.endOfMonth().toString(format: "yyyy.MM.dd")
@@ -85,7 +85,7 @@ class ChartViewController: UIViewController {
         }
     }
     
-    func setDataSource(posts: [Posts]) {
+    func setDataSource(posts: [Post]) {
         var categoryToSum: [String: Int] = [:]
         
         for post in posts {

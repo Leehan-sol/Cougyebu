@@ -6,17 +6,17 @@
 //
 
 import UIKit
-import Combine
+import RxSwift
 import FirebaseAuth
 
 class NicknameEditViewController: UIViewController {
     private let nicknameEditView = NicknameEditView()
     private let userManager = UserManager()
-    private let user: Observable<User>?
+    private let user: Observable2<User>?
     private var checkNickname = false
-    private var cancelBags = Set<AnyCancellable>()
+    private let disposeBag = DisposeBag()
     
-    init(user: Observable<User>?) {
+    init(user: Observable2<User>?) {
         self.user = user
         super.init(nibName: nil, bundle: nil)
     }
@@ -57,31 +57,29 @@ class NicknameEditViewController: UIViewController {
     @objc func nicknameCheckButtonTapped() {
         if let nickname = nicknameEditView.nicknameTextField.text?.trimmingCharacters(in: .whitespaces), !nickname.isEmpty {
             userManager.findNickname(nickname: nickname)
-                .sink(receiveCompletion: { completion in
-                    switch completion {
-                    case .failure(let error):
-                        print("Error: \(error.localizedDescription)")
-                        AlertManager.showAlertOneButton(from: self, title: "오류", message: error.localizedDescription, buttonTitle: "확인")
-                    case .finished:
-                        break
-                    }
-                }, receiveValue: { isUsed in
-                    if isUsed != nil {
-                        AlertManager.showAlertOneButton(from: self, title: "사용 불가능", message: "이미 사용중인 닉네임입니다.", buttonTitle: "확인")
-                        self.nicknameEditView.nicknameCheckButton.backgroundColor = .systemGray6
-                        self.nicknameEditView.nicknameCheckButton.setTitleColor(UIColor.black, for: .normal)
-                        self.checkNickname = false
+                .subscribe(onNext: { [weak self] user in
+                    if let user = user {
+                        // 사용 불가능한 경우
+                        AlertManager.showAlertOneButton(from: self!, title: "사용 불가능", message: "이미 사용중인 닉네임입니다.", buttonTitle: "확인")
+                        self?.nicknameEditView.nicknameCheckButton.backgroundColor = .systemGray6
+                        self?.nicknameEditView.nicknameCheckButton.setTitleColor(UIColor.black, for: .normal)
+                        self?.checkNickname = false
                     } else {
-                        AlertManager.showAlertOneButton(from: self, title: "사용 가능", message: "사용 가능한 닉네임입니다. \n 입력하신 닉네임은 아이디 찾기시 이용됩니다.", buttonTitle: "확인")
-                        self.nicknameEditView.nicknameCheckButton.backgroundColor = .black
-                        self.nicknameEditView.nicknameCheckButton.setTitleColor(UIColor.white, for: .normal)
-                        self.checkNickname = true
+                        // 사용 가능한 경우
+                        AlertManager.showAlertOneButton(from: self!, title: "사용 가능", message: "사용 가능한 닉네임입니다. \n 입력하신 닉네임은 아이디 찾기시 이용됩니다.", buttonTitle: "확인")
+                        self?.nicknameEditView.nicknameCheckButton.backgroundColor = .black
+                        self?.nicknameEditView.nicknameCheckButton.setTitleColor(UIColor.white, for: .normal)
+                        self?.checkNickname = true
                     }
-                })
-                .store(in: &cancelBags)
+                }, onError: { error in
+                    // 오류 발생 시 처리
+                    print("Error: \(error.localizedDescription)")
+                    AlertManager.showAlertOneButton(from: self, title: "오류", message: error.localizedDescription, buttonTitle: "확인")
+                }, onCompleted: {
+                }).disposed(by: disposeBag)
         }
     }
-
+    
     
     @objc func nicknameEditButtonTapped() {
         guard let newNickname = nicknameEditView.nicknameTextField.text?.trimmingCharacters(in: .whitespaces),
@@ -101,25 +99,19 @@ class NicknameEditViewController: UIViewController {
         }
         
         userManager.updateUserNickname(email: userEmail, updatedFields: ["nickname": newNickname])
-            .sink(receiveCompletion: { completion in
-                switch completion {
-                case .failure(let error):
-                    print("Error: \(error.localizedDescription)")
-                    AlertManager.showAlertOneButton(from: self, title: "닉네임 변경 실패", message: "닉네임 변경에 실패했습니다.", buttonTitle: "확인")
-                case .finished:
-                    break
-                }
-            }, receiveValue: { success in
+            .subscribe(onNext: { success in
                 if success {
-                    AlertManager.showAlertOneButton(from: self, title: "닉네임 변경", message: "닉네임이 변경되었습니다.", buttonTitle: "확인"){
+                    AlertManager.showAlertOneButton(from: self, title: "닉네임 변경", message: "닉네임이 변경되었습니다.", buttonTitle: "확인") {
                         self.user?.value.nickname = newNickname
                         self.navigationController?.popViewController(animated: true)
                     }
                 } else {
                     AlertManager.showAlertOneButton(from: self, title: "닉네임 변경 실패", message: "닉네임 변경에 실패했습니다.", buttonTitle: "확인")
                 }
-            })
-            .store(in: &cancelBags)
+            }, onError: { error in
+                print("Error: \(error.localizedDescription)")
+                AlertManager.showAlertOneButton(from: self, title: "닉네임 변경 실패", message: "닉네임 변경에 실패했습니다.", buttonTitle: "확인")
+            }, onCompleted: {}).disposed(by: disposeBag)
     }
     
     @objc func textFieldDidChange(_ textField: UITextField) {
@@ -170,7 +162,7 @@ extension NicknameEditViewController: UITextFieldDelegate {
     }
     
     func textFieldDidChangeSelection(_ textField: UITextField) {
-        var text = textField.text ?? ""
+        let text = textField.text ?? ""
         let maxLength = 8
         if text.count > maxLength {
             let startIndex = text.startIndex

@@ -6,108 +6,139 @@
 //
 
 import Foundation
-import Combine
 import FirebaseAuth
+import RxSwift
 
 // MARK: - PasswordViewProtocol
 protocol PasswordChangeViewProtocol {
-    var userAuthCode: Int { get set }
-    var checkEmail: Bool { get set }
-    
-    var showAlert: PassthroughSubject<(String, String), Never> { get }
-    var showTimer: PassthroughSubject<Int, Never> { get }
-    var invalidTimer: PassthroughSubject<Void, Never> { get }
-    var sendEmailForCheckId: PassthroughSubject<Bool, Never> { get }
-    var checkAuthCode: PassthroughSubject<Bool, Never> { get }
-    
-    func sendAuthCode(email: String)
-    func verifyAuthCode(enteredCode: String)
-    func sendPasswordResetEmail(email: String)
+    func transform(input: PasswordChangeViewModel.Input) -> PasswordChangeViewModel.Output
 }
 
 // MARK: - PasswordChangeViewModel
 class PasswordChangeViewModel: PasswordChangeViewProtocol {
     private let userManager = UserManager()
-    private var seconds = 181
+    private var seconds = 0
     private var timer: Timer?
     
-    var userAuthCode = 0
-    var checkEmail = false
+    let userAuthCode = BehaviorSubject(value: Int.random(in: 1...10000))
+    let showAlert = PublishSubject<(String, String)>()
+    let showTimer = PublishSubject<Int>()
+    let invalidTimer = PublishSubject<Void>()
+    let sendEmailResult = BehaviorSubject(value: false)
+    let checkEmailAuthResult = BehaviorSubject(value: false)
+    private let disposeBag = DisposeBag()
     
-    let showAlert = PassthroughSubject<(String, String), Never>()
-    let showTimer = PassthroughSubject<Int, Never>()
-    let invalidTimer = PassthroughSubject<Void, Never>()
-    let sendEmailForCheckId = PassthroughSubject<Bool, Never>()
-    let checkAuthCode = PassthroughSubject<Bool, Never>()
+    struct Input {
+        let sendAuthCodeAction: PublishSubject<String>
+        let checkAuthCodeAction: PublishSubject<String>
+        let sendPasswordResetEmailAction: PublishSubject<String>
+        let checkEmailAuthResultChanged: PublishSubject<Bool>
+    }
     
+    struct Output {
+        let userAuthCode: BehaviorSubject<Int>
+        let showAlert: PublishSubject<(String, String)>
+        let showTimer: PublishSubject<Int>
+        let invalidTimer: PublishSubject<Void>
+        let sendEmailResult: BehaviorSubject<Bool>
+        let checkEmailAuthResult: BehaviorSubject<Bool>
+    }
+    
+    func transform(input: Input) -> Output {
+        input.sendAuthCodeAction
+            .bind(onNext: { email in
+                self.sendAuthCode(email: email)
+            }).disposed(by: disposeBag)
+        
+        input.checkAuthCodeAction
+            .bind(onNext: { code in
+                self.checkAuthCode(code: code)
+            }).disposed(by: disposeBag)
+        
+        input.sendPasswordResetEmailAction
+            .bind(onNext: { email in
+                self.sendPasswordResetEmail(email: email)
+            }).disposed(by: disposeBag)
+        
+        input.checkEmailAuthResultChanged
+            .bind(onNext: { bool in
+                self.checkEmailAuthResult.onNext(bool)
+                self.userAuthCode.onNext(Int.random(in: 1...10000))
+            }).disposed(by: disposeBag)
+        
+        return Output(userAuthCode: userAuthCode,
+                      showAlert: showAlert,
+                      showTimer: showTimer,
+                      invalidTimer: invalidTimer,
+                      sendEmailResult: sendEmailResult,
+                      checkEmailAuthResult: checkEmailAuthResult)
+    }
+    
+    private func sendAuthCode(email: String) {
+        userManager.findId(email: email)
+            .subscribe(onNext: { [weak self] isUsed in
+                guard let self = self else { return }
+                if isUsed {
+                    seconds = 181
+                    setTimer()
+                    sendEmail(email: email)
+                    sendEmailResult.onNext(true)
+                } else {
+                    self.showAlert.onNext(("이메일 찾기 실패", "가입되지 않은 이메일입니다."))
+                    sendEmailResult.onNext(false)
+                }
+            }).disposed(by: disposeBag)
+    }
+    
+    private func sendEmail(email: String) {
+        SMTPManager.sendAuth(userEmail: email)
+            .subscribe(onNext: { code in
+                self.userAuthCode.onNext(code)
+                self.showAlert.onNext(("인증 메일 발송", "인증 메일을 발송했습니다."))
+            }, onError: { error in
+                self.showAlert.onNext(("이메일 발송 실패", "이메일 발송을 실패했습니다. 다시 시도해주세요."))
+            }).disposed(by: disposeBag)
+    }
     
     private func setTimer() {
         timer?.invalidate()
-        userAuthCode = Int.random(in: 1...10000)
-        self.timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] timer in
+        userAuthCode.onNext(Int.random(in: 1...10000))
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] timer in
             guard let self = self else { return }
             self.seconds -= 1
             
             if self.seconds > 0 {
-                self.showTimer.send(self.seconds)
+                self.showTimer.onNext(self.seconds)
             } else {
-                self.invalidTimer.send()
-                self.userAuthCode = Int.random(in: 1...10000)
+                invalidTimer.onNext(())
+                userAuthCode.onNext(Int.random(in: 1...10000))
             }
         }
     }
     
-    func sendAuthCode(email: String) {
-        userManager.findUser(email: email) { [weak self] user in
-            guard let self = self else { return }
-            if user != nil {
-                if let timer = self.timer, timer.isValid {
-                    self.seconds = 181
-                }
-                self.setTimer()
-                self.sendEmailForCheckId.send(true)
-                self.showAlert.send(("인증 메일 발송", "인증 메일을 발송했습니다."))
-                
-                DispatchQueue.global().async {
-                    SMTPManager.sendAuth(userEmail: email) { [weak self] (authCode, success) in
-                        guard let self = self else { return }
-                        if authCode >= 10000 && authCode <= 99999 && success {
-                            self.userAuthCode = authCode
-                        }
-                    }
-                }
-            } else {
-                self.showAlert.send(("이메일 찾기 실패", "가입되지 않은 이메일입니다."))
-            }
-        }
-    }
-    
-    func verifyAuthCode(enteredCode: String) {
-        if isValidAuthCode(enteredCode) {
-            showAlert.send(("인증 성공", "인증 성공했습니다."))
-            checkEmail = true
-            self.checkAuthCode.send(true)
+    private func checkAuthCode(code: String) {
+        if code == (try? String(userAuthCode.value())) {
+            showAlert.onNext(("인증 성공", "인증 성공했습니다."))
+            timer?.invalidate()
+            checkEmailAuthResult.onNext(true)
         } else {
-            showAlert.send(("인증 실패", "인증 실패했습니다. 다시 시도해주세요."))
+            showAlert.onNext(("인증 실패", "인증 실패했습니다. 다시 시도해주세요."))
+            checkEmailAuthResult.onNext(false)
         }
     }
-    
-    private func isValidAuthCode(_ enteredCode: String) -> Bool {
-        return enteredCode == String(userAuthCode)
-    }
-    
-    func sendPasswordResetEmail(email: String) {
-        if checkEmail {
+
+    private func sendPasswordResetEmail(email: String) {
+        if (try? sendEmailResult.value()) == true && (try? checkEmailAuthResult.value()) == true {
             Auth.auth().sendPasswordReset(withEmail: email) { error in
                 if let error = error {
                     print("재설정 이메일 전송실패: \(error.localizedDescription)")
-                    self.showAlert.send(("메일 전송 실패", "비밀번호 재설정 이메일 발송에 실패했습니다. 다시 확인해주세요."))
+                    self.showAlert.onNext(("메일 전송 실패", "비밀번호 재설정 이메일 발송에 실패했습니다. 다시 확인해주세요."))
                 } else {
-                    self.showAlert.send(("메일 전송", "비밀번호 재설정 이메일이 발송되었습니다."))
+                    self.showAlert.onNext(("메일 전송", "비밀번호 재설정 이메일이 발송되었습니다."))
                 }
             }
         } else {
-            self.showAlert.send(("메일 전송 실패", "비밀번호 재설정 이메일 발송에 실패했습니다. 다시 확인해주세요."))
+            self.showAlert.onNext(("메일 전송 실패", "비밀번호 재설정 이메일 발송에 실패했습니다. 다시 확인해주세요."))
         }
     }
 }

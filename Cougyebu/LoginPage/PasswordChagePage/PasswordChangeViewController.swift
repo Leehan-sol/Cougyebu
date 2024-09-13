@@ -6,13 +6,18 @@
 //
 
 import UIKit
-import Combine
 import FirebaseAuth
+import RxSwift
 
 class PasswordChangeViewController: UIViewController {
     private let passwordChangeView = PasswordChangeView()
     private var viewModel: PasswordChangeViewProtocol
-    private var cancelBags = Set<AnyCancellable>()
+    
+    let sendAuthCodeAction = PublishSubject<String>()
+    let checkAuthCodeAction = PublishSubject<String>()
+    let sendPasswordResetEmailAction = PublishSubject<String>()
+    let checkEmailAuthResultChanged = PublishSubject<Bool>()
+    private let disposeBag = DisposeBag()
     
     init(viewModel: PasswordChangeViewProtocol) {
         self.viewModel = viewModel
@@ -30,9 +35,9 @@ class PasswordChangeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setNavigationBar()
-        setAddTarget()
-        setTextField()
-        bindViewModel()
+        setGesture()
+        setAction()
+        setbinding()
     }
     
     private func setNavigationBar() {
@@ -41,106 +46,102 @@ class PasswordChangeViewController: UIViewController {
         navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 18)]
     }
     
-    private func setAddTarget(){
-        passwordChangeView.authIdButton.addTarget(self, action: #selector(authIdButtonTapped), for: .touchUpInside)
-        passwordChangeView.authCodeButton.addTarget(self, action: #selector(authCodeButtonTapped), for: .touchUpInside)
-        passwordChangeView.changePasswordButton.addTarget(self, action: #selector(changePasswordButtonTapped), for: .touchUpInside)
-        passwordChangeView.registerIdTextField.addTarget(self, action: #selector(idTextFieldDidChange(_:)), for: .editingChanged)
+    private func setGesture() {
+        bindTextFieldsToMoveNext(fields: [
+            passwordChangeView.registerIdTextField,
+            passwordChangeView.authCodeTextField,
+        ], disposeBag: disposeBag)
     }
     
-    private func setTextField(){
-        passwordChangeView.registerIdTextField.delegate = self
-        passwordChangeView.authCodeTextField.delegate = self
-    }
-    
-    private func bindViewModel() {
-        viewModel.showAlert
-            .sink { [weak self] (title, message) in
-                AlertManager.showAlertOneButton(from: self!, title: title, message: message, buttonTitle: "확인")
-            }
-            .store(in: &cancelBags)
+    private func setAction() {
+        passwordChangeView.authIdButton.rx.tap
+            .bind(onNext: { [weak self] in
+                guard let self = self else { return }
+                guard let email = passwordChangeView.registerIdTextField.text else { return }
+                sendAuthCodeAction.onNext(email)
+            }).disposed(by: disposeBag)
         
-        viewModel.showTimer
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] seconds in
+        passwordChangeView.authCodeButton.rx.tap
+            .bind(onNext: { [weak self] in
+                guard let self = self else { return }
+                guard let enteredCode = passwordChangeView.authCodeTextField.text else { return }
+                checkAuthCodeAction.onNext(enteredCode)
+            }).disposed(by: disposeBag)
+        
+        passwordChangeView.changePasswordButton.rx.tap
+            .bind(onNext: { [weak self] in
+                guard let self = self else { return }
+                guard let userEmail = passwordChangeView.registerIdTextField.text else { return }
+                sendPasswordResetEmailAction.onNext(userEmail)
+            }).disposed(by: disposeBag)
+        
+        passwordChangeView.registerIdTextField.rx.controlEvent(.editingChanged)
+            .bind(onNext: { [weak self] in
+                guard let self = self else { return }
+                checkEmailAuthResultChanged.onNext(false)
+            }).disposed(by: disposeBag)
+    }
+    
+    private func setbinding() {
+        let input = PasswordChangeViewModel.Input(sendAuthCodeAction: sendAuthCodeAction,
+                                                  checkAuthCodeAction: checkAuthCodeAction,
+                                                  sendPasswordResetEmailAction: sendPasswordResetEmailAction,
+                                                  checkEmailAuthResultChanged: checkEmailAuthResultChanged)
+        
+        let output = viewModel.transform(input: input)
+        
+        output.showAlert
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] (title, message) in
+                AlertManager.showAlertOneButton(from: self!, title: title, message: message, buttonTitle: "확인")
+            }).disposed(by: disposeBag)
+        
+        output.showTimer
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] seconds in
+                guard let self = self else { return }
                 let min = seconds / 60
                 let sec = seconds % 60
-                self?.passwordChangeView.timerLabel.text = String(format: "%d:%02d", min, sec)
-            }
-            .store(in: &cancelBags)
+                passwordChangeView.timerLabel.isHidden = false
+                passwordChangeView.timerLabel.text = String(format: "%d:%02d", min, sec)
+            }).disposed(by: disposeBag)
         
-        viewModel.invalidTimer
-            .receive(on: DispatchQueue.main)
-            .sink {
-                self.passwordChangeView.timerLabel.text = "시간만료"
-                self.passwordChangeView.authIdButton.backgroundColor = .systemGray6
-                self.passwordChangeView.authIdButton.setTitleColor(UIColor.black, for: .normal)
-                self.passwordChangeView.authCodeButton.backgroundColor = .systemGray6
-                self.passwordChangeView.authCodeButton.setTitleColor(UIColor.black, for: .normal)
-            }
-            .store(in: &cancelBags)
+        output.invalidTimer
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] in
+                guard let self = self else { return }
+                passwordChangeView.timerLabel.text = "시간만료"
+                passwordChangeView.authIdButton.backgroundColor = .systemGray6
+                passwordChangeView.authIdButton.setTitleColor(UIColor.black, for: .normal)
+                passwordChangeView.authCodeButton.backgroundColor = .systemGray6
+                passwordChangeView.authCodeButton.setTitleColor(UIColor.black, for: .normal)
+            }).disposed(by: disposeBag)
         
-        viewModel.sendEmailForCheckId
-            .sink { [weak self] isEnabled in
-                self?.passwordChangeView.timerLabel.isHidden = false
-                self?.passwordChangeView.authIdButton.backgroundColor = .black
-                self?.passwordChangeView.authIdButton.setTitleColor(UIColor.white, for: .normal)
-            }
-            .store(in: &cancelBags)
+        output.sendEmailResult
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] bool in
+                guard let self = self else { return }
+                passwordChangeView.timerLabel.isHidden = bool
+                passwordChangeView.authIdButton.backgroundColor = bool ? .black : .systemGray6
+                passwordChangeView.authIdButton.setTitleColor(bool ? UIColor.white : UIColor.black, for: .normal)
+            }).disposed(by: disposeBag)
         
-        viewModel.checkAuthCode
-            .sink { [weak self] isCorrect in
-                self?.passwordChangeView.authCodeButton.backgroundColor = .black
-                self?.passwordChangeView.authCodeButton.setTitleColor(UIColor.white, for: .normal)
-                self?.passwordChangeView.changePasswordButton.backgroundColor = .black
-                self?.passwordChangeView.changePasswordButton.setTitleColor(UIColor.white, for: .normal)
-                self?.passwordChangeView.timerLabel.isHidden = true
-            }
-            .store(in: &cancelBags)
+        output.checkEmailAuthResult
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] bool in
+                guard let self = self else { return }
+                if bool {
+                    passwordChangeView.timerLabel.isHidden = bool
+                }
+                passwordChangeView.authCodeButton.backgroundColor = bool ? .black : .systemGray6
+                passwordChangeView.authCodeButton.setTitleColor(bool ? UIColor.white : UIColor.black, for: .normal)
+                passwordChangeView.changePasswordButton.backgroundColor = bool ? .black : .systemGray6
+                passwordChangeView.changePasswordButton.setTitleColor(bool ? UIColor.white : UIColor.black, for: .normal)
+            }).disposed(by: disposeBag)
     }
     
-    // MARK: - @objc
-    @objc func authIdButtonTapped() {
-        guard let email = passwordChangeView.registerIdTextField.text else { return }
-        viewModel.sendAuthCode(email: email)
-    }
-    
-    @objc func authCodeButtonTapped(){
-        guard let enteredCode = passwordChangeView.authCodeTextField.text else { return }
-        viewModel.verifyAuthCode(enteredCode: enteredCode)
-    }
-    
-    @objc func changePasswordButtonTapped() {
-        guard let userEmail = passwordChangeView.registerIdTextField.text else { return }
-        viewModel.sendPasswordResetEmail(email: userEmail)
-    }
-    
-    @objc func idTextFieldDidChange(_ textField: UITextField) {
-        passwordChangeView.authIdButton.backgroundColor = .systemGray6
-        passwordChangeView.authIdButton.setTitleColor(.darkGray, for: .normal)
-        passwordChangeView.authCodeButton.backgroundColor = .systemGray6
-        passwordChangeView.authCodeButton.setTitleColor(.darkGray, for: .normal)
-        passwordChangeView.changePasswordButton.backgroundColor = .systemGray6
-        passwordChangeView.changePasswordButton.setTitleColor(.darkGray, for: .normal)
-        viewModel.userAuthCode = Int.random(in: 1...10000)
-        viewModel.checkEmail = false
-    }
-    
-}
-
-
-// MARK: - UITextFieldDelegate
-extension PasswordChangeViewController: UITextFieldDelegate {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         view.endEditing(true)
     }
-    
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        if textField == passwordChangeView.registerIdTextField {
-            passwordChangeView.authCodeTextField.becomeFirstResponder()
-        }
-        return true
-    }
-    
     
 }

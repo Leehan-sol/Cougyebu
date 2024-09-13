@@ -11,6 +11,13 @@ import SnapKit
 class LoginView: UIView {
     
     // MARK: - UI Properties
+    
+    let titleImage: UIImageView = {
+        let imgView = UIImageView()
+        imgView.image = UIImage(named: "Title")
+        return imgView
+    }()
+    
     let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "커계부"
@@ -151,7 +158,7 @@ class LoginView: UIView {
     // MARK: - Methods
     func setUI() {
         self.backgroundColor = .systemBackground
-        addSubview(titleLabel)
+        addSubview(titleImage)
         
         addSubview(idView)
         idView.addSubview(idTextField)
@@ -172,9 +179,11 @@ class LoginView: UIView {
         idLabel.translatesAutoresizingMaskIntoConstraints = false
         pwLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        titleLabel.snp.makeConstraints {
-            $0.bottom.equalTo(idView.snp.top).offset(-70)
+        titleImage.snp.makeConstraints {
+            $0.top.equalTo(safeAreaLayoutGuide).offset(40)
+            $0.bottom.equalTo(idView.snp.top).offset(-40)
             $0.centerX.equalToSuperview()
+            $0.leading.trailing.equalToSuperview().inset(50)
         }
         
         idView.snp.makeConstraints {

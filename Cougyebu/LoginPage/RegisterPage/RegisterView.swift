@@ -56,6 +56,7 @@ class RegisterView: UIView {
         tf.autocorrectionType = .no
         tf.spellCheckingType = .no
         tf.clearsOnBeginEditing = false
+        tf.keyboardType = .numberPad
         return tf
     }()
     let authButton: UIButton = {

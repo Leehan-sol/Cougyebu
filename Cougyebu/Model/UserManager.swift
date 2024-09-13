@@ -5,139 +5,15 @@
 //  Created by hansol on 2024/03/07.
 //
 
-import Combine
 import Foundation
 import FirebaseFirestore
 import FirebaseAuth
+import RxSwift
 
 class UserManager {
-    
     private let db = Firestore.firestore()
     private let currentUser = Auth.auth().currentUser
     
-    func findUser(email: String, completion: @escaping (User?) -> Void) {
-        let userDB = db.collection("User")
-        let query = userDB.whereField("email", isEqualTo: email)
-        
-        query.getDocuments { (snapshot, error) in
-            if let error = error {
-                print(error.localizedDescription)
-                completion(nil)
-                return
-            }
-            
-            if let snapshot = snapshot, !snapshot.isEmpty {
-                guard let data = snapshot.documents.first?.data() else {
-                    completion(nil)
-                    return
-                }
-                
-                let email = data["email"] as? String ?? ""
-                let nickname = data["nickname"] as? String ?? ""
-                let isConnect = data["isConnect"] as? Bool ?? false
-                let code = data["code"] as? String
-                let coupleEmail = data["coupleEmail"] as? String
-                let requestUser = data["requestUser"] as? Bool
-                let incomeCategory = data["incomeCategory"] as? [String]
-                let expenditureCategory = data["expenditureCategory"] as? [String]
-                
-                // 커플 닉네임 가져오기
-                var coupleNickname: String?
-                if let coupleNicknameRef = data["coupleNickname"] as? DocumentReference {
-                    coupleNicknameRef.getDocument { (snapshot, error) in
-                        if let error = error {
-                            print(error.localizedDescription)
-                            completion(nil)
-                            return
-                        }
-                        
-                        guard let snapshot = snapshot, let data = snapshot.data() else {
-                            completion(nil)
-                            return
-                        }
-                        
-                        coupleNickname = data["nickname"] as? String
-                        let user = User(email: email, nickname: nickname, isConnect: isConnect, code: code, coupleEmail: coupleEmail, coupleNickname: coupleNickname, requestUser: requestUser, incomeCategory: incomeCategory, expenditureCategory: expenditureCategory)
-                        completion(user)
-                    }
-                } else {
-                    let user = User(email: email, nickname: nickname, isConnect: isConnect, code: code, coupleEmail: coupleEmail, coupleNickname: nil, requestUser: requestUser, incomeCategory: incomeCategory, expenditureCategory: expenditureCategory)
-                    completion(user)
-                }
-            } else {
-                completion(nil)
-            }
-        }
-    }
-    
-    func findId(email: String, completion: @escaping (Bool) -> Void) {
-        let userDB = db.collection("User")
-        let query = userDB.whereField("email", isEqualTo: email)
-        query.getDocuments { (snapShot, error) in
-            if let error = error {
-                print(error.localizedDescription)
-                completion(false)
-            } else if let qs = snapShot, !qs.documents.isEmpty {
-                completion(true)
-            } else {
-                completion(false)
-            }
-        }
-    }
-    
-    func findNickname(nickname: String) -> AnyPublisher<User?, Error> {
-        let userDB = db.collection("User")
-        let query = userDB.whereField("nickname", isEqualTo: nickname)
-        
-        return Future<User?, Error> { promise in
-            query.getDocuments { (snapshot, error) in
-                if let error = error {
-                    promise(.failure(error))
-                } else if let snapshot = snapshot, !snapshot.documents.isEmpty {
-                    if let data = snapshot.documents.first?.data() {
-                        let email = data["email"] as? String ?? ""
-                        let nickname = data["nickname"] as? String ?? ""
-                        let isConnect = data["isConnect"] as? Bool ?? false
-                        let user = User(email: email, nickname: nickname, isConnect: isConnect)
-                        promise(.success(user))
-                    } else {
-                        promise(.success(nil))
-                    }
-                } else {
-                    promise(.success(nil))
-                }
-            }
-        }
-        .eraseToAnyPublisher()
-    }
-    
-    func findCategory(email: String, completion: @escaping (([String]?, [String]?) -> Void)) {
-        let userDB = db.collection("User")
-        let query = userDB.whereField("email", isEqualTo: email)
-        
-        query.getDocuments { (snapshot, error) in
-            if let error = error {
-                print(error.localizedDescription)
-                completion(nil, nil)
-                return
-            }
-            
-            if let snapshot = snapshot, !snapshot.isEmpty {
-                guard let data = snapshot.documents.first?.data() else {
-                    completion(nil, nil)
-                    return
-                }
-                
-                let incomeCategory = data["incomeCategory"] as? [String]
-                let expenditureCategory = data["expenditureCategory"] as? [String]
-                completion(incomeCategory, expenditureCategory)
-            } else {
-                completion(nil, nil)
-            }
-        }
-    }
-    
-    // 유저 생성
     func addUser(user: User) {
         db.collection("User").document(user.email).setData([
             "email": user.email,
@@ -157,7 +33,156 @@ class UserManager {
         }
     }
     
-    // 유저 업데이트
+    func findUser(email: String) -> Observable<User?> {
+        let userDB = db.collection("User")
+        let query = userDB.whereField("email", isEqualTo: email)
+        
+        return Observable.create { observer in
+            query.getDocuments { snapshot, error in
+                if let error = error {
+                    observer.onError(error)
+                    return
+                }
+                
+                guard let snapshot = snapshot, let data = snapshot.documents.first?.data() else {
+                    observer.onNext(nil)
+                    observer.onCompleted()
+                    return
+                }
+                
+                let email = data["email"] as? String ?? ""
+                let nickname = data["nickname"] as? String ?? ""
+                let isConnect = data["isConnect"] as? Bool ?? false
+                let code = data["code"] as? String
+                let coupleEmail = data["coupleEmail"] as? String
+                let requestUser = data["requestUser"] as? Bool
+                let incomeCategory = data["incomeCategory"] as? [String]
+                let expenditureCategory = data["expenditureCategory"] as? [String]
+                
+                if let coupleNicknameRef = data["coupleNickname"] as? DocumentReference {
+                    coupleNicknameRef.getDocument { coupleSnapshot, error in
+                        if let error = error {
+                            observer.onError(error)
+                            return
+                        }
+                        
+                        let coupleNickname = coupleSnapshot?.data()?["nickname"] as? String
+                        let user = User(email: email,
+                            nickname: nickname,
+                            isConnect: isConnect,
+                            code: code,
+                            coupleEmail: coupleEmail,
+                            coupleNickname: coupleNickname,
+                            requestUser: requestUser,
+                            incomeCategory: incomeCategory,
+                            expenditureCategory: expenditureCategory
+                        )
+                        observer.onNext(user)
+                        observer.onCompleted()
+                    }
+                } else {
+                    let user = User(
+                        email: email,
+                        nickname: nickname,
+                        isConnect: isConnect,
+                        code: code,
+                        coupleEmail: coupleEmail,
+                        coupleNickname: nil,
+                        requestUser: requestUser,
+                        incomeCategory: incomeCategory,
+                        expenditureCategory: expenditureCategory
+                    )
+                    observer.onNext(user)
+                    observer.onCompleted()
+                }
+            }
+            return Disposables.create()
+        }
+    }
+    
+    func findId(email: String) -> Observable<Bool> {
+        let userDB = db.collection("User")
+        let query = userDB.whereField("email", isEqualTo: email)
+        
+        return Observable.create { observer in
+            query.getDocuments { snapshot, error in
+                if let error = error {
+                    print(error.localizedDescription)
+                    observer.onError(error)
+                } else if let snapshot = snapshot, !snapshot.documents.isEmpty {
+                    observer.onNext(true)
+                    observer.onCompleted()
+                } else {
+                    observer.onNext(false)
+                    observer.onCompleted()
+                }
+            }
+            return Disposables.create()
+        }
+    }
+    
+    func findNickname(nickname: String) -> Observable<User?> {
+        let userDB = db.collection("User")
+        let query = userDB.whereField("nickname", isEqualTo: nickname)
+        
+        return Observable.create { observer in
+            query.getDocuments { snapshot, error in
+                if let error = error {
+                    observer.onError(error)
+                } else if let snapshot = snapshot, !snapshot.documents.isEmpty {
+                    guard let data = snapshot.documents.first?.data() else {
+                        observer.onNext(nil)
+                        observer.onCompleted()
+                        return
+                    }
+                    let email = data["email"] as? String ?? ""
+                    let nickname = data["nickname"] as? String ?? ""
+                    let isConnect = data["isConnect"] as? Bool ?? false
+                    let user = User(email: email, nickname: nickname, isConnect: isConnect)
+                    observer.onNext(user)
+                    observer.onCompleted()
+                } else {
+                    observer.onNext(nil)
+                    observer.onCompleted()
+                }
+            }
+            return Disposables.create()
+        }
+    }
+    
+    func findCategory(email: String) -> Observable<([String], [String])> {
+        let userDB = Firestore.firestore().collection("User")
+        let query = userDB.whereField("email", isEqualTo: email)
+        
+        return Observable.create { observer in
+            query.getDocuments { snapshot, error in
+                if let error = error {
+                    print(error.localizedDescription)
+                    observer.onError(error)
+                    return
+                }
+                
+                if let snapshot = snapshot, !snapshot.isEmpty {
+                    guard let data = snapshot.documents.first?.data() else {
+                        observer.onNext(([], []))
+                        observer.onCompleted()
+                        return
+                    }
+                    
+                    let incomeCategory = data["incomeCategory"] as? [String] ?? []
+                    let expenditureCategory = data["expenditureCategory"] as? [String] ?? []
+                    observer.onNext((incomeCategory, expenditureCategory))
+                    observer.onCompleted()
+                } else {
+                    observer.onNext(([], []))
+                    observer.onCompleted()
+                }
+            }
+            return Disposables.create()
+        }
+    }
+    
+    // 📌 유저 업데이트
     func updateUser(email: String, updatedFields: [String: Any], completion: ((Bool?) -> Void)?) {
         db.collection("User").document(email).updateData(updatedFields) { error in
             if let error = error {
@@ -170,19 +195,21 @@ class UserManager {
         }
     }
     
-    func updateUserNickname(email: String, updatedFields: [String: Any]) -> AnyPublisher<Bool, Error> {
-        return Future<Bool, Error> { promise in
+    // 📌 유저닉네임 업데이트
+    func updateUserNickname(email: String, updatedFields: [String: Any]) -> Observable<Bool> {
+        return Observable.create { observer in
             self.db.collection("User").document(email).updateData(updatedFields) { error in
                 if let error = error {
                     print("Error: \(error)")
-                    promise(.failure(error))
+                    observer.onError(error)
                 } else {
                     print("유저 정보 업데이트 성공")
-                    promise(.success(true))
+                    observer.onNext(true)
+                    observer.onCompleted()
                 }
             }
+            return Disposables.create()
         }
-        .eraseToAnyPublisher()
     }
     
     // 유저 삭제
@@ -242,8 +269,7 @@ class UserManager {
         }
     }
     
-    
-    // 유저 연결 해제
+    // 📌 유저 연결 해제
     func disconnectUser(inputEmail: String, completion: ((Bool?) -> Void)?) {
         db.collection("User").document(inputEmail).getDocument { [self] (document, error) in
             guard let document = document, document.exists else {
@@ -354,7 +380,6 @@ class UserManager {
             }
         }
     }
-    
     
 }
 

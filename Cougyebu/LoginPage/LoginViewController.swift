@@ -6,16 +6,20 @@
 //
 
 import UIKit
-import Combine
 import FirebaseAuth
+import RxSwift
+import RxCocoa
 
 class LoginViewController: UIViewController {
     
     private let loginView = LoginView()
-    private let viewModel: LoginViewProtocol
-    private var cancelBags = Set<AnyCancellable>()
+    private let viewModel: LoginProtocol
     
-    init(viewModel: LoginViewProtocol) {
+    private let loginAction = PublishSubject<(String, String)>()
+    private let findIdAction = PublishSubject<String>()
+    private let disposeBag = DisposeBag()
+    
+    init(viewModel: LoginProtocol) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -31,128 +35,120 @@ class LoginViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setNavigation()
-        setTextField()
-        setAddTarget()
-        bindViewModel()
+        setGesture()
+        setAction()
+        setBinding()
     }
     
-    // MARK: - Methods
-    private func setNavigation(){
+    private func setNavigation() {
         navigationItem.leftBarButtonItem = nil
     }
     
-    private func setTextField(){
-        loginView.idTextField.delegate = self
-        loginView.pwTextField.delegate = self
-    }
-    
-    private func setAddTarget() {
-        loginView.showPwButton.addTarget(self, action: #selector(showPwButtonTapped), for: .touchUpInside)
-        loginView.loginButton.addTarget(self, action: #selector(loginButtonTapped), for: .touchUpInside)
-        loginView.findIdButton.addTarget(self, action: #selector(findIdButtonTapped), for: .touchUpInside)
-        loginView.findPwButton.addTarget(self, action: #selector(findPwButtonTapped), for: .touchUpInside)
-        loginView.registerButton.addTarget(self, action: #selector(registerButtonTapped), for: .touchUpInside)
-    }
-    
-    private func bindViewModel() {
-        viewModel.showAlert
-            .sink { [weak self] (title, message) in
-                AlertManager.showAlertOneButton(from: self!, title: title, message: message, buttonTitle: "확인")
-            }
-            .store(in: &cancelBags)
+    private func setGesture() {
+        loginView.showPwButton.showPasswordButtonToggle(textField: loginView.pwTextField, disposeBag: disposeBag)
         
-        viewModel.checkResult
-            .sink { bool in
-                if bool == true {
-                    NotificationCenter.default.post(name: .authStateDidChange, object: nil)
-                }
-            }
-            .store(in: &cancelBags)
+        loginView.findPwButton.rx.tap
+            .observe(on: MainScheduler.instance)
+            .subscribe (onNext: { [weak self] in
+                guard let self = self else { return }
+                let passwordChangeVM = PasswordChangeViewModel()
+                let passwordChangeVC = PasswordChangeViewController(viewModel: passwordChangeVM)
+                self.navigationController?.pushViewController(passwordChangeVC, animated: true)
+            }).disposed(by: disposeBag)
+        
+        loginView.registerButton.rx.tap
+            .subscribe(onNext: {
+                let registerVM = RegisterViewModel()
+                let registerVC = RegisterViewController(viewModel: registerVM)
+                self.navigationController?.pushViewController(registerVC, animated: true)
+            }).disposed(by: disposeBag)
+        
+        loginView.findIdButton.rx.tap
+            .subscribe(onNext: { [weak self] in
+                self?.showFindIdAlert()
+            }).disposed(by: disposeBag)
+        
+        animateLabelOnEditing(textField: loginView.idTextField, label: loginView.idLabel, centerYConstraint: loginView.idLabelCenterY, fontSize: 9)
+        
+        animateLabelOnEditing(textField: loginView.pwTextField, label: loginView.pwLabel, centerYConstraint: loginView.pwLabelCenterY, fontSize: 9)
+        
+        bindTextFieldsToMoveNext(fields: [
+            loginView.idTextField,
+            loginView.pwTextField,
+        ], disposeBag: disposeBag)
     }
     
-    
-    // MARK: - @objc
-    @objc func showPwButtonTapped(){
-        loginView.showPwButton.isSelected.toggle()
-        
-        if loginView.showPwButton.isSelected {
-            loginView.showPwButton.setImage(UIImage(systemName: "eye.slash"), for: .normal)
-            loginView.pwTextField.isSecureTextEntry = true
-        } else {
-            loginView.showPwButton.setImage(UIImage(systemName: "eye.fill"), for: .normal)
-            loginView.pwTextField.isSecureTextEntry = false
-        }
-        
+    private func setAction() {
+        loginView.loginButton.rx.tap
+            .throttle(.milliseconds(5000), scheduler: MainScheduler.instance)
+            .bind { [weak self] in
+                guard let self = self else { return }
+                guard let id = loginView.idTextField.text, let pw = loginView.pwTextField.text else { return }
+                loginAction.onNext((id, pw))
+            }.disposed(by: disposeBag)
     }
     
-    @objc func loginButtonTapped() {
-        guard let id = loginView.idTextField.text else { return }
-        guard let pw = loginView.pwTextField.text else { return }
-        
-        viewModel.loginButtonTapped(id: id, password: pw)
-    }
-    
-    @objc func findIdButtonTapped() {
+    private func showFindIdAlert() {
         AlertManager.showAlertWithOneTF(from: self,
                                         title: "아이디 찾기",
                                         message: "등록한 닉네임을 입력해주세요.",
                                         placeholder: "닉네임",
                                         button1Title: "찾기",
                                         button2Title: "취소") { [weak self] text in
-            guard let nickname = text?.trimmingCharacters(in: .whitespaces), !nickname.isEmpty else {
-                AlertManager.showAlertOneButton(from: self!, title: "닉네임 입력", message: "닉네임을 입력해주세요.", buttonTitle: "확인")
-                return
+            guard let self = self else { return }
+            let nickname = text?.trimmingCharacters(in: .whitespaces) ?? ""
+            
+            if nickname.isEmpty {
+                AlertManager.showAlertOneButton(from: self,
+                                                title: "닉네임 입력",
+                                                message: "닉네임을 입력해주세요.",
+                                                buttonTitle: "확인")
+            } else {
+                findIdAction.onNext(nickname)
             }
-            self?.viewModel.findId(nickname)
         }
     }
+
     
-    @objc func findPwButtonTapped() {
-        let passwordChangeVM = PasswordChangeViewModel()
-        let passwordChangeVC = PasswordChangeViewController(viewModel: passwordChangeVM)
-        self.navigationController?.pushViewController(passwordChangeVC, animated: true)
+    private func setBinding() {
+        let input = LoginViewModel.Input(loginAction: loginAction, findIdAction: findIdAction)
+        
+        let output = viewModel.transform(input: input)
+        
+        output.showAlert
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] (title, message) in
+                AlertManager.showAlertOneButton(from: self!, title: title, message: message, buttonTitle: "확인")
+            }).disposed(by: disposeBag)
+        
+        output.checkResult
+            .subscribe(onNext: { bool in
+                if bool {
+                    NotificationCenter.default.post(name: .authStateDidChange, object: nil)
+                }
+            }).disposed(by: disposeBag)
     }
-    
-    @objc func registerButtonTapped() {
-        let registerVM = RegisterViewModel()
-        let registerVC = RegisterViewController(viewModel: registerVM)
-        self.navigationController?.pushViewController(registerVC, animated: true)
-    }
-    
 }
 
-// MARK: - UITextFieldDelegate
-extension LoginViewController: UITextFieldDelegate {
+
+
+// MARK: - Extension
+extension LoginViewController {
     
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        view.endEditing(true)
-    }
-    
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        if textField == loginView.idTextField {
-            loginView.pwTextField.becomeFirstResponder()
-        } else if textField == loginView.pwTextField {
-            loginButtonTapped()
-        }
-        return true
-    }
-    
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        if textField == loginView.idTextField {
-            animateLabel(label: loginView.idLabel, centerYConstraint: loginView.idLabelCenterY, fontSize: 9)
-        }
-        if textField == loginView.pwTextField {
-            animateLabel(label: loginView.pwLabel, centerYConstraint: loginView.pwLabelCenterY, fontSize: 9)
-        }
-    }
-    
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        if textField == loginView.idTextField && textField.text == "" {
-            animateLabel(label: loginView.idLabel, centerYConstraint: loginView.idLabelCenterY, fontSize: 16)
-        }
-        if textField == loginView.pwTextField && textField.text == "" {
-            animateLabel(label: loginView.pwLabel, centerYConstraint: loginView.pwLabelCenterY, fontSize: 16)
-        }
+    private func animateLabelOnEditing(textField: UITextField, label: UILabel, centerYConstraint: NSLayoutConstraint, fontSize: CGFloat) {
+        textField.rx.controlEvent(.editingDidBegin)
+            .bind { [weak self] in
+                guard let self = self else { return }
+                animateLabel(label: label, centerYConstraint: centerYConstraint, fontSize: fontSize)
+            }.disposed(by: disposeBag)
+        
+        textField.rx.controlEvent(.editingDidEnd)
+            .bind { [weak self] in
+                guard let self = self else { return }
+                if let text = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines), text == "" {
+                    animateLabel(label: label, centerYConstraint: centerYConstraint, fontSize: fontSize == 9 ? 16 : 9)
+                }
+            }.disposed(by: disposeBag)
     }
     
     private func animateLabel(label: UILabel, centerYConstraint: NSLayoutConstraint, fontSize: CGFloat) {
@@ -163,5 +159,7 @@ extension LoginViewController: UITextFieldDelegate {
         }
     }
     
-    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        view.endEditing(true)
+    }
 }

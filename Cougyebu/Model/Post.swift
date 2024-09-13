@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Posts {
+struct Post {
     let date: String
     let group: String
     let category: String

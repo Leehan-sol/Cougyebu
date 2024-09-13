@@ -7,20 +7,21 @@
 
 import UIKit
 import FSCalendar
+import RxSwift
+import RxCocoa
 
 class MainViewController: UIViewController {
     private let mainView = MainView()
     private let viewModel: MainViewModel
     private var tapGestureRecognizer: UITapGestureRecognizer!
     
-    private let dateFormatter = DateFormatter()
-    private var firstDate: Date?
-    private var lastDate: Date?
-    private lazy var datesRange: [String] = currentDate.getAllDatesInMonthAsString()
-    private let currentDate = Date()
-    private lazy var startOfMonth = currentDate.startOfMonth().toString(format: "yyyy.MM.dd")
-    private lazy var endOfMonth = currentDate.endOfMonth().toString(format: "yyyy.MM.dd")
-
+    private let loadCategoryAction = PublishSubject<Void>()
+    private let makePostingVMAction = PublishSubject<Int?>()
+    private let deletePostAction = PublishSubject<Int>()
+    private let calendarSelectAction = PublishSubject<Date>()
+    private let calendarDeselectAction = PublishSubject<Date>()
+    private let disposeBag = DisposeBag()
+    
     
     init(viewModel: MainViewModel) {
         self.viewModel = viewModel
@@ -38,271 +39,193 @@ class MainViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setNavigationBar()
-        setAddtarget()
-        setButton()
-        setCalendar()
         setTableView()
-        setViewModelUser()
+        setCalendar()
+        
+        setGesture()
+        setAction()
         setBinding()
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        loadCategory()
+        super.viewWillAppear(true)
+        loadCategoryAction.onNext(())
     }
     
     
-    // MARK: - Method
-    
-    func setNavigationBar() {
+    private func setNavigationBar() {
         navigationController?.isNavigationBarHidden = true
     }
     
-    func setAddtarget() {
-        mainView.startButton.addTarget(self, action: #selector(showCalendar), for: .touchUpInside)
-        mainView.waveButton.addTarget(self, action: #selector(showCalendar), for: .touchUpInside)
-        mainView.lastButton.addTarget(self, action: #selector(showCalendar), for: .touchUpInside)
-        mainView.floatingButton.addTarget(self, action: #selector(floatingButtonTapped), for: .touchUpInside)
-    }
-    
-    func setButton() {
-        mainView.startButton.setTitle(startOfMonth, for: .normal)
-        mainView.lastButton.setTitle(endOfMonth, for: .normal)
-    }
-    
-    func setCalendar() {
-        mainView.calendar.delegate = self
-        mainView.calendar.isHidden = true
-        dateFormatter.dateFormat = "yyyy.MM.dd"
-    }
-    
-    func setTableView() {
-        mainView.tableView.delegate = self
-        mainView.tableView.dataSource = self
+    private func setTableView() {
         mainView.tableView.register(MainTableViewCell.self, forCellReuseIdentifier: "MainCell")
     }
     
-    func setViewModelUser() {
-        viewModel.setUser()
+    private func setCalendar() {
+        mainView.calendar.delegate = self
     }
     
-    func setBinding() {
-        viewModel.observablePost.bind { [weak self] _ in
-            DispatchQueue.main.async {
-                self?.mainView.tableView.reloadData()
-                self?.loadPrice()
-                self?.setPlaceholderLabel()
-            }
-        }
+    private func setGesture() {
+        mainView.startButton.rx.tap
+            .bind(onNext: { [weak self] in
+                guard let self = self else { return }
+                showCalendar()
+            }).disposed(by: disposeBag)
+        
+        mainView.waveButton.rx.tap
+            .bind(onNext: { [weak self] in
+                guard let self = self else { return }
+                showCalendar()
+            }).disposed(by: disposeBag)
+        
+        mainView.lastButton.rx.tap
+            .bind(onNext: { [weak self] in
+                guard let self = self else { return }
+                showCalendar()
+            }).disposed(by: disposeBag)
     }
     
-    func loadPrice() {
-        let (totalIncome, totalExpenditure, totalPrice) = self.viewModel.calculatePrice()
-        mainView.incomePriceLabel.text = "\(totalIncome.makeComma(num: totalIncome))원"
-        mainView.expenditurePriceLabel.text = "\(totalExpenditure.makeComma(num: totalExpenditure))원"
-        mainView.sumPriceLabel.text = "\(totalPrice.makeComma(num: totalPrice))원"
+    private func setAction() {
+        mainView.tableView.rx.itemSelected
+            .subscribe(onNext: { [weak self] indexPath in
+                guard let self = self else { return }
+                mainView.tableView.deselectRow(at: indexPath, animated: true)
+                makePostingVMAction.onNext(indexPath.row)
+            }).disposed(by: disposeBag)
+
+        mainView.tableView.rx.itemDeleted
+            .subscribe(onNext: { [weak self] indexPath in
+                guard let self = self else { return }
+                mainView.tableView.beginUpdates()
+                deletePostAction.onNext(indexPath.row)
+                mainView.tableView.endUpdates()
+            }).disposed(by: disposeBag)
+        
+        mainView.floatingButton.rx.tap
+            .bind(onNext: { [weak self] in
+                guard let self = self else { return }
+                makePostingVMAction.onNext(nil)
+            }).disposed(by: disposeBag)
     }
     
-    func setPlaceholderLabel() {
-        if viewModel.observablePost.value.isEmpty {
-            mainView.placeholderLabel.isHidden = false
-        } else {
-            mainView.placeholderLabel.isHidden = true
-        }
+    private func setBinding() {
+        let input = MainViewModel.Input(loadCategoryAction: loadCategoryAction,
+                                        makePostingVMAction: makePostingVMAction,
+                                        deletePostAction: deletePostAction,
+                                        calendarSelectAction: calendarSelectAction,
+                                        calendarDeselectAction: calendarDeselectAction)
+        
+        let output = viewModel.transform(input: input)
+
+        output.isLoading
+            .observe(on: MainScheduler.instance)
+            .subscribe { [weak self] bool in
+                guard let self = self else { return }
+                bool ? mainView.indicatorView.startAnimating() : mainView.indicatorView.stopAnimating()
+            }.disposed(by: disposeBag)
+        
+        output.alertAction
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] (title, message) in
+                guard let self = self else { return }
+                AlertManager.showAlertOneButton(from: self, title: title, message: message, buttonTitle: "확인")
+            }).disposed(by: disposeBag)
+        
+        output.movePostPageAction
+            .subscribe(onNext: { [weak self] viewModel in
+                guard let self = self else { return }
+                let postingVC = PostingViewController(viewModel: viewModel)
+                present(postingVC, animated: true)
+            }).disposed(by: disposeBag)
+        
+        output.rxPosts
+            .map { !($0.isEmpty) }
+            .observe(on: MainScheduler.instance)
+            .bind(to: mainView.placeholderLabel.rx.isHidden)
+            .disposed(by: disposeBag)
+        
+        output.rxPosts
+            .observe(on: MainScheduler.instance)
+            .bind(to: mainView.tableView.rx.items(cellIdentifier: "MainCell", cellType: MainTableViewCell.self)) {
+                index, item, cell in
+                cell.configure(post: item)
+            }.disposed(by: disposeBag)
+        
+        output.postsPrice
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] (income, expenditure, result) in
+                guard let self = self else { return }
+                mainView.incomePriceLabel.text = "\(income.makeComma(num: income))원"
+                mainView.expenditurePriceLabel.text = "\(expenditure.makeComma(num: expenditure))원"
+                mainView.sumPriceLabel.text = "\(result.makeComma(num: result))원"
+            }).disposed(by: disposeBag)
+        
+        output.firstDate
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] date in
+                guard let self = self else { return }
+                mainView.calendar.reloadData()
+            }).disposed(by: disposeBag)
+        
+        output.existingFirstDate
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] date in
+                guard let self = self else { return }
+                if let date = date {
+                    mainView.calendar.deselect(date)
+                }
+            }).disposed(by: disposeBag)
+        
+        output.selectDate
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] date in
+                guard let self = self else { return }
+                mainView.calendar.select(date)
+            }).disposed(by: disposeBag)
+        
+        output.deselectDate
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] date in
+                guard let self = self else { return }
+                if let date = date {
+                    mainView.calendar.deselect(date)
+                }
+            }).disposed(by: disposeBag)
+     
+        output.datesRange
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] dates in
+                guard let self = self else { return }
+                mainView.startButton.setTitle(dates.first, for: .normal)
+                mainView.lastButton.setTitle(dates.last, for: .normal)
+            }).disposed(by: disposeBag)
     }
     
-    func loadCategory() {
-        viewModel.loadCategory()
-    }
     
-    func loadPost(dates: [String]) {
-        viewModel.loadPost(dates: dates)
-    }
-    
-    func updateButtons() {
-        if let startDate = firstDate, let endDate = lastDate {
-            let startData = dateFormatter.string(from: startDate)
-            let lastData = dateFormatter.string(from: endDate)
-            mainView.startButton.setTitle(startData, for: .normal)
-            mainView.lastButton.setTitle(lastData, for: .normal)
-        }
-    }
-    
-    
-    // MARK: - @objc
-    @objc func showCalendar() {
-        mainView.calendar.isHidden = false
+    private func showCalendar() {
+        mainView.calendar.isHidden.toggle()
         tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(toggleCalender(_:)))
         mainView.tableView.addGestureRecognizer(tapGestureRecognizer)
     }
     
-    @objc func toggleCalender(_ sender: UITapGestureRecognizer) {
+    @objc private func toggleCalender(_ sender: UITapGestureRecognizer) {
         mainView.calendar.isHidden = true
         mainView.tableView.removeGestureRecognizer(tapGestureRecognizer)
     }
     
-    @objc func floatingButtonTapped() {
-        let postingVM = PostingViewModel(observablePost: viewModel.observablePost, userEmail: viewModel.userEmail, coupleEmail: viewModel.coupleEmail ?? "", userIncomeCategory: viewModel.userIncomeCategory, userExpenditureCategory: viewModel.userExpenditureCategory)
-        postingVM.datesRange = datesRange
-        let postingVC = PostingViewController(viewModel: postingVM)
-        present(postingVC, animated: true)
-    }
-    
-    
 }
 
-// MARK: - UITableViewDelegate
-extension MainViewController: UITableViewDelegate {
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-        
-        let post = viewModel.observablePost.value[indexPath.row]
-        let postingVM = PostingViewModel(observablePost: viewModel.observablePost, userEmail: viewModel.userEmail, coupleEmail: viewModel.coupleEmail ?? "", userIncomeCategory: viewModel.userIncomeCategory, userExpenditureCategory: viewModel.userExpenditureCategory)
-        postingVM.post = post
-        postingVM.datesRange = datesRange
-        postingVM.indexPath = indexPath.row
-        let postingVC = PostingViewController(viewModel: postingVM)
-        
-        present(postingVC, animated: true)
-    }
-
-    
-    
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            let post = viewModel.observablePost.value[indexPath.row]
-            
-            viewModel.deletePost(date: post.date, uuid: post.uuid) { bool in
-                if bool == true {
-                    self.viewModel.observablePost.value.remove(at: indexPath.row)
-                    tableView.deleteRows(at: [indexPath], with: .fade)
-                } else {
-                    AlertManager.showAlertOneButton(from: self, title: "삭제 실패", message: "삭제 실패했습니다.", buttonTitle: "확인")
-                }
-            }
-        }
-    }
-    
-    
-    
-}
-
-
-// MARK: - UITableViewDataSource
-extension MainViewController: UITableViewDataSource {
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.observablePost.value.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "MainCell", for: indexPath) as! MainTableViewCell
-        let post = viewModel.observablePost.value[indexPath.row]
-        
-        let dateString = post.date
-        let startIndex = dateString.index(dateString.startIndex, offsetBy: 5)
-        let formattedDate = String(dateString[startIndex...])
-
-        cell.dateLabel.text = formattedDate
-        cell.categoryLabel.text = post.category
-        cell.contentLabel.text = post.content
-        cell.priceLabel.text = "\(post.cost)원"
-        cell.priceLabel.textColor = post.group == "수입" ? .systemBlue : .systemRed
-        return cell
-    }
-    
-}
 
 
 // MARK: - FSCalendarDelegate
 extension MainViewController: FSCalendarDelegate {
     
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
-        // 선택 x: 선택 date를 firstDate 설정
-        if firstDate == nil {
-            firstDate = date
-            datesRange = []
-            mainView.calendar.reloadData()
-            return
-        }
-        
-        //  firstDate 하나만 선택된 경우
-        if firstDate != nil && lastDate == nil {
-            // firstDate 이전 날짜 선택: firstDate 변경
-            if date < firstDate! {
-                calendar.deselect(firstDate!)
-                firstDate = date
-                datesRange = []
-                mainView.calendar.reloadData()
-                calendar.select(date)
-                return
-                // firstDate 이후 날짜 선택: 범위 선택
-            } else {
-                var range: [Date] = []
-                var currentDate = firstDate!
-                while currentDate <= date {
-                    range.append(currentDate)
-                    currentDate = Calendar.current.date(byAdding: .day, value: 1, to: currentDate)!
-                }
-
-                var rangeString: [String] = []
-                for day in range {
-                    let dateString = dateFormatter.string(from: day)
-                    rangeString.append(dateString)
-                    calendar.select(day)
-                }
-              
-                for dateString in rangeString {
-                    datesRange.append(dateString)
-                }
-                firstDate = range.first
-                lastDate = range.last
-                datesRange = range.map { dateFormatter.string(from: $0) }
-                mainView.calendar.reloadData()
-                updateButtons()
-                loadPost(dates: datesRange)
-                return
-            }
-        }
-
-        // 두개 선택: 선택날짜 전체해제 후 선택 날짜를 firstDate로 설정
-        if firstDate != nil && lastDate != nil {
-            
-            for day in calendar.selectedDates {
-                calendar.deselect(day)
-            }
-            
-            lastDate = nil
-            firstDate = date
-            datesRange = []
-            calendar.select(date)
-            mainView.calendar.reloadData()
-            updateButtons()
-            return
-        }
+        calendarSelectAction.onNext(date)
     }
     
-    // 선택된 날짜들중에 선택: 선택날짜 모두 초기화
     func calendar(_ calendar: FSCalendar, didDeselect date: Date, at monthPosition: FSCalendarMonthPosition) {
-        for dateString in datesRange {
-            if let day = dateFormatter.date(from: dateString) {
-                calendar.deselect(day)
-            }
-        }
-        firstDate = nil
-        lastDate = nil
-        datesRange = []
-        
-        mainView.calendar.reloadData()
-    }
-
-    // 날짜 31개까지 선택 가능
-    func calendar(_ calendar: FSCalendar, shouldSelect date: Date, at monthPosition: FSCalendarMonthPosition) -> Bool {
-        if calendar.selectedDates.count > 31 {
-            return false
-        } else {
-            return true
-        }
+        calendarDeselectAction.onNext(date)
     }
     
 }

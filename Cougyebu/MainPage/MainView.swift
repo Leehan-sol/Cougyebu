@@ -11,6 +11,11 @@ import SnapKit
 
 class MainView: UIView {
     
+    let indicatorView: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView(style: .large)
+        return indicator
+    }()
+    
     let startButton: UIButton = {
         let btn = UIButton()
         btn.setTitle("시작날짜", for: .normal)
@@ -51,6 +56,7 @@ class MainView: UIView {
         calendar.appearance.weekdayTextColor = .black
         calendar.backgroundColor = .systemGray6
         calendar.calendarWeekdayView.weekdayLabels.last!.textColor = .red
+        calendar.isHidden = true
         return calendar
     }()
     
@@ -109,7 +115,7 @@ class MainView: UIView {
     
     let placeholderLabel: UILabel = {
         let label = UILabel()
-        label.text = "저장된 데이터가 없습니다."
+        label.text = "작성한 게시글이 없습니다."
         label.textColor = .darkGray
         label.font = UIFont.systemFont(ofSize: 15)
         return label
@@ -144,6 +150,7 @@ class MainView: UIView {
     func setUI() {
         self.backgroundColor = .systemBackground
         addSubview(tableView)
+        addSubview(indicatorView)
         addSubview(labelStackView)
         labelStackView.addArrangedSubview(incomeLabel)
         labelStackView.addArrangedSubview(incomePriceLabel)
@@ -157,6 +164,11 @@ class MainView: UIView {
         addSubview(waveButton)
         addSubview(lastButton)
         addSubview(floatingButton)
+        
+        indicatorView.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.centerY.equalToSuperview()
+        }
         
         startButton.snp.makeConstraints {
             $0.top.equalToSuperview().offset(70)

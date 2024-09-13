@@ -6,9 +6,23 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 extension UIButton {
-
+    
+    func showPasswordButtonToggle(textField: UITextField?, disposeBag: DisposeBag) {
+        self.rx.tap
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] in
+                guard let self = self else { return }
+                isSelected.toggle()
+                let imageName = self.isSelected ? "eye.fill" : "eye.slash"
+                setImage(UIImage(systemName: imageName), for: .normal)
+                textField?.isSecureTextEntry = !self.isSelected
+            }).disposed(by: disposeBag)
+    }
+    
     func resizeImageButton(image: UIImage?, width: Int, height: Int, color: UIColor) -> UIImage? {
         guard let image = image else { return nil }
         let newSize = CGSize(width: width, height: height)

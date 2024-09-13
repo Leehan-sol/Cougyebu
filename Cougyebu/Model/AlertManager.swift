@@ -78,7 +78,6 @@ struct AlertManager {
         
         viewController.present(alertController, animated: true, completion: nil)
     }
-    
-    
+
 }
 

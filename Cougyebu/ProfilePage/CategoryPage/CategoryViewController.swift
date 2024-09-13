@@ -10,11 +10,11 @@ import UIKit
 class CategoryViewController: UIViewController {
     private let categoryView = CategoryView()
     private let userManager = UserManager()
-    private let user: Observable<User>?
+    private let user: Observable2<User>?
     private var category: [String] = []
     private var incomeOutcome: Bool? // 지출: false, 수입: true
     
-    init(user: Observable<User>?) {
+    init(user: Observable2<User>?) {
         self.user = user
         super.init(nibName: nil, bundle: nil)
     }
