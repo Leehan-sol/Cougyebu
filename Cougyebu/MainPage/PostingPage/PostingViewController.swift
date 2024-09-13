@@ -32,12 +32,32 @@ class PostingViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setGesture()
         setAction()
         setBinding()
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
+    }
+    
+    private func setGesture() {
+        postingView.costTextField.rx.controlEvent([.editingChanged])
+               .asObservable()
+               .subscribe(onNext: { [weak self] in
+                   guard let self = self else { return }
+                   if let text = self.postingView.costTextField.text?.filter({ $0.isNumber }), let number = Int(text) {
+                       let formatted = number.makeComma(num: number)
+                
+                       let cursorPosition = self.postingView.costTextField.offset(from: postingView.costTextField.beginningOfDocument, to: self.postingView.costTextField.selectedTextRange!.start)
+                       
+                       postingView.costTextField.text = formatted
+                       
+                       if let newPosition = postingView.costTextField.position(from: postingView.costTextField.beginningOfDocument, offset: cursorPosition) {
+                           postingView.costTextField.selectedTextRange = postingView.costTextField.textRange(from: newPosition, to: newPosition)
+                       }
+                   }
+               }).disposed(by: disposeBag)
     }
     
     private func setAction() {
@@ -85,6 +105,11 @@ class PostingViewController: UIViewController {
                 return element
             }.disposed(by: disposeBag)
         
+        output.currentCategories
+            .bind(to: postingView.categoryPicker.rx.itemTitles) { row, element in
+                return element
+            }.disposed(by: disposeBag)
+        
         output.groupIndex
              .subscribe(onNext: { [weak self] index in
                  guard let self = self, let index = index else { return }
@@ -97,10 +122,7 @@ class PostingViewController: UIViewController {
                 self.postingView.categoryPicker.selectRow(index, inComponent: 0, animated: true)
             }).disposed(by: disposeBag)
         
-        output.currentCategories
-            .bind(to: postingView.categoryPicker.rx.itemTitles) { row, element in
-                return element
-            }.disposed(by: disposeBag)
+     
     }
     
     
@@ -111,7 +133,7 @@ class PostingViewController: UIViewController {
         if let post = post, let date = dateFormatter.date(from: post.date) {
             postingView.datePicker.date = date
             postingView.contentTextField.text = post.content
-            postingView.costTextField.text = post.cost.removeComma(from: post.cost)
+            postingView.costTextField.text = post.cost
             postingView.addButton.setTitle("수정하기", for: .normal)
         }
     }

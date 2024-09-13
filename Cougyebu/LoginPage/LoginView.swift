@@ -11,7 +11,6 @@ import SnapKit
 class LoginView: UIView {
     
     // MARK: - UI Properties
-    
     let titleImage: UIImageView = {
         let imgView = UIImageView()
         imgView.image = UIImage(named: "Title")

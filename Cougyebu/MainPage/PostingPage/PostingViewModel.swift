@@ -111,14 +111,20 @@ class PostingViewModel {
             alertAction.onNext(("입력 오류", "내용을 입력하세요."))
             return
         }
-        
-        guard let cost = cost?.trimmingCharacters(in: .whitespaces), !cost.isEmpty, let intCost = Int(cost) else {
+
+        guard let cost = cost?.trimmingCharacters(in: .whitespaces), !cost.isEmpty else {
+            alertAction.onNext(("입력 오류", "유효한 가격을 입력하세요."))
+            return
+        }
+        let rawCost = cost.filter { $0.isNumber }
+
+        guard let intCost = Int(rawCost) else {
             alertAction.onNext(("입력 오류", "유효한 가격을 입력하세요."))
             return
         }
         
         let uuid = UUID().uuidString
-        let newPost = Post(date: date, group: selectedGroup, category: selectedCategory, content: content, cost: cost, uuid: uuid)
+        let newPost = Post(date: date, group: selectedGroup, category: selectedCategory, content: content, cost: intCost.makeComma(num: intCost), uuid: uuid)
         
         if let post = try? post.value() {
             updatePost(originalDate: post.date, uuid: post.uuid, post: newPost)
@@ -144,6 +150,7 @@ class PostingViewModel {
     
     private func updatePost(originalDate: String, uuid: String, post: Post) {
         if coupleEmail != "" {
+            print(coupleEmail, userEmail)
             let updateCoupleEmailPost = postManager.updatePost(email: coupleEmail, originalDate: originalDate, uuid: uuid, post: post)
                 .catch { error in
                     return Observable.just(false)

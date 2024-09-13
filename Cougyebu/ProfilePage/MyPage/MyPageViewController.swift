@@ -11,7 +11,6 @@ import MessageUI
 
 class MyPageViewController: UIViewController {
     private let myPageView = MyPageView()
-    // ✨ 프로토콜 타입으로 변경
     private let viewModel: MyPageViewModel
     
     init(viewModel: MyPageViewModel) {

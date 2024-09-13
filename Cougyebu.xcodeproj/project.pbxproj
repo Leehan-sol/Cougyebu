@@ -44,6 +44,11 @@
 		CC49563A2B9995BF003B3341 /* Secret.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4956392B9995BF003B3341 /* Secret.swift */; };
 		CC49563E2B9997F2003B3341 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = CC49563D2B9997F2003B3341 /* .gitignore */; };
 		CC50A1CA2C70EDAF00CDEE98 /* UIViewController +.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC50A1C92C70EDAF00CDEE98 /* UIViewController +.swift */; };
+		CC52261C2C942B7200102099 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = CC52261B2C942B7200102099 /* SnapKit */; };
+		CC52261F2C942C2D00102099 /* DGCharts in Frameworks */ = {isa = PBXBuildFile; productRef = CC52261E2C942C2D00102099 /* DGCharts */; };
+		CC52262D2C942D8400102099 /* RxBlocking in Frameworks */ = {isa = PBXBuildFile; productRef = CC52262C2C942D8400102099 /* RxBlocking */; };
+		CC52262F2C942D8400102099 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = CC52262E2C942D8400102099 /* RxCocoa */; };
+		CC5226312C942D8400102099 /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = CC5226302C942D8400102099 /* RxRelay */; };
 		CC53482A2BB85E0600037DC1 /* AppController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC5348292BB85E0600037DC1 /* AppController.swift */; };
 		CC53482C2BB869FD00037DC1 /* PasswordChangeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC53482B2BB869FD00037DC1 /* PasswordChangeViewModel.swift */; };
 		CC570FFA2B9EAE0C00DF000D /* ChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC570FF92B9EAE0C00DF000D /* ChartView.swift */; };
@@ -67,19 +72,10 @@
 		CC6BED4E2C7DB8A100AB34AC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CC6BED4D2C7DB8A100AB34AC /* GoogleService-Info.plist */; };
 		CCCCCCED2B9A946C00355EAA /* ConnectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCCCCCEC2B9A946C00355EAA /* ConnectViewModel.swift */; };
 		CCF8A7BF2C6DD95E00553143 /* Notification +.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCF8A7BE2C6DD95E00553143 /* Notification +.swift */; };
-		CCF8A8652C6DF5F400553143 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = CCF8A8642C6DF5F400553143 /* SnapKit */; };
-		CCF8A8672C6DF5F400553143 /* SnapKit-Dynamic in Frameworks */ = {isa = PBXBuildFile; productRef = CCF8A8662C6DF5F400553143 /* SnapKit-Dynamic */; };
 		CCF8A86A2C6DF60300553143 /* SwiftSMTP in Frameworks */ = {isa = PBXBuildFile; productRef = CCF8A8692C6DF60300553143 /* SwiftSMTP */; };
 		CCF8A86D2C6DF60F00553143 /* FSCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = CCF8A86C2C6DF60F00553143 /* FSCalendar */; };
-		CCF8A8702C6DF61C00553143 /* DGCharts in Frameworks */ = {isa = PBXBuildFile; productRef = CCF8A86F2C6DF61C00553143 /* DGCharts */; };
-		CCF8A8722C6DF61C00553143 /* DGChartsDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = CCF8A8712C6DF61C00553143 /* DGChartsDynamic */; };
 		CCF8A8752C6DF62900553143 /* NVActivityIndicatorView in Frameworks */ = {isa = PBXBuildFile; productRef = CCF8A8742C6DF62900553143 /* NVActivityIndicatorView */; };
 		CCF8A8772C6DF62900553143 /* NVActivityIndicatorViewExtended in Frameworks */ = {isa = PBXBuildFile; productRef = CCF8A8762C6DF62900553143 /* NVActivityIndicatorViewExtended */; };
-		CCF8A87A2C6DF63900553143 /* RxBlocking in Frameworks */ = {isa = PBXBuildFile; productRef = CCF8A8792C6DF63900553143 /* RxBlocking */; };
-		CCF8A87C2C6DF63900553143 /* RxBlocking-Dynamic in Frameworks */ = {isa = PBXBuildFile; productRef = CCF8A87B2C6DF63900553143 /* RxBlocking-Dynamic */; };
-		CCF8A87E2C6DF63900553143 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = CCF8A87D2C6DF63900553143 /* RxCocoa */; };
-		CCF8A8802C6DF63900553143 /* RxCocoa-Dynamic in Frameworks */ = {isa = PBXBuildFile; productRef = CCF8A87F2C6DF63900553143 /* RxCocoa-Dynamic */; };
-		CCF8A8822C6DF63900553143 /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = CCF8A8812C6DF63900553143 /* RxRelay */; };
 		CCF8A8902C6DF7B100553143 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = CCF8A88F2C6DF7B100553143 /* FirebaseAnalytics */; };
 		CCF8A8922C6DF7B100553143 /* FirebaseAnalyticsOnDeviceConversion in Frameworks */ = {isa = PBXBuildFile; productRef = CCF8A8912C6DF7B100553143 /* FirebaseAnalyticsOnDeviceConversion */; };
 		CCF8A8942C6DF7B100553143 /* FirebaseAnalyticsSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CCF8A8932C6DF7B100553143 /* FirebaseAnalyticsSwift */; };
@@ -208,10 +204,7 @@
 				CCF8A8A42C6DF7B100553143 /* FirebaseDatabaseSwift in Frameworks */,
 				CCF8A8902C6DF7B100553143 /* FirebaseAnalytics in Frameworks */,
 				CCF8A8D82C6DF8A100553143 /* FirebaseStorage in Frameworks */,
-				CCF8A8822C6DF63900553143 /* RxRelay in Frameworks */,
 				CCF8A8A82C6DF8A100553143 /* FirebaseAnalyticsOnDeviceConversion in Frameworks */,
-				CCF8A8722C6DF61C00553143 /* DGChartsDynamic in Frameworks */,
-				CCF8A8702C6DF61C00553143 /* DGCharts in Frameworks */,
 				CCF8A8AE2C6DF8A100553143 /* FirebaseAppCheck in Frameworks */,
 				CCF8A8772C6DF62900553143 /* NVActivityIndicatorViewExtended in Frameworks */,
 				CCF8A8A02C6DF7B100553143 /* FirebaseCrashlytics in Frameworks */,
@@ -219,10 +212,9 @@
 				CCF8A8CC2C6DF8A100553143 /* FirebaseInstallations in Frameworks */,
 				CCF8A8B22C6DF8A100553143 /* FirebaseAuth in Frameworks */,
 				CCF8A86A2C6DF60300553143 /* SwiftSMTP in Frameworks */,
-				CCF8A87E2C6DF63900553143 /* RxCocoa in Frameworks */,
 				CCF8A8922C6DF7B100553143 /* FirebaseAnalyticsOnDeviceConversion in Frameworks */,
+				CC52262D2C942D8400102099 /* RxBlocking in Frameworks */,
 				CCF8A8AC2C6DF8A100553143 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
-				CCF8A8802C6DF63900553143 /* RxCocoa-Dynamic in Frameworks */,
 				CCF8A8C62C6DF8A100553143 /* FirebaseFunctionsCombine-Community in Frameworks */,
 				CCF8A8962C6DF7B100553143 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
 				CCF8A86D2C6DF60F00553143 /* FSCalendar in Frameworks */,
@@ -233,27 +225,27 @@
 				CCF8A8B02C6DF8A100553143 /* FirebaseAppDistribution-Beta in Frameworks */,
 				CCF8A8A22C6DF7B100553143 /* FirebaseDatabase in Frameworks */,
 				CCF8A8D02C6DF8A100553143 /* FirebaseMessaging in Frameworks */,
-				CCF8A8652C6DF5F400553143 /* SnapKit in Frameworks */,
 				CCF8A89A2C6DF7B100553143 /* FirebaseAppDistribution-Beta in Frameworks */,
 				CCF8A8BC2C6DF8A100553143 /* FirebaseDynamicLinks in Frameworks */,
 				CCF8A8CA2C6DF8A100553143 /* FirebaseInAppMessagingSwift-Beta in Frameworks */,
 				CCF8A8D62C6DF8A100553143 /* FirebaseRemoteConfigSwift in Frameworks */,
 				CCF8A8C42C6DF8A100553143 /* FirebaseFunctions in Frameworks */,
+				CC5226312C942D8400102099 /* RxRelay in Frameworks */,
+				CC52261F2C942C2D00102099 /* DGCharts in Frameworks */,
 				CCF8A8C82C6DF8A100553143 /* FirebaseInAppMessaging-Beta in Frameworks */,
 				CCF8A8AA2C6DF8A100553143 /* FirebaseAnalyticsSwift in Frameworks */,
-				CCF8A87C2C6DF63900553143 /* RxBlocking-Dynamic in Frameworks */,
 				CCF8A8B82C6DF8A100553143 /* FirebaseDatabase in Frameworks */,
 				CCF8A8942C6DF7B100553143 /* FirebaseAnalyticsSwift in Frameworks */,
 				CCF8A8752C6DF62900553143 /* NVActivityIndicatorView in Frameworks */,
 				CCF8A8DA2C6DF8A100553143 /* FirebaseStorageCombine-Community in Frameworks */,
-				CCF8A8672C6DF5F400553143 /* SnapKit-Dynamic in Frameworks */,
 				CCF8A8D42C6DF8A100553143 /* FirebaseRemoteConfig in Frameworks */,
 				CCF8A8B62C6DF8A100553143 /* FirebaseCrashlytics in Frameworks */,
 				CCF8A8982C6DF7B100553143 /* FirebaseAppCheck in Frameworks */,
 				CCF8A89E2C6DF7B100553143 /* FirebaseAuthCombine-Community in Frameworks */,
+				CC52261C2C942B7200102099 /* SnapKit in Frameworks */,
+				CC52262F2C942D8400102099 /* RxCocoa in Frameworks */,
 				CCF8A8A62C6DF8A100553143 /* FirebaseAnalytics in Frameworks */,
 				CCF8A8CE2C6DF8A100553143 /* FirebaseMLModelDownloader in Frameworks */,
-				CCF8A87A2C6DF63900553143 /* RxBlocking in Frameworks */,
 				CCF8A8D22C6DF8A100553143 /* FirebasePerformance in Frameworks */,
 				CCF8A8B42C6DF8A100553143 /* FirebaseAuthCombine-Community in Frameworks */,
 			);
@@ -492,19 +484,10 @@
 			);
 			name = Cougyebu;
 			packageProductDependencies = (
-				CCF8A8642C6DF5F400553143 /* SnapKit */,
-				CCF8A8662C6DF5F400553143 /* SnapKit-Dynamic */,
 				CCF8A8692C6DF60300553143 /* SwiftSMTP */,
 				CCF8A86C2C6DF60F00553143 /* FSCalendar */,
-				CCF8A86F2C6DF61C00553143 /* DGCharts */,
-				CCF8A8712C6DF61C00553143 /* DGChartsDynamic */,
 				CCF8A8742C6DF62900553143 /* NVActivityIndicatorView */,
 				CCF8A8762C6DF62900553143 /* NVActivityIndicatorViewExtended */,
-				CCF8A8792C6DF63900553143 /* RxBlocking */,
-				CCF8A87B2C6DF63900553143 /* RxBlocking-Dynamic */,
-				CCF8A87D2C6DF63900553143 /* RxCocoa */,
-				CCF8A87F2C6DF63900553143 /* RxCocoa-Dynamic */,
-				CCF8A8812C6DF63900553143 /* RxRelay */,
 				CCF8A88F2C6DF7B100553143 /* FirebaseAnalytics */,
 				CCF8A8912C6DF7B100553143 /* FirebaseAnalyticsOnDeviceConversion */,
 				CCF8A8932C6DF7B100553143 /* FirebaseAnalyticsSwift */,
@@ -544,6 +527,11 @@
 				CCF8A8D72C6DF8A100553143 /* FirebaseStorage */,
 				CCF8A8D92C6DF8A100553143 /* FirebaseStorageCombine-Community */,
 				CCF8A8DB2C6DF8A100553143 /* FirebaseVertexAI-Preview */,
+				CC52261B2C942B7200102099 /* SnapKit */,
+				CC52261E2C942C2D00102099 /* DGCharts */,
+				CC52262C2C942D8400102099 /* RxBlocking */,
+				CC52262E2C942D8400102099 /* RxCocoa */,
+				CC5226302C942D8400102099 /* RxRelay */,
 			);
 			productName = Cougyebu;
 			productReference = CC49558E2B998CE4003B3341 /* Cougyebu.app */;
@@ -574,13 +562,13 @@
 			);
 			mainGroup = CC4955852B998CE4003B3341;
 			packageReferences = (
-				CCF8A8632C6DF5F400553143 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				CCF8A8682C6DF60300553143 /* XCRemoteSwiftPackageReference "Swift-SMTP" */,
 				CCF8A86B2C6DF60F00553143 /* XCRemoteSwiftPackageReference "FSCalendar" */,
-				CCF8A86E2C6DF61C00553143 /* XCRemoteSwiftPackageReference "Charts" */,
 				CCF8A8732C6DF62900553143 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */,
-				CCF8A8782C6DF63900553143 /* XCRemoteSwiftPackageReference "RxSwift" */,
 				CCF8A88E2C6DF7B100553143 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				CC52261A2C942B7200102099 /* XCRemoteSwiftPackageReference "SnapKit" */,
+				CC52261D2C942C2D00102099 /* XCRemoteSwiftPackageReference "Charts" */,
+				CC52262B2C942D8400102099 /* XCRemoteSwiftPackageReference "RxSwift" */,
 			);
 			productRefGroup = CC49558F2B998CE4003B3341 /* Products */;
 			projectDirPath = "";
@@ -892,12 +880,28 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		CCF8A8632C6DF5F400553143 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+		CC52261A2C942B7200102099 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SnapKit/SnapKit";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 5.7.1;
+			};
+		};
+		CC52261D2C942C2D00102099 /* XCRemoteSwiftPackageReference "Charts" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/danielgindi/Charts.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.1.0;
+			};
+		};
+		CC52262B2C942D8400102099 /* XCRemoteSwiftPackageReference "RxSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ReactiveX/RxSwift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.7.1;
 			};
 		};
 		CCF8A8682C6DF60300553143 /* XCRemoteSwiftPackageReference "Swift-SMTP" */ = {
@@ -916,28 +920,12 @@
 				minimumVersion = 2.8.4;
 			};
 		};
-		CCF8A86E2C6DF61C00553143 /* XCRemoteSwiftPackageReference "Charts" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/danielgindi/Charts.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.1.0;
-			};
-		};
 		CCF8A8732C6DF62900553143 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/ninjaprox/NVActivityIndicatorView.git";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 5.2.0;
-			};
-		};
-		CCF8A8782C6DF63900553143 /* XCRemoteSwiftPackageReference "RxSwift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/ReactiveX/RxSwift.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 6.7.1;
 			};
 		};
 		CCF8A88E2C6DF7B100553143 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
@@ -951,15 +939,30 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		CCF8A8642C6DF5F400553143 /* SnapKit */ = {
+		CC52261B2C942B7200102099 /* SnapKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = CCF8A8632C6DF5F400553143 /* XCRemoteSwiftPackageReference "SnapKit" */;
+			package = CC52261A2C942B7200102099 /* XCRemoteSwiftPackageReference "SnapKit" */;
 			productName = SnapKit;
 		};
-		CCF8A8662C6DF5F400553143 /* SnapKit-Dynamic */ = {
+		CC52261E2C942C2D00102099 /* DGCharts */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = CCF8A8632C6DF5F400553143 /* XCRemoteSwiftPackageReference "SnapKit" */;
-			productName = "SnapKit-Dynamic";
+			package = CC52261D2C942C2D00102099 /* XCRemoteSwiftPackageReference "Charts" */;
+			productName = DGCharts;
+		};
+		CC52262C2C942D8400102099 /* RxBlocking */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CC52262B2C942D8400102099 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxBlocking;
+		};
+		CC52262E2C942D8400102099 /* RxCocoa */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CC52262B2C942D8400102099 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxCocoa;
+		};
+		CC5226302C942D8400102099 /* RxRelay */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CC52262B2C942D8400102099 /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxRelay;
 		};
 		CCF8A8692C6DF60300553143 /* SwiftSMTP */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -971,16 +974,6 @@
 			package = CCF8A86B2C6DF60F00553143 /* XCRemoteSwiftPackageReference "FSCalendar" */;
 			productName = FSCalendar;
 		};
-		CCF8A86F2C6DF61C00553143 /* DGCharts */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CCF8A86E2C6DF61C00553143 /* XCRemoteSwiftPackageReference "Charts" */;
-			productName = DGCharts;
-		};
-		CCF8A8712C6DF61C00553143 /* DGChartsDynamic */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CCF8A86E2C6DF61C00553143 /* XCRemoteSwiftPackageReference "Charts" */;
-			productName = DGChartsDynamic;
-		};
 		CCF8A8742C6DF62900553143 /* NVActivityIndicatorView */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = CCF8A8732C6DF62900553143 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */;
@@ -990,31 +983,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CCF8A8732C6DF62900553143 /* XCRemoteSwiftPackageReference "NVActivityIndicatorView" */;
 			productName = NVActivityIndicatorViewExtended;
-		};
-		CCF8A8792C6DF63900553143 /* RxBlocking */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CCF8A8782C6DF63900553143 /* XCRemoteSwiftPackageReference "RxSwift" */;
-			productName = RxBlocking;
-		};
-		CCF8A87B2C6DF63900553143 /* RxBlocking-Dynamic */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CCF8A8782C6DF63900553143 /* XCRemoteSwiftPackageReference "RxSwift" */;
-			productName = "RxBlocking-Dynamic";
-		};
-		CCF8A87D2C6DF63900553143 /* RxCocoa */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CCF8A8782C6DF63900553143 /* XCRemoteSwiftPackageReference "RxSwift" */;
-			productName = RxCocoa;
-		};
-		CCF8A87F2C6DF63900553143 /* RxCocoa-Dynamic */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CCF8A8782C6DF63900553143 /* XCRemoteSwiftPackageReference "RxSwift" */;
-			productName = "RxCocoa-Dynamic";
-		};
-		CCF8A8812C6DF63900553143 /* RxRelay */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CCF8A8782C6DF63900553143 /* XCRemoteSwiftPackageReference "RxSwift" */;
-			productName = RxRelay;
 		};
 		CCF8A88F2C6DF7B100553143 /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -151,6 +151,12 @@ class MainViewController: UIViewController {
                 cell.configure(post: item)
             }.disposed(by: disposeBag)
         
+        output.rxPosts
+            .subscribe { [weak self] _ in
+                self?.scrollToBottom()
+            }
+            .disposed(by: disposeBag)
+        
         output.postsPrice
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] (income, expenditure, result) in
@@ -202,6 +208,14 @@ class MainViewController: UIViewController {
     }
     
     
+    private func scrollToBottom() {
+        let lastRow = self.mainView.tableView.numberOfRows(inSection: 0) - 1
+        if lastRow >= 0 {
+            let indexPath = IndexPath(row: lastRow, section: 0)
+            self.mainView.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+        }
+    }
+    
     private func showCalendar() {
         mainView.calendar.isHidden.toggle()
         tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(toggleCalender(_:)))
@@ -212,6 +226,7 @@ class MainViewController: UIViewController {
         mainView.calendar.isHidden = true
         mainView.tableView.removeGestureRecognizer(tapGestureRecognizer)
     }
+    
     
 }
 
