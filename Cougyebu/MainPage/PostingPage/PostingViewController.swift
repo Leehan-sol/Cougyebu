@@ -17,6 +17,14 @@ class PostingViewController: UIViewController {
     private let selectGroupChangeAction = PublishSubject<String>()
     private let disposeBag = DisposeBag()
     
+    private let numberFormatter: NumberFormatter = {
+           let formatter = NumberFormatter()
+           formatter.numberStyle = .decimal
+           formatter.groupingSeparator = ","
+           formatter.maximumFractionDigits = 0
+           return formatter
+       }()
+    
     init(viewModel: PostingViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -42,22 +50,19 @@ class PostingViewController: UIViewController {
     }
     
     private func setGesture() {
-        postingView.costTextField.rx.controlEvent([.editingChanged])
-               .asObservable()
-               .subscribe(onNext: { [weak self] in
-                   guard let self = self else { return }
-                   if let text = self.postingView.costTextField.text?.filter({ $0.isNumber }), let number = Int(text) {
-                       let formatted = number.makeComma(num: number)
-                
-                       let cursorPosition = self.postingView.costTextField.offset(from: postingView.costTextField.beginningOfDocument, to: self.postingView.costTextField.selectedTextRange!.start)
+        postingView.costTextField.rx.text.orEmpty
+                   .map { [weak self] text -> String in
+                       guard let self = self else { return "" }
+                       let numberOnlyString = text.replacingOccurrences(of: self.numberFormatter.groupingSeparator, with: "")
                        
-                       postingView.costTextField.text = formatted
-                       
-                       if let newPosition = postingView.costTextField.position(from: postingView.costTextField.beginningOfDocument, offset: cursorPosition) {
-                           postingView.costTextField.selectedTextRange = postingView.costTextField.textRange(from: newPosition, to: newPosition)
+                       if let number = Int(numberOnlyString) {
+                           return self.numberFormatter.string(from: NSNumber(value: number)) ?? ""
+                       } else {
+                           return ""
                        }
                    }
-               }).disposed(by: disposeBag)
+                   .bind(to: postingView.costTextField.rx.text)
+                   .disposed(by: disposeBag)
     }
     
     private func setAction() {

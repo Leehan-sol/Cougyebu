@@ -20,6 +20,7 @@ class MyPageViewModel {
     init(userEmail: String) {
         self.userEmail = userEmail
         self.observableUser = Observable2<User>(User(email: "", nickname: "", isConnect: false))
+        setUser()
     }
     
     // user 세팅
@@ -31,10 +32,13 @@ class MyPageViewModel {
                 guard let self = self else { return }
                 if let user = user {
                     self.observableUser?.value = user
+                    
+                    if user.isConnect == true {
+                        UserDefaults.standard.set(user.coupleNickname, forKey: "coupleNickname")
+                    }
                 }
             }).disposed(by: disposeBag)
-        
     }
     
-    
 }
+

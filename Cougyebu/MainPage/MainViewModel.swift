@@ -32,7 +32,7 @@ class MainViewModel {
     private let existingFirstDate = PublishSubject<Date?>()
     private let selectDate = BehaviorSubject<Date?>(value: nil)
     private let deselectDate = BehaviorSubject<Date?>(value: nil)
-    private lazy var datesRange = BehaviorSubject<[String]>(value: currentDate.getAllDatesInMonth())
+    lazy var datesRange = BehaviorSubject<[String]>(value: currentDate.getAllDatesInMonth())
     private let disposeBag = DisposeBag()
     
     struct Input {
@@ -104,6 +104,7 @@ class MainViewModel {
         userManager.findUser(email: userEmail)
             .subscribe(onNext: { [weak self] user in
                 guard let self = self else { return }
+                isLoading.onNext(true)
                 rxUser.onNext(user)
             }).disposed(by: disposeBag)
         

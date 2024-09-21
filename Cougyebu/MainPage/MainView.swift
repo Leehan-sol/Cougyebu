@@ -128,10 +128,12 @@ class MainView: UIView {
     }()
     
     let floatingButton: UIButton = {
-        let btn = UIButton()
-        let image = UIImage(systemName: "plus.circle")
-        let resizedImage = btn.resizeImageButton(image: image, width: 40, height: 40, color: UIColor.black)
-        btn.setImage(resizedImage, for: .normal)
+        let btn = UIButton(type: .system)
+        btn.setImage(UIImage(systemName: "plus"), for: .normal)
+        btn.tintColor = .white
+        btn.backgroundColor = .gray.withAlphaComponent(0.5)
+        btn.layer.cornerRadius = 25
+        btn.layer.masksToBounds = true
         return btn
     }()
     
@@ -188,7 +190,7 @@ class MainView: UIView {
         calendar.snp.makeConstraints {
             $0.top.equalTo(lastButton.snp.bottom).offset(10)
             $0.left.right.equalToSuperview().inset(10)
-            $0.bottom.equalToSuperview().offset(-480)
+            $0.height.equalToSuperview().multipliedBy(0.3)
         }
  
         labelStackView.snp.makeConstraints {
@@ -205,10 +207,11 @@ class MainView: UIView {
             $0.top.equalTo(labelStackView.snp.bottom).offset(10)
             $0.left.right.bottom.equalToSuperview()
         }
-        
+
         floatingButton.snp.makeConstraints {
             $0.right.equalToSuperview().offset(-30)
             $0.bottom.equalToSuperview().offset(-100)
+            $0.width.height.equalTo(50)
         }
         
     }

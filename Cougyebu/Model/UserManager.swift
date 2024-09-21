@@ -224,6 +224,7 @@ class UserManager {
                 print("유저 문서 삭제 성공")
             }
         }
+        UserDefaults.standard.removeObject(forKey: "coupleNickname")
     }
     
     // 유저 연결 (inputEmail: 상대이메일)

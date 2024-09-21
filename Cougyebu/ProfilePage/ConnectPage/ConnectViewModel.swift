@@ -40,12 +40,14 @@ class ConnectViewModel {
     }
     
     func disconnectUser(email: String) {
-        userManager.disconnectUser(inputEmail: email){ _ in
-            self.observableUser?.value.coupleEmail = nil
-            self.observableUser?.value.coupleNickname = nil
-            self.observableUser?.value.requestUser = nil
-            self.observableUser?.value.code = nil
-            self.observableUser?.value.isConnect = false
+        userManager.disconnectUser(inputEmail: email){ [weak self] _ in
+            guard let self = self else { return }
+            observableUser?.value.coupleEmail = nil
+            observableUser?.value.coupleNickname = nil
+            observableUser?.value.requestUser = nil
+            observableUser?.value.code = nil
+            observableUser?.value.isConnect = false
+            UserDefaults.standard.removeObject(forKey: "coupleNickname")
         }
     }
     

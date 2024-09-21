@@ -12,6 +12,7 @@ import MessageUI
 class MyPageViewController: UIViewController {
     private let myPageView = MyPageView()
     private let viewModel: MyPageViewModel
+    private lazy var user = viewModel.observableUser
     
     init(viewModel: MyPageViewModel) {
         self.viewModel = viewModel
@@ -29,7 +30,6 @@ class MyPageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setTableView()
-        setViewModelUser()
         setBinding()
     }
     
@@ -38,23 +38,23 @@ class MyPageViewController: UIViewController {
         myPageView.tableView.dataSource = self
         myPageView.tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
     }
-    
-    func setViewModelUser() {
-        viewModel.setUser()
-    }
-    
+
     func setBinding() {
         viewModel.observableUser?.bind { [weak self] user in
-            self?.myPageView.nicknameLabel.text = user.nickname
-            if user.isConnect {
-                self?.myPageView.coupleNicknameLabel.text = user.coupleNickname
-            } else {
-                self?.myPageView.coupleNicknameLabel.text = "내 짝꿍"
-            }
+            guard let self = self else { return }
+            print("유저 변경됨")
+            myPageView.nicknameLabel.text = user.nickname
+            setCoupleNickname(user: user)
         }
     }
-
     
+    func setCoupleNickname(user: User) {
+        if user.isConnect {
+            myPageView.coupleNicknameLabel.text = UserDefaults.standard.string(forKey: "coupleNickname")
+        } else {
+            myPageView.coupleNicknameLabel.text = "내 짝꿍"
+        }
+    }
 }
 
 

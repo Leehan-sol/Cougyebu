@@ -69,19 +69,19 @@ class MainViewController: UIViewController {
         mainView.startButton.rx.tap
             .bind(onNext: { [weak self] in
                 guard let self = self else { return }
-                showCalendar()
+                mainView.calendar.isHidden.toggle()
             }).disposed(by: disposeBag)
         
         mainView.waveButton.rx.tap
             .bind(onNext: { [weak self] in
                 guard let self = self else { return }
-                showCalendar()
+                mainView.calendar.isHidden.toggle()
             }).disposed(by: disposeBag)
         
         mainView.lastButton.rx.tap
             .bind(onNext: { [weak self] in
                 guard let self = self else { return }
-                showCalendar()
+                mainView.calendar.isHidden.toggle()
             }).disposed(by: disposeBag)
     }
     
@@ -187,6 +187,7 @@ class MainViewController: UIViewController {
             .subscribe(onNext: { [weak self] date in
                 guard let self = self else { return }
                 mainView.calendar.select(date)
+                
             }).disposed(by: disposeBag)
         
         output.deselectDate
@@ -204,6 +205,9 @@ class MainViewController: UIViewController {
                 guard let self = self else { return }
                 mainView.startButton.setTitle(dates.first, for: .normal)
                 mainView.lastButton.setTitle(dates.last, for: .normal)
+                if !dates.isEmpty {
+                    mainView.calendar.isHidden = true
+                }
             }).disposed(by: disposeBag)
     }
     
@@ -215,18 +219,6 @@ class MainViewController: UIViewController {
             self.mainView.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
         }
     }
-    
-    private func showCalendar() {
-        mainView.calendar.isHidden.toggle()
-        tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(toggleCalender(_:)))
-        mainView.tableView.addGestureRecognizer(tapGestureRecognizer)
-    }
-    
-    @objc private func toggleCalender(_ sender: UITapGestureRecognizer) {
-        mainView.calendar.isHidden = true
-        mainView.tableView.removeGestureRecognizer(tapGestureRecognizer)
-    }
-    
     
 }
 

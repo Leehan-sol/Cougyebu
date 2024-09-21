@@ -32,10 +32,6 @@ class ConnectViewController: UIViewController {
         setAddTarget()
     }
     
-//    override func viewWillAppear(_ animated: Bool) {
-//        setUI()
-//    }
-//
     func setBinding() {
         viewModel.observableUser?.bind { [weak self] _ in
             DispatchQueue.main.async {
@@ -43,7 +39,6 @@ class ConnectViewController: UIViewController {
             }
         }
     }
-
     
     func setNavigationBar() {
         self.title = "커플 연결"
