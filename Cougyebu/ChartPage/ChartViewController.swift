@@ -82,6 +82,7 @@ class ChartViewController: UIViewController {
             guard let self = self else { return }
             DispatchQueue.main.async {
                 self.setDataSource(posts: posts)
+                self.chartView.placeholderLabel.isHidden = true
             }
         }
     }
@@ -123,26 +124,30 @@ class ChartViewController: UIViewController {
     func loadPost(dates: [String]) {
         viewModel.loadPost(dates: dates)
     }
+
     
     func customizeChart(categoryToSum: [String: Int]) {
+        let minSize = 300000
         // 1. ChartDataEntry 세팅, 각 카테고리별 합산된 금액 사용
         var dataEntries: [ChartDataEntry] = []
+        
         for (category, sum) in categoryToSum {
-            let dataEntry = PieChartDataEntry(value: Double(sum), label: category)
+            let adjustedValue = max(Double(sum), Double(minSize))
+            let dataEntry = PieChartDataEntry(value: adjustedValue, label: category, data: sum)
             dataEntries.append(dataEntry)
         }
-        
+
         // 2. ChartDataSet 세팅
         let pieChartDataSet = PieChartDataSet(entries: dataEntries, label: "")
         pieChartDataSet.colors = colorsOfCharts(count: categoryToSum.count)
         pieChartDataSet.valueColors = [.black]
+        pieChartDataSet.drawValuesEnabled = true
+        pieChartDataSet.sliceSpace = 5.0
         
         // 3. ChartData 설정
         let pieChartData = PieChartData(dataSet: pieChartDataSet)
-        
-        // 사용자 정의 포맷터 생성
-        let valueFormatter = CurrencyValueFormatter(suffix: "원")
-        pieChartData.setValueFormatter(valueFormatter)
+        pieChartData.setValueFormatter(CustomValueFormatter())
+        pieChartData.setValueFont(.systemFont(ofSize: 12))
         
         // 4. ChareView 설정
         chartView.pieChartView.holeRadiusPercent = 0

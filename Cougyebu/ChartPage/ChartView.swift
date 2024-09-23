@@ -153,7 +153,7 @@ class ChartView: UIView {
         
         pieChartView.snp.makeConstraints {
             $0.top.equalTo(buttonStackView.snp.bottom)
-            $0.left.right.bottom.equalTo(safeAreaLayoutGuide)
+            $0.left.right.bottom.equalToSuperview()
         }
         
     }
